@@ -85,9 +85,6 @@ export const MobileBottomNav: React.FC = () => {
         >
           <div className="relative flex items-center justify-center mb-0.5">
             <Home className={`w-5 h-5 transition-transform ${isHomeActive ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
-            {isHomeActive && (
-              <span className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-amber-500" />
-            )}
           </div>
           <span className="text-[10px] tracking-tight leading-tight mt-0.5">
             Home
@@ -127,9 +124,6 @@ export const MobileBottomNav: React.FC = () => {
             <span className="absolute -top-1.5 -right-2 px-1 py-0.2 rounded-full bg-rose-500 text-white font-black text-[8px] leading-none shadow-2xs animate-pulse">
               HOT
             </span>
-            {isTrendingActive && (
-              <span className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-amber-500" />
-            )}
           </div>
           <span className="text-[10px] tracking-tight leading-tight mt-0.5">
             Trending
