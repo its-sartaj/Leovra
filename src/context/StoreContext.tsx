@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Product, CartItem, Order, FilterOptions, CustomerUser } from '../types';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
+import { 
+  fetchRemoteProducts, 
+  saveRemoteProducts, 
+  fetchRemoteOrders, 
+  saveRemoteOrders,
+  subscribeRemoteProducts,
+  subscribeRemoteOrders 
+} from '../services/firebaseSync';
 
 interface StoreContextType {
   products: Product[];
@@ -382,7 +390,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
   const currentVersionRef = useRef<number>(Date.now());
 
-  // Persist products and broadcast to other tabs for REAL-TIME inventory synchronization
+  // Persist products and broadcast to other tabs + Firebase Realtime Database for GLOBAL REAL-TIME synchronization
   const saveProducts = useCallback((newProducts: Product[], skipBroadcast = false) => {
     const newVersion = Date.now();
     currentVersionRef.current = newVersion;
@@ -394,7 +402,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.warn('localStorage save warning:', e);
     }
 
-    // 1. Send via persistent BroadcastChannel (WITHOUT closing!)
+    // 1. Cloud Sync: Send to Firebase Realtime Database (syncs to all devices across internet)
+    saveRemoteProducts(newProducts).catch((err) => {
+      console.warn('[Firebase] Save products error:', err);
+    });
+
+    // 2. Send via persistent BroadcastChannel (for instant same-browser tabs)
     if (!skipBroadcast && broadcastChannelRef.current) {
       try {
         broadcastChannelRef.current.postMessage({ 
@@ -408,7 +421,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
 
-    // 2. Dispatch custom event for same-window / iframe components
+    // 3. Dispatch custom event for same-window / iframe components
     if (!skipBroadcast && typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('leovra_sync_products', { 
         detail: { payload: newProducts, version: newVersion } 
@@ -416,7 +429,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
-  // Persist orders and broadcast
+  // Persist orders and broadcast to other tabs + Firebase Realtime Database
   const saveOrders = useCallback((newOrders: Order[], skipBroadcast = false) => {
     const newVersion = Date.now();
     setOrders(newOrders);
@@ -426,6 +439,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch (e) {
       console.warn('localStorage save warning:', e);
     }
+
+    // 1. Cloud Sync: Send to Firebase Realtime Database
+    saveRemoteOrders(newOrders).catch((err) => {
+      console.warn('[Firebase] Save orders error:', err);
+    });
 
     if (!skipBroadcast && broadcastChannelRef.current) {
       try {
@@ -448,7 +466,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   // REAL-TIME SYNCHRONIZATION:
-  // Persistent BroadcastChannel + Window Storage Event + Local Custom Event + Heartbeat Polling
+  // Firebase Realtime Database SSE Stream + Persistent BroadcastChannel + Window Storage Event + Local Custom Event + Heartbeat Polling
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -541,7 +559,57 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }, 1200);
 
+    // 5. Firebase Cloud Realtime Database: Initial fetch + Live Server-Sent Events (SSE) Stream
+    fetchRemoteProducts().then((remoteProds) => {
+      if (remoteProds && remoteProds.length > 0) {
+        currentVersionRef.current = Date.now();
+        setProducts(remoteProds);
+        try {
+          localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
+        } catch {
+          // ignore
+        }
+      }
+    });
+
+    fetchRemoteOrders().then((remoteOrders) => {
+      if (remoteOrders && remoteOrders.length > 0) {
+        setOrders(remoteOrders);
+        try {
+          localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
+        } catch {
+          // ignore
+        }
+      }
+    });
+
+    const unsubscribeProducts = subscribeRemoteProducts((remoteProds) => {
+      if (remoteProds && remoteProds.length > 0) {
+        currentVersionRef.current = Date.now();
+        setProducts(remoteProds);
+        try {
+          localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
+        } catch {
+          // ignore
+        }
+        showToast('⚡ Live Inventory updated in real time');
+      }
+    });
+
+    const unsubscribeOrders = subscribeRemoteOrders((remoteOrders) => {
+      if (remoteOrders) {
+        setOrders(remoteOrders);
+        try {
+          localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
+        } catch {
+          // ignore
+        }
+      }
+    });
+
     return () => {
+      unsubscribeProducts();
+      unsubscribeOrders();
       if (broadcastChannelRef.current) {
         broadcastChannelRef.current.close();
         broadcastChannelRef.current = null;

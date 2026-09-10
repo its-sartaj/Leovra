@@ -439,7 +439,7 @@ export const AdminDashboard: React.FC = () => {
             <span className="text-neutral-300">•</span>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Real-Time Sync Active (All Tabs & Devices)</span>
+              <span>Firebase Cloud Sync Active (Live on all devices)</span>
             </div>
           </div>
           
