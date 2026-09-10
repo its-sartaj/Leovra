@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: clip;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Hardware accelerated smooth scrolling and image rendering */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  will-change: scroll-position;
+}
+
+/* Off-screen rendering optimization for product grid */
+.product-card-optimize {
+  contain-intrinsic-size: 0 380px;
+  content-visibility: auto;
+}

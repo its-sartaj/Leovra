@@ -1,0 +1,6 @@
+{
+  "name": "Leovra Enterprises",
+  "description": "Exclusive collection of designer earrings, trendy t-shirts, and premium lowers with live real-time inventory management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,154 @@
+import React from 'react';
+
+interface LeovraLogoIconProps {
+  className?: string;
+  size?: number | string;
+  includeBackground?: boolean;
+}
+
+export const LeovraLogoIcon: React.FC<LeovraLogoIconProps> = ({ 
+  className = '',
+  size = 48,
+  includeBackground = true
+}) => {
+  return (
+    <svg
+      viewBox="0 0 260 200"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width: size, height: 'auto', aspectRatio: '260/200' }}
+      className={`shrink-0 drop-shadow-sm select-none ${className}`}
+      aria-label="Leovra Brand Logo"
+    >
+      <defs>
+        {/* Rich Metallic Gold Linear Gradient (Left-to-right luxury shine) */}
+        <linearGradient id="leovraGold" x1="15%" y1="10%" x2="85%" y2="90%">
+          <stop offset="0%" stopColor="#FCEBA4" />
+          <stop offset="20%" stopColor="#E5BE64" />
+          <stop offset="45%" stopColor="#CAA145" />
+          <stop offset="65%" stopColor="#FCEBA4" />
+          <stop offset="85%" stopColor="#B88A2E" />
+          <stop offset="100%" stopColor="#8E6515" />
+        </linearGradient>
+
+        {/* Deep Luxury Midnight Navy Background Gradient */}
+        <radialGradient id="leovraBg" cx="50%" cy="45%" r="60%">
+          <stop offset="0%" stopColor="#0E192D" />
+          <stop offset="70%" stopColor="#07101E" />
+          <stop offset="100%" stopColor="#040811" />
+        </radialGradient>
+
+        {/* Shadow filter for 3D depth */}
+        <filter id="leovraShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.6" />
+        </filter>
+      </defs>
+
+      {/* Optional Dark Navy Background Tile */}
+      {includeBackground && (
+        <rect width="260" height="200" rx="24" fill="url(#leovraBg)" stroke="#C6922C" strokeWidth="2" strokeOpacity="0.3" />
+      )}
+
+      {/* Main Logo Group */}
+      <g filter="url(#leovraShadow)">
+        
+        {/* Outer Golden Circular Ring Arc */}
+        <path 
+          d="M 76 128 A 66 66 0 1 1 184 128" 
+          stroke="url(#leovraGold)" 
+          strokeWidth="2.5" 
+          strokeLinecap="round" 
+          fill="none" 
+        />
+
+        {/* Main Thick Golden Circular Frame Arc */}
+        <path 
+          d="M 83 124 A 58 58 0 1 1 177 124" 
+          stroke="url(#leovraGold)" 
+          strokeWidth="7" 
+          strokeLinecap="round" 
+          fill="none" 
+        />
+
+        {/* Inner Thin Accent Ring Arc */}
+        <path 
+          d="M 90 120 A 50 50 0 1 1 170 120" 
+          stroke="url(#leovraGold)" 
+          strokeWidth="1.8" 
+          strokeLinecap="round" 
+          fill="none" 
+        />
+
+        {/* LEFT WING FLOURISH (Artisanal Sculpted Gold Feathers) */}
+        <g fill="url(#leovraGold)">
+          {/* Top Feather extending up along the outer ring */}
+          <path d="M 82 100 C 74 80 82 62 92 48 C 88 64 85 82 91 96 C 93 100 89 104 85 104 C 82 104 80 102 82 100 Z" />
+          
+          {/* Primary Upper Wing Feather sweeping diagonally out */}
+          <path d="M 86 112 C 64 88 56 68 68 54 C 62 74 66 96 82 110 C 84 113 82 117 78 117 C 74 117 72 114 71 110 Z" />
+          
+          {/* Middle Wing Feather sweeping horizontally left */}
+          <path d="M 94 128 C 66 112 58 92 64 76 C 60 98 72 118 92 126 Z" />
+          
+          {/* Lower Wing Feather sweeping downward-left */}
+          <path d="M 104 144 C 76 138 64 122 66 104 C 72 124 88 138 108 142 Z" />
+
+          {/* Bottom Acanthus Leaf Curl */}
+          <path d="M 118 156 C 96 154 82 144 78 132 C 88 142 104 148 118 150 Z" />
+          <path d="M 110 162 C 98 160 88 154 86 146 C 94 152 104 156 114 156 Z" />
+        </g>
+
+        {/* RIGHT WING FLOURISH (Symmetrical Mirror) */}
+        <g fill="url(#leovraGold)">
+          {/* Top Feather extending up along the outer ring */}
+          <path d="M 178 100 C 186 80 178 62 168 48 C 172 64 175 82 169 96 C 167 100 171 104 175 104 C 178 104 180 102 178 100 Z" />
+          
+          {/* Primary Upper Wing Feather sweeping diagonally out */}
+          <path d="M 174 112 C 196 88 204 68 192 54 C 198 74 194 96 178 110 C 176 113 178 117 182 117 C 186 117 188 114 189 110 Z" />
+          
+          {/* Middle Wing Feather sweeping horizontally right */}
+          <path d="M 166 128 C 194 112 202 92 196 76 C 200 98 188 118 168 126 Z" />
+          
+          {/* Lower Wing Feather sweeping downward-right */}
+          <path d="M 156 144 C 184 138 196 122 194 104 C 188 124 172 138 152 142 Z" />
+
+          {/* Bottom Acanthus Leaf Curl */}
+          <path d="M 142 156 C 164 154 178 144 182 132 C 172 142 156 148 142 150 Z" />
+          <path d="M 150 162 C 162 160 172 154 174 146 C 166 152 156 156 146 156 Z" />
+        </g>
+
+        {/* REGAL SERIF MONOGRAM "L" */}
+        <g fill="url(#leovraGold)">
+          {/* Top Bracketed Serif & Vertical Pillar */}
+          <path d="M 104 68 L 126 68 C 124 72 121 76 118 80 L 118 120 C 118 128 122 131 131 131 C 139 131 146 127 151 120 C 152 118 153 120 153 122 C 150 130 140 137 127 137 C 108 137 102 127 102 114 L 102 80 C 99 76 96 72 94 68 Z" />
+          
+          {/* Subtle Emboss Light Highlight along the Letter */}
+          <path 
+            d="M 106 69 L 116 69 L 116 118 C 116 126 120 129 129 129 C 137 129 143 125 148 119 L 149 121 C 144 128 135 134 125 134 C 110 134 104 125 104 114 Z" 
+            fill="#FFFFFF" 
+            fillOpacity="0.32" 
+          />
+        </g>
+
+        {/* THREE GOLDEN 5-POINTED STARS */}
+        {/* Center Star (Largest) */}
+        <polygon 
+          points="130.0,147.0 131.7,151.4 136.3,151.5 132.6,154.5 133.9,159.0 130.0,156.4 126.1,159.0 127.4,154.5 123.7,151.5 128.3,151.4" 
+          fill="url(#leovraGold)" 
+        />
+
+        {/* Left Star */}
+        <polygon 
+          points="114.0,152.0 115.3,155.4 118.8,155.5 116.0,157.7 116.9,161.1 114.0,159.2 111.1,161.1 112.0,157.7 109.2,155.5 112.7,155.4" 
+          fill="url(#leovraGold)" 
+        />
+
+        {/* Right Star */}
+        <polygon 
+          points="146.0,152.0 147.3,155.4 150.8,155.5 148.0,157.7 148.9,161.1 146.0,159.2 143.1,161.1 144.0,157.7 141.2,155.5 144.7,155.4" 
+          fill="url(#leovraGold)" 
+        />
+
+      </g>
+    </svg>
+  );
+};
