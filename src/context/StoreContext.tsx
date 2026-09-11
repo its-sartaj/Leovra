@@ -64,7 +64,9 @@ interface StoreContextType {
     customerPhone: string;
     customerAddress: string;
     customerCity?: string;
-    paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call';
+    paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
+    totalAmount?: number;
+    transactionId?: string;
   }) => Order;
   generateWhatsAppOrderUrl: (orderItems?: CartItem[], customerInfo?: { name: string; phone: string; address: string }) => string;
   
@@ -800,8 +802,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     customerPhone: string;
     customerAddress: string;
     customerCity?: string;
-    paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call';
+    paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
+    totalAmount?: number;
+    transactionId?: string;
   }): Order => {
+    const finalTotal = typeof orderData.totalAmount === 'number' ? orderData.totalAmount : cartTotal;
     const newOrder: Order = {
       id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
       customerId: currentCustomer?.id,
@@ -810,9 +815,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       customerAddress: orderData.customerAddress,
       customerCity: orderData.customerCity,
       items: [...cart],
-      totalAmount: cartTotal,
+      totalAmount: finalTotal,
       status: 'Confirmed',
       paymentMethod: orderData.paymentMethod,
+      transactionId: orderData.transactionId,
       createdAt: new Date().toISOString(),
     };
 

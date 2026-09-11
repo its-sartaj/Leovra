@@ -45,7 +45,8 @@ export interface Order {
   items: CartItem[];
   totalAmount: number;
   status: 'Pending' | 'Confirmed' | 'Dispatched' | 'Delivered';
-  paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call';
+  paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
+  transactionId?: string;
   createdAt: string;
 }
 

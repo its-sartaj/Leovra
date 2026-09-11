@@ -4,11 +4,18 @@ import {
   Trash2, 
   ShoppingBag, 
   ArrowRight, 
+  ArrowLeft,
   MessageCircle, 
   CheckCircle2, 
   Truck, 
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  QrCode,
+  Smartphone,
+  Copy,
+  Check,
+  Banknote,
+  ExternalLink
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Order } from '../types';
@@ -33,12 +40,15 @@ export const CartDrawer: React.FC = () => {
   } = useStore();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState<'address' | 'payment'>('address');
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerAddress, setCustomerAddress] = useState('');
   const [customerPincode, setCustomerPincode] = useState('');
   const [customerCity, setCustomerCity] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'Cash on Delivery' | 'UPI / Direct Call'>('Cash on Delivery');
+  const [paymentMethod, setPaymentMethod] = useState<'Cash on Delivery' | 'UPI / Online Payment'>('UPI / Online Payment');
+  const [transactionId, setTransactionId] = useState('');
+  const [copiedUpi, setCopiedUpi] = useState(false);
   const [lastConfirmedOrder, setLastConfirmedOrder] = useState<Order | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -61,12 +71,25 @@ export const CartDrawer: React.FC = () => {
   const grandTotal = cartTotal + deliveryCharge;
   const amountNeeded = Math.max(0, freeDeliveryThreshold - cartTotal);
 
-  const handlePlaceDirectOrder = (e: React.FormEvent) => {
+  const businessUpiId = '7979968347@upi';
+  const upiUrl = `upi://pay?pa=${businessUpiId}&pn=${encodeURIComponent('Leovra Enterprises')}&am=${grandTotal}&cu=INR&tn=${encodeURIComponent('Order Payment Leovra')}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(upiUrl)}`;
+
+  const handleCopyUpi = (upi: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(upi);
+      setCopiedUpi(true);
+      setTimeout(() => setCopiedUpi(false), 2000);
+    }
+  };
+
+  // Step 1: Validate address and proceed to payment selection
+  const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
     const cleanName = customerName.trim();
-    const cleanPhone = customerPhone.trim();
+    const cleanPhone = customerPhone.trim().replace(/\D/g, '');
     const cleanAddress = customerAddress.trim();
 
     if (!cleanName) {
@@ -74,16 +97,26 @@ export const CartDrawer: React.FC = () => {
       return;
     }
 
-    if (!cleanPhone || cleanPhone.replace(/\D/g, '').length < 10) {
+    if (!cleanPhone || cleanPhone.length < 10) {
       setFormError('Please enter a valid 10-digit mobile number for order delivery.');
       return;
     }
 
-    if (!cleanAddress || cleanAddress.length < 10) {
+    if (!cleanAddress || cleanAddress.length < 8) {
       setFormError('Please enter complete house/flat no., street, and locality.');
       return;
     }
 
+    setCheckoutStep('payment');
+  };
+
+  // Step 2: Finalize and place the order
+  const handlePlaceFinalOrder = () => {
+    setFormError(null);
+
+    const cleanName = customerName.trim();
+    const cleanPhone = customerPhone.trim();
+    const cleanAddress = customerAddress.trim();
     const fullDeliveryAddress = `${cleanAddress}${customerPincode ? ` - Pincode: ${customerPincode}` : ''}${customerCity ? `, ${customerCity}` : ''}`;
 
     const order = placeOrder({
@@ -92,6 +125,8 @@ export const CartDrawer: React.FC = () => {
       customerAddress: fullDeliveryAddress,
       customerCity: customerCity || undefined,
       paymentMethod,
+      totalAmount: grandTotal,
+      transactionId: transactionId.trim() || undefined,
     });
 
     setLastConfirmedOrder(order);
@@ -107,12 +142,15 @@ export const CartDrawer: React.FC = () => {
 
   const resetCheckoutModal = () => {
     setIsCheckingOut(false);
+    setCheckoutStep('address');
     setLastConfirmedOrder(null);
     setCustomerName('');
     setCustomerPhone('');
     setCustomerAddress('');
     setCustomerPincode('');
     setCustomerCity('');
+    setTransactionId('');
+    setCopiedUpi(false);
     setFormError(null);
     setIsCartOpen(false);
   };
@@ -137,10 +175,10 @@ export const CartDrawer: React.FC = () => {
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-extrabold text-neutral-900 leading-tight">
-                  Your Shopping Bag ({cartCount})
+                  {lastConfirmedOrder ? 'Order Confirmation' : isCheckingOut ? (checkoutStep === 'payment' ? 'Payment Options (Step 2/2)' : 'Delivery Details (Step 1/2)') : `Your Shopping Bag (${cartCount})`}
                 </h2>
                 <p className="text-[10px] text-neutral-500">
-                  Leovra Enterprises • Doorstep Delivery
+                  Leovra Enterprises • 100% Genuine Products
                 </p>
               </div>
             </div>
@@ -148,7 +186,7 @@ export const CartDrawer: React.FC = () => {
               {cart.length > 0 && !lastConfirmedOrder && !isCheckingOut && (
                 <button
                   onClick={clearCart}
-                  className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 hover:underline px-2 py-1"
+                  className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 hover:underline px-2 py-1 cursor-pointer"
                   title="Remove all items from bag"
                 >
                   Clear Bag
@@ -170,8 +208,8 @@ export const CartDrawer: React.FC = () => {
             
             {/* If Order Just Placed Successfully */}
             {lastConfirmedOrder ? (
-              <div className="py-6 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-sm animate-bounce">
+              <div className="py-4 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
                 <div>
@@ -188,13 +226,25 @@ export const CartDrawer: React.FC = () => {
                 {/* Confirmed Order Summary */}
                 <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 text-left text-xs space-y-2.5">
                   <div className="flex justify-between items-center pb-2 border-b border-neutral-200">
-                    <span className="text-neutral-500 font-medium">Total Amount:</span>
-                    <strong className="text-sm font-black text-neutral-950">₹{lastConfirmedOrder.totalAmount}</strong>
+                    <span className="text-neutral-500 font-medium">Total Payable:</span>
+                    <strong className="text-base font-black text-neutral-950">₹{lastConfirmedOrder.totalAmount}</strong>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-neutral-500 font-medium">Payment Mode:</span>
-                    <strong className="text-neutral-900 font-semibold">{lastConfirmedOrder.paymentMethod}</strong>
+                    <span className={`px-2 py-0.5 rounded-md font-bold text-xs ${
+                      lastConfirmedOrder.paymentMethod === 'Cash on Delivery'
+                        ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                        : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                    }`}>
+                      {lastConfirmedOrder.paymentMethod}
+                    </span>
                   </div>
+                  {lastConfirmedOrder.transactionId && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-neutral-500 font-medium">UPI Ref / UTR:</span>
+                      <strong className="font-mono text-emerald-700 font-bold">{lastConfirmedOrder.transactionId}</strong>
+                    </div>
+                  )}
                   <div className="flex justify-between items-start">
                     <span className="text-neutral-500 font-medium shrink-0">Delivery Address:</span>
                     <span className="text-neutral-800 text-right font-medium max-w-[200px] leading-snug">
@@ -218,18 +268,32 @@ export const CartDrawer: React.FC = () => {
                   </div>
                 </div>
 
+                {/* If UPI, provide post-order payment assistance */}
+                {lastConfirmedOrder.paymentMethod !== 'Cash on Delivery' && (
+                  <div className="p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-2xl text-left space-y-2.5">
+                    <div className="flex items-center gap-2 text-emerald-900 font-bold text-xs">
+                      <Smartphone className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>UPI Payment Confirmation</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-800 leading-relaxed">
+                      Please share your payment screenshot on WhatsApp so our dispatch team can immediately fast-track your package.
+                    </p>
+                    <a
+                      href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(
+                        `Hello Leovra Enterprises! I have placed order #${lastConfirmedOrder.id} for ₹${lastConfirmedOrder.totalAmount} via UPI.${lastConfirmedOrder.transactionId ? ` (UTR: ${lastConfirmedOrder.transactionId})` : ''} Attached is my payment confirmation.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Send Payment Screenshot on WhatsApp</span>
+                    </a>
+                  </div>
+                )}
+
                 {/* Actions */}
                 <div className="pt-2 flex flex-col gap-2">
-                  <a
-                    href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(`Hello Leovra Enterprises! I just placed order #${lastConfirmedOrder.id} for ₹${lastConfirmedOrder.totalAmount}. Please confirm dispatch timing.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Send Order to WhatsApp (+91 {businessPhone})</span>
-                  </a>
-
                   <button
                     type="button"
                     onClick={() => {
@@ -251,19 +315,44 @@ export const CartDrawer: React.FC = () => {
                 </div>
               </div>
             ) : isCheckingOut ? (
-              /* Checkout Form */
-              <form onSubmit={handlePlaceDirectOrder} className="space-y-3.5">
-                <div className="flex items-center justify-between pb-2 border-b border-neutral-100">
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-bold text-neutral-900">Delivery & Contact Details</h3>
-                    <p className="text-[10px] text-neutral-500">Fill your delivery details below</p>
+              /* Checkout Process: Step 1 or Step 2 */
+              <div className="space-y-4">
+                
+                {/* Stepper Indicator */}
+                <div className="flex items-center justify-between px-1 pb-1">
+                  <div className="flex items-center gap-2 text-xs font-bold">
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] ${
+                      checkoutStep === 'address' ? 'bg-amber-500 text-neutral-950' : 'bg-emerald-500 text-white'
+                    }`}>
+                      {checkoutStep === 'payment' ? '✓' : '1'}
+                    </span>
+                    <span className={checkoutStep === 'address' ? 'text-neutral-900 font-black' : 'text-neutral-500'}>
+                      Delivery
+                    </span>
+                    <span className="text-neutral-300">→</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] ${
+                      checkoutStep === 'payment' ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-200 text-neutral-600'
+                    }`}>
+                      2
+                    </span>
+                    <span className={checkoutStep === 'payment' ? 'text-neutral-900 font-black' : 'text-neutral-500'}>
+                      Payment Option
+                    </span>
                   </div>
+
                   <button
                     type="button"
-                    onClick={() => setIsCheckingOut(false)}
-                    className="text-xs text-amber-700 font-semibold hover:underline cursor-pointer"
+                    onClick={() => {
+                      if (checkoutStep === 'payment') {
+                        setCheckoutStep('address');
+                      } else {
+                        setIsCheckingOut(false);
+                      }
+                    }}
+                    className="text-xs text-amber-700 font-semibold hover:underline cursor-pointer flex items-center gap-1"
                   >
-                    ← Back to Bag
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>{checkoutStep === 'payment' ? 'Back' : 'Back to Bag'}</span>
                   </button>
                 </div>
 
@@ -275,136 +364,332 @@ export const CartDrawer: React.FC = () => {
                   </div>
                 )}
 
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-neutral-700 mb-1">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Rahul Sharma / Pooja Verma"
-                      value={customerName}
-                      onChange={(e) => {
-                        setCustomerName(e.target.value);
-                        if (formError) setFormError(null);
-                      }}
-                      className="w-full px-3 py-2.5 rounded-xl border border-neutral-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-hidden text-sm"
-                      id="checkout-name-input"
-                    />
-                  </div>
+                {/* STEP 1: DELIVERY ADDRESS */}
+                {checkoutStep === 'address' && (
+                  <form onSubmit={handleProceedToPayment} className="space-y-3.5">
+                    <div className="space-y-3 text-xs">
+                      <div>
+                        <label className="block font-bold text-neutral-700 mb-1">
+                          Full Name / पूरा नाम <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Rahul Sharma / Pooja Verma"
+                          value={customerName}
+                          onChange={(e) => {
+                            setCustomerName(e.target.value);
+                            if (formError) setFormError(null);
+                          }}
+                          className="w-full px-3 py-2.5 rounded-xl border border-neutral-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-hidden text-sm bg-neutral-50/50"
+                          id="checkout-name-input"
+                          autoFocus
+                        />
+                      </div>
 
-                  <div>
-                    <label className="block font-bold text-neutral-700 mb-1">Mobile / WhatsApp Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="e.g. 9876543210 (10 digits)"
-                      value={customerPhone}
-                      onChange={(e) => {
-                        setCustomerPhone(e.target.value);
-                        if (formError) setFormError(null);
-                      }}
-                      className="w-full px-3 py-2.5 rounded-xl border border-neutral-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-hidden text-sm"
-                      id="checkout-phone-input"
-                    />
-                  </div>
+                      <div>
+                        <label className="block font-bold text-neutral-700 mb-1">
+                          Mobile / WhatsApp Number <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2.5 text-sm font-bold text-neutral-400">+91</span>
+                          <input
+                            type="tel"
+                            required
+                            maxLength={10}
+                            placeholder="10-digit mobile number"
+                            value={customerPhone}
+                            onChange={(e) => {
+                              setCustomerPhone(e.target.value.replace(/\D/g, ''));
+                              if (formError) setFormError(null);
+                            }}
+                            className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-neutral-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-hidden text-sm font-mono bg-neutral-50/50"
+                            id="checkout-phone-input"
+                          />
+                        </div>
+                        <p className="text-[10px] text-neutral-400 mt-1">Order tracking updates will be sent to this number.</p>
+                      </div>
 
-                  <div>
-                    <label className="block font-bold text-neutral-700 mb-1">Complete Delivery Address *</label>
-                    <textarea
-                      required
-                      rows={3}
-                      placeholder="Flat/House No., Building name, Street, Landmark"
-                      value={customerAddress}
-                      onChange={(e) => {
-                        setCustomerAddress(e.target.value);
-                        if (formError) setFormError(null);
-                      }}
-                      className="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-hidden resize-none text-sm"
-                      id="checkout-address-input"
-                    />
-                  </div>
+                      <div>
+                        <label className="block font-bold text-neutral-700 mb-1">
+                          Complete Delivery Address / पूरा पता <span className="text-rose-500">*</span>
+                        </label>
+                        <textarea
+                          required
+                          rows={3}
+                          placeholder="Flat/House No., Building Name, Street, Landmark, Area"
+                          value={customerAddress}
+                          onChange={(e) => {
+                            setCustomerAddress(e.target.value);
+                            if (formError) setFormError(null);
+                          }}
+                          className="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-hidden resize-none text-sm bg-neutral-50/50"
+                          id="checkout-address-input"
+                        />
+                      </div>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block font-bold text-neutral-700 mb-1">Pincode *</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. 110001"
-                        value={customerPincode}
-                        onChange={(e) => setCustomerPincode(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:border-amber-500 outline-hidden text-sm"
-                        id="checkout-pincode-input"
-                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block font-bold text-neutral-700 mb-1">City / शहर</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Patna / Delhi"
+                            value={customerCity}
+                            onChange={(e) => setCustomerCity(e.target.value)}
+                            className="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:border-amber-500 outline-hidden text-sm bg-neutral-50/50"
+                            id="checkout-city-input"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-bold text-neutral-700 mb-1">Pincode / पिनकोड</label>
+                          <input
+                            type="text"
+                            maxLength={6}
+                            placeholder="e.g. 800001"
+                            value={customerPincode}
+                            onChange={(e) => setCustomerPincode(e.target.value.replace(/\D/g, ''))}
+                            className="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:border-amber-500 outline-hidden text-sm font-mono bg-neutral-50/50"
+                            id="checkout-pincode-input"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block font-bold text-neutral-700 mb-1">City / Region</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. City or District"
-                        value={customerCity}
-                        onChange={(e) => setCustomerCity(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:border-amber-500 outline-hidden text-sm"
-                        id="checkout-city-input"
-                      />
-                    </div>
-                  </div>
 
-                  <div>
-                    <label className="block font-bold text-neutral-700 mb-1">Payment Preference</label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="pt-3 border-t border-neutral-100 space-y-2.5">
+                      <div className="flex justify-between items-center text-sm font-extrabold text-neutral-900">
+                        <span>Order Amount:</span>
+                        <span className="text-base font-black">₹{grandTotal}</span>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+                        id="proceed-to-payment-step-btn"
+                      >
+                        <span>Continue to Payment Options</span>
+                        <ArrowRight className="w-4 h-4 text-amber-400" />
+                      </button>
+
+                      <div className="text-center pt-1">
+                        <a
+                          href={getWhatsAppUrl()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-emerald-700 font-bold hover:underline inline-flex items-center gap-1"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>Or order directly via WhatsApp (+91 {businessPhone})</span>
+                        </a>
+                      </div>
+                    </div>
+                  </form>
+                )}
+
+                {/* STEP 2: CHOOSE PAYMENT METHOD & COMPLETE ORDER */}
+                {checkoutStep === 'payment' && (
+                  <div className="space-y-4 text-xs animate-in fade-in duration-200">
+                    
+                    {/* Delivery Address Summary Card */}
+                    <div className="p-3 bg-neutral-50 rounded-2xl border border-neutral-200 flex items-start justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">Deliver To:</span>
+                        <div className="font-extrabold text-neutral-900">{customerName} (+91 {customerPhone})</div>
+                        <div className="text-[11px] text-neutral-600 truncate max-w-[240px] mt-0.5">
+                          {customerAddress}{customerCity ? `, ${customerCity}` : ''}{customerPincode ? ` - ${customerPincode}` : ''}
+                        </div>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => setPaymentMethod('Cash on Delivery')}
-                        className={`p-2.5 rounded-xl border text-xs font-bold text-center transition-all cursor-pointer ${
-                          paymentMethod === 'Cash on Delivery'
-                            ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
-                            : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
-                        }`}
+                        onClick={() => setCheckoutStep('address')}
+                        className="text-xs font-bold text-amber-700 hover:underline px-2 py-1 cursor-pointer shrink-0"
                       >
-                        Cash on Delivery
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod('UPI / Direct Call')}
-                        className={`p-2.5 rounded-xl border text-xs font-bold text-center transition-all cursor-pointer ${
-                          paymentMethod === 'UPI / Direct Call'
-                            ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
-                            : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
-                        }`}
-                      >
-                        UPI / Direct Pay
+                        Edit
                       </button>
                     </div>
-                  </div>
-                </div>
 
-                <div className="pt-3 border-t border-neutral-100 space-y-2">
-                  <div className="flex justify-between text-sm font-extrabold text-neutral-900">
-                    <span>Total Amount:</span>
-                    <span>₹{grandTotal}</span>
-                  </div>
+                    {/* Amount to Pay Banner */}
+                    <div className="p-3.5 bg-neutral-950 text-white rounded-2xl flex items-center justify-between shadow-xs">
+                      <div>
+                        <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Total Amount to Pay</div>
+                        <div className="text-xl font-black text-amber-400 font-mono leading-tight">₹{grandTotal}</div>
+                      </div>
+                      <div className="text-right text-[11px] text-neutral-300">
+                        <div>{cartCount} Items Selected</div>
+                        <div className="text-emerald-400 font-semibold">{isFreeDelivery ? 'Free Delivery' : '+ ₹49 Delivery'}</div>
+                      </div>
+                    </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-sm shadow-md transition-all cursor-pointer active:scale-98"
-                    id="confirm-direct-order-btn"
-                  >
-                    Confirm & Place Order (₹{grandTotal})
-                  </button>
+                    {/* Payment Mode Selector */}
+                    <div>
+                      <label className="block font-bold text-neutral-800 mb-2">
+                        Select Payment Option / भुगतान का तरीका:
+                      </label>
+                      
+                      <div className="grid grid-cols-2 gap-2.5">
+                        {/* Option 1: UPI / Online Payment */}
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('UPI / Online Payment')}
+                          className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative ${
+                            paymentMethod === 'UPI / Online Payment'
+                              ? 'bg-emerald-50/70 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20'
+                              : 'bg-white border-neutral-200 hover:border-neutral-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                              <QrCode className="w-4 h-4" />
+                            </div>
+                            <span className="text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">
+                              Instant
+                            </span>
+                          </div>
+                          <div className="font-extrabold text-neutral-900 text-xs">UPI / Online Pay</div>
+                          <div className="text-[10px] text-neutral-500 mt-0.5">GPay, PhonePe, Paytm, QR</div>
+                        </button>
 
-                  <div className="text-center pt-1">
-                    <a
-                      href={getWhatsAppUrl()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-emerald-700 font-bold hover:underline inline-flex items-center gap-1"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      <span>Or complete order via WhatsApp (+91 {businessPhone})</span>
-                    </a>
+                        {/* Option 2: Cash on Delivery */}
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('Cash on Delivery')}
+                          className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative ${
+                            paymentMethod === 'Cash on Delivery'
+                              ? 'bg-amber-50/70 border-amber-500 shadow-sm ring-2 ring-amber-500/20'
+                              : 'bg-white border-neutral-200 hover:border-neutral-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                              <Banknote className="w-4 h-4" />
+                            </div>
+                            <span className="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
+                              Doorstep
+                            </span>
+                          </div>
+                          <div className="font-extrabold text-neutral-900 text-xs">Cash on Delivery</div>
+                          <div className="text-[10px] text-neutral-500 mt-0.5">Pay cash when item arrives</div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* DYNAMIC PAYMENT DETAILS BASED ON SELECTED METHOD */}
+                    
+                    {/* IF UPI IS SELECTED: LIVE QR CODE & DIRECT 1-CLICK PAY APP */}
+                    {paymentMethod === 'UPI / Online Payment' && (
+                      <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-200 space-y-3.5">
+                        <div className="text-center space-y-1">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            <span>100% Safe UPI Direct Payment</span>
+                          </span>
+                          <h4 className="font-black text-neutral-900 text-xs sm:text-sm">Scan QR or Tap to Pay via UPI</h4>
+                          <p className="text-[11px] text-neutral-500">Pay directly to Leovra Enterprises: ₹{grandTotal}</p>
+                        </div>
+
+                        {/* Live QR Code Box */}
+                        <div className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-emerald-200/80 shadow-2xs">
+                          <img 
+                            src={qrCodeUrl} 
+                            alt="Scan to Pay via UPI" 
+                            className="w-40 h-40 object-contain rounded-lg border border-neutral-100"
+                          />
+                          <div className="text-[10px] text-neutral-400 font-bold mt-1.5 uppercase tracking-wider">
+                            Scan with GPay, PhonePe, Paytm or BHIM
+                          </div>
+                        </div>
+
+                        {/* 1-Click Direct Pay Button for Mobile Users */}
+                        <a
+                          href={upiUrl}
+                          className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors text-center"
+                        >
+                          <Smartphone className="w-4 h-4" />
+                          <span>Pay ₹{grandTotal} with any UPI App (GPay / PhonePe / Paytm)</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+
+                        {/* Copy UPI ID */}
+                        <div className="flex items-center justify-between p-2 bg-white rounded-xl border border-emerald-200 text-xs">
+                          <div>
+                            <span className="text-[10px] text-neutral-400 block">UPI ID:</span>
+                            <span className="font-mono font-bold text-neutral-900">{businessUpiId}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyUpi(businessUpiId)}
+                            className="px-2.5 py-1 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors"
+                          >
+                            {copiedUpi ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                            <span>{copiedUpi ? 'Copied!' : 'Copy UPI'}</span>
+                          </button>
+                        </div>
+
+                        {/* Optional UTR / Reference No. */}
+                        <div>
+                          <label className="block text-[11px] font-bold text-neutral-700 mb-1">
+                            UPI Ref / UTR No. (Optional / वैकल्पिक)
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 12-digit UPI reference number after payment"
+                            value={transactionId}
+                            onChange={(e) => setTransactionId(e.target.value)}
+                            className="w-full px-3 py-2 rounded-xl border border-emerald-300 focus:border-emerald-500 outline-hidden text-xs font-mono bg-white"
+                          />
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                          type="button"
+                          onClick={handlePlaceFinalOrder}
+                          className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-extrabold text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+                          id="confirm-upi-order-btn"
+                        >
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>Confirm Order (Paid ₹{grandTotal} via UPI)</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {/* IF COD IS SELECTED: DIRECT COD CONFIRMATION */}
+                    {paymentMethod === 'Cash on Delivery' && (
+                      <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-200 space-y-3.5">
+                        <div className="flex items-start gap-2.5">
+                          <Truck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="font-extrabold text-neutral-900 text-xs">Cash on Delivery Confirmed</h4>
+                            <p className="text-[11px] text-neutral-600 mt-0.5 leading-relaxed">
+                              You do not need to pay anything right now. Please keep exact cash of <strong>₹{grandTotal}</strong> ready when the courier partner arrives at your address.
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={handlePlaceFinalOrder}
+                          className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-extrabold text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+                          id="confirm-cod-order-btn"
+                        >
+                          <span>Place Cash on Delivery Order (₹{grandTotal})</span>
+                          <ArrowRight className="w-4 h-4 text-amber-400" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="text-center pt-1">
+                      <a
+                        href={getWhatsAppUrl()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-emerald-700 font-bold hover:underline inline-flex items-center gap-1"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>Or complete order via WhatsApp (+91 {businessPhone})</span>
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </form>
+                )}
+              </div>
             ) : cart.length === 0 ? (
               /* Empty Bag State */
               <div className="py-16 text-center space-y-3">
@@ -450,51 +735,48 @@ export const CartDrawer: React.FC = () => {
                     const isOutOfStock = liveProduct.isOutOfStock || liveProduct.stock <= 0;
 
                     return (
-                      <div key={`${item.product.id}-${item.selectedSize}-${item.selectedColor || 'default'}`} className="pt-3 flex gap-3">
+                      <div key={`${item.product.id}-${item.selectedSize}-${item.selectedColor || ''}`} className="pt-3 flex gap-3">
                         <img
                           src={item.product.image}
                           alt={item.product.name}
-                          referrerPolicy="no-referrer"
-                          className="w-18 h-20 rounded-xl object-cover bg-neutral-100 shrink-0 border border-neutral-200"
+                          className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl bg-neutral-100 border border-neutral-200 shrink-0"
                         />
-                        <div className="flex-1 flex flex-col justify-between min-w-0">
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
                           <div>
                             <div className="flex items-start justify-between gap-1">
-                              <h4 className="font-bold text-xs text-neutral-900 line-clamp-1">
+                              <h3 className="font-bold text-xs sm:text-sm text-neutral-900 line-clamp-1">
                                 {item.product.name}
-                              </h4>
+                              </h3>
                               <button
                                 onClick={() => removeFromCart(item.product.id, item.selectedSize, item.selectedColor)}
-                                className="text-neutral-400 hover:text-rose-600 p-1 cursor-pointer shrink-0"
+                                className="text-neutral-400 hover:text-rose-600 p-1 cursor-pointer transition-colors"
                                 title="Remove item"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                             
-                            <div className="flex items-center gap-2 text-[11px] text-neutral-500 mt-0.5">
-                              <span className="bg-neutral-100 px-1.5 py-0.5 rounded font-medium text-neutral-700">
-                                Size: {item.selectedSize}
-                              </span>
+                            <div className="flex flex-wrap items-center gap-2 mt-0.5 text-[11px] text-neutral-500">
+                              <span className="font-semibold text-neutral-700">Size: {item.selectedSize}</span>
                               {item.selectedColor && (
-                                <span className="text-neutral-600">{item.selectedColor}</span>
+                                <>
+                                  <span>•</span>
+                                  <span>{item.selectedColor}</span>
+                                </>
                               )}
                             </div>
 
-                            {isOutOfStock ? (
-                              <div className="text-[10px] text-rose-600 font-bold mt-1">
-                                Notice: Item recently went out of stock
+                            {isOutOfStock && (
+                              <div className="text-[10px] text-rose-600 font-bold mt-0.5 flex items-center gap-1">
+                                <AlertTriangle className="w-3 h-3" />
+                                <span>Out of stock - please remove or update</span>
                               </div>
-                            ) : liveProduct.stock < item.quantity ? (
-                              <div className="text-[10px] text-amber-600 font-bold mt-1">
-                                Only {liveProduct.stock} units available
-                              </div>
-                            ) : null}
+                            )}
                           </div>
 
                           <div className="flex items-center justify-between mt-2">
-                            {/* Quantity buttons */}
-                            <div className="flex items-center border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50">
+                            {/* Quantity Selector */}
+                            <div className="flex items-center border border-neutral-200 rounded-lg bg-neutral-50 overflow-hidden">
                               <button
                                 onClick={() => updateCartQuantity(item.product.id, item.selectedSize, item.quantity - 1, item.selectedColor)}
                                 className="px-2.5 py-1 text-neutral-700 hover:bg-neutral-200 text-xs font-bold cursor-pointer transition-colors"
@@ -559,7 +841,10 @@ export const CartDrawer: React.FC = () => {
               {/* Action Buttons */}
               <div className="space-y-2 pt-1">
                 <button
-                  onClick={() => setIsCheckingOut(true)}
+                  onClick={() => {
+                    setIsCheckingOut(true);
+                    setCheckoutStep('address');
+                  }}
                   className="w-full py-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer active:scale-98"
                   id="proceed-to-checkout-btn"
                 >

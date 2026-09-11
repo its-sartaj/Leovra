@@ -855,7 +855,12 @@ export const AdminDashboard: React.FC = () => {
                     <div>
                       <div className="text-xs text-neutral-400">Total Amount:</div>
                       <div className="text-base font-black text-neutral-950">₹{order.totalAmount}</div>
-                      <div className="text-[10px] text-neutral-500">{order.paymentMethod}</div>
+                      <div className="text-[10px] text-neutral-500 font-medium">{order.paymentMethod}</div>
+                      {order.transactionId && (
+                        <div className="text-[10px] text-emerald-700 font-mono font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 mt-0.5 inline-block">
+                          UTR: {order.transactionId}
+                        </div>
+                      )}
                     </div>
 
                     <a
