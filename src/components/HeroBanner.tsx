@@ -23,7 +23,7 @@ const BACKGROUND_SLIDES = [
     id: 'tshirts' as ProductCategory,
     label: 'Streetwear Apparel',
     hindiTag: 'ट्रेंडिंग टी-शर्ट्स',
-    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80',
+    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1600&q=80',
     glowColor: 'from-purple-500/35 via-indigo-500/20 to-transparent',
   },
   {
