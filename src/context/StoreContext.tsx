@@ -78,6 +78,7 @@ interface StoreContextType {
   businessName: string;
   businessPhone: string;
   businessEmail: string;
+  businessUpi: string;
 }
 
 const STORAGE_KEY_PRODUCTS = 'leovra_products_v1';
@@ -95,6 +96,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const businessName = 'Leovra Enterprises';
   const businessPhone = '7979968347';
   const businessEmail = 'support@leovraenterprises.com';
+  const businessUpi = '7979968347@slc';
 
   // Check URL initially for dedicated admin route (e.g. #admin or /admin or ?admin=true)
   const isInitialAdminRoute = typeof window !== 'undefined' && (
@@ -945,6 +947,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         businessName,
         businessPhone,
         businessEmail,
+        businessUpi,
       }}
     >
       {children}

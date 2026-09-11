@@ -33,6 +33,7 @@ export const CartDrawer: React.FC = () => {
     placeOrder,
     generateWhatsAppOrderUrl,
     businessPhone,
+    businessUpi,
     products,
     currentCustomer,
     setIsAccountModalOpen,
@@ -71,7 +72,7 @@ export const CartDrawer: React.FC = () => {
   const grandTotal = cartTotal + deliveryCharge;
   const amountNeeded = Math.max(0, freeDeliveryThreshold - cartTotal);
 
-  const businessUpiId = '7979968347@upi';
+  const businessUpiId = businessUpi || '7979968347@slc';
   const upiUrl = `upi://pay?pa=${businessUpiId}&pn=${encodeURIComponent('Leovra Enterprises')}&am=${grandTotal}&cu=INR&tn=${encodeURIComponent('Order Payment Leovra')}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(upiUrl)}`;
 
