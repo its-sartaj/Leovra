@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
+import heroTshirtImg from '../assets/hero-tshirt.png';
 
 const BACKGROUND_SLIDES = [
   {
@@ -22,9 +23,9 @@ const BACKGROUND_SLIDES = [
   {
     id: 'tshirts' as ProductCategory,
     label: 'Streetwear Apparel',
-    hindiTag: 'ट्रेंडिंग टी-शर्ट्स',
-    image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1600&q=80',
-    glowColor: 'from-purple-500/35 via-indigo-500/20 to-transparent',
+    hindiTag: 'क्लासिक टी-शर्ट्स',
+    image: heroTshirtImg,
+    glowColor: 'from-amber-600/35 via-orange-500/20 to-transparent',
   },
   {
     id: 'lowers' as ProductCategory,
