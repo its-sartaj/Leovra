@@ -54,29 +54,36 @@ export const HeroBanner: React.FC = () => {
     return products.filter((p) => p.category === cat && !p.isOutOfStock && p.stock > 0).length;
   };
 
-  const categoryCards: {
-    id: ProductCategory;
-    title: string;
-    hindiTitle: string;
-    tagline: string;
-  }[] = [
+  const CATEGORY_SHOWCASE = [
     {
-      id: 'earrings',
-      title: 'Earrings',
-      hindiTitle: 'झुमके',
-      tagline: 'Oxidized, Kundan & Studs',
+      id: 'earrings' as ProductCategory,
+      title: 'Artisanal Jewelry',
+      shortTitle: 'Earrings',
+      hindiTitle: 'शाही झुमके',
+      subtitle: 'Oxidized, Kundan & Studs',
+      priceTag: 'From ₹249',
+      image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=600&q=80',
+      icon: '💎',
     },
     {
-      id: 'tshirts',
-      title: 'T-Shirts',
+      id: 'tshirts' as ProductCategory,
+      title: 'Streetwear T-Shirts',
+      shortTitle: 'T-Shirts',
       hindiTitle: 'टी-शर्ट्स',
-      tagline: 'Oversized Streetwear & Cotton',
+      subtitle: 'Oversized & Supima Cotton',
+      priceTag: 'From ₹449',
+      image: heroTshirtImg,
+      icon: '👕',
     },
     {
-      id: 'lowers',
-      title: 'Lowers & Joggers',
-      hindiTitle: 'लोअर',
-      tagline: 'Comfort Cargo & Stretch',
+      id: 'lowers' as ProductCategory,
+      title: 'Comfort Lowers',
+      shortTitle: 'Lowers & Joggers',
+      hindiTitle: 'फ्लेक्सिबल लोअर',
+      subtitle: 'Cargo Joggers & Stretch',
+      priceTag: 'From ₹549',
+      image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=600&q=80',
+      icon: '👖',
     },
   ];
 
@@ -241,60 +248,83 @@ export const HeroBanner: React.FC = () => {
         </div>
       </div>
 
-      {/* 3 Categories Showcase: Clean name-only cards without photos */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-3 sm:mt-5 w-full">
-        {categoryCards.map((card) => {
+      {/* 3 Categories Showcase: Luxury visual cards with rich imagery & gold accents */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-3.5 sm:mt-5 w-full">
+        {CATEGORY_SHOWCASE.map((card) => {
           const isSelected = filters.category === card.id;
-          const inStockCount = getCategoryInStock(card.id);
+          const count = getCategoryInStock(card.id);
 
           return (
             <button
               key={card.id}
               type="button"
-              onClick={() => setFilters((prev) => ({ 
-                ...prev, 
-                category: prev.category === card.id ? 'all' : card.id 
-              }))}
-              className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border transition-all cursor-pointer p-2.5 sm:p-4 text-left flex flex-col justify-between min-w-0 ${
+              onClick={() => {
+                setFilters((prev) => ({ 
+                  ...prev, 
+                  category: prev.category === card.id ? 'all' : card.id 
+                }));
+                const catalogEl = document.getElementById('products-catalog-section');
+                if (catalogEl) {
+                  catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              className={`group relative overflow-hidden rounded-xl sm:rounded-2xl text-left transition-all duration-300 cursor-pointer h-[135px] sm:h-[165px] md:h-[180px] p-2.5 sm:p-4 flex flex-col justify-between border ${
                 isSelected
-                  ? 'border-amber-500 bg-amber-50/90 ring-2 ring-amber-500/30 shadow-xs'
-                  : 'border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50/80 shadow-2xs'
+                  ? 'border-amber-500 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/10'
+                  : 'border-neutral-800 hover:border-amber-500/60 shadow-md hover:shadow-xl'
               }`}
               id={`hero-category-card-${card.id}`}
             >
-              <div className="min-w-0 w-full">
-                <div className="flex items-center justify-between gap-1 mb-1 sm:mb-1.5">
-                  <span className={`text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded ${
-                    isSelected ? 'bg-amber-200/70 text-amber-900' : 'bg-neutral-100 text-neutral-600'
-                  }`}>
-                    {card.hindiTitle}
-                  </span>
-                  {isSelected && (
-                    <span className="text-[9px] sm:text-[10px] font-extrabold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full">
-                      Active
-                    </span>
-                  )}
-                </div>
-
-                <h3 className={`text-xs sm:text-base font-extrabold leading-tight truncate transition-colors ${
-                  isSelected ? 'text-amber-900' : 'text-neutral-900 group-hover:text-amber-700'
-                }`}>
-                  {card.title}
-                </h3>
-                
-                <p className="hidden sm:block text-xs text-neutral-500 line-clamp-1 mt-0.5">
-                  {card.tagline}
-                </p>
-                
-                <div className="text-[10px] sm:text-xs font-semibold text-emerald-700 mt-1 truncate">
-                  {inStockCount} In Stock
-                </div>
+              {/* Background Image with Zoom on Hover */}
+              <div className="absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700"
+                />
+                {/* Multi-layer Dark Gradient for 100% Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/75 to-neutral-950/45" />
+                <div className={`absolute inset-0 bg-gradient-to-r from-neutral-950/80 to-transparent transition-opacity duration-300 ${isSelected ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'}`} />
               </div>
 
-              <div className="hidden sm:flex items-center justify-between pt-2 mt-2 border-t border-neutral-100 w-full">
-                <span className="text-xs font-semibold text-neutral-600 flex items-center gap-1 group-hover:text-neutral-900">
-                  Filter category <ArrowRight className="w-3 h-3 text-amber-600" />
+              {/* Top Row: Hindi Tag & Active / Price Badge */}
+              <div className="relative z-10 flex items-center justify-between gap-1 w-full">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-neutral-950/80 backdrop-blur-md border border-neutral-700/80 text-[10px] sm:text-xs font-bold text-amber-400">
+                  <span>{card.icon}</span>
+                  <span className="truncate">{card.hindiTitle}</span>
                 </span>
+
+                {isSelected ? (
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500 text-neutral-950 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-xs">
+                    Active
+                  </span>
+                ) : (
+                  <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-neutral-900/80 text-neutral-300 text-[10px] font-semibold border border-neutral-700/60">
+                    {card.priceTag}
+                  </span>
+                )}
+              </div>
+
+              {/* Bottom Content: Title, Subtitle, & Explore CTA */}
+              <div className="relative z-10 w-full space-y-0.5 sm:space-y-1">
+                <h3 className="text-xs sm:text-base md:text-lg font-extrabold text-white leading-tight truncate group-hover:text-amber-400 transition-colors">
+                  {card.shortTitle}
+                </h3>
+                
+                <p className="hidden sm:block text-[11px] text-neutral-300 truncate font-normal">
+                  {card.subtitle}
+                </p>
+
+                <div className="flex items-center justify-between pt-1 border-t border-white/10 w-full">
+                  <span className="text-[10px] sm:text-xs font-semibold text-amber-400/90 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                    <span>{isSelected ? 'Clear Filter' : 'Explore'}</span>
+                    <ArrowRight className="w-3 h-3 text-amber-400" />
+                  </span>
+
+                  <span className="text-[9px] sm:text-[10px] text-neutral-400 font-medium">
+                    {count > 0 ? `${count} In Stock` : 'In Stock'}
+                  </span>
+                </div>
               </div>
             </button>
           );
