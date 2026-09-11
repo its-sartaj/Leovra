@@ -22,7 +22,6 @@ import {
   Key,
   ShieldCheck,
   Upload,
-  Image as ImageIcon,
   Check,
   Truck,
   Download,
@@ -135,13 +134,13 @@ export const AdminDashboard: React.FC = () => {
   
   // Shiprocket dispatch state
   const [dispatchOrder, setDispatchOrder] = useState<Order | null>(null);
-  const [dispatchStatus, setDispatchStatus] = useState<Order['status']>('shipped');
+  const [dispatchStatus, setDispatchStatus] = useState<Order['status']>('Dispatched');
   const [dispatchAwb, setDispatchAwb] = useState('');
   const [dispatchCourier, setDispatchCourier] = useState('Delhivery');
 
   const openDispatchModal = (order: Order) => {
     setDispatchOrder(order);
-    setDispatchStatus(order.status || 'shipped');
+    setDispatchStatus(order.status || 'Dispatched');
     setDispatchAwb(order.awbCode || '');
     setDispatchCourier(order.courierName || 'Delhivery');
   };
@@ -921,13 +920,13 @@ export const AdminDashboard: React.FC = () => {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-black text-neutral-900 font-mono">{order.id}</span>
                       <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] uppercase ${
-                        order.status === 'delivered' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
-                        order.status === 'shipped' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
-                        order.status === 'processing' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
-                        order.status === 'cancelled' ? 'bg-rose-100 text-rose-800 border border-rose-300' :
+                        order.status === 'Delivered' || order.status?.toLowerCase() === 'delivered' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                        order.status === 'Dispatched' || order.status?.toLowerCase() === 'shipped' || order.status?.toLowerCase() === 'dispatched' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                        order.status === 'Confirmed' || order.status?.toLowerCase() === 'processing' || order.status?.toLowerCase() === 'confirmed' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
+                        order.status === 'Cancelled' || order.status?.toLowerCase() === 'cancelled' ? 'bg-rose-100 text-rose-800 border border-rose-300' :
                         'bg-neutral-100 text-neutral-800 border border-neutral-200'
                       }`}>
-                        {order.status || 'pending'}
+                        {order.status || 'Pending'}
                       </span>
                       <span className="text-neutral-400 text-[10px]">
                         {new Date(order.createdAt).toLocaleString()}
@@ -1269,14 +1268,14 @@ export const AdminDashboard: React.FC = () => {
                 </label>
                 <select
                   value={dispatchStatus}
-                  onChange={(e) => setDispatchStatus(e.target.value as any)}
+                  onChange={(e) => setDispatchStatus(e.target.value as Order['status'])}
                   className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
-                  <option value="pending">Pending</option>
-                  <option value="processing">Processing (Packing)</option>
-                  <option value="shipped">Shipped (In Transit)</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="cancelled">Cancelled</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Confirmed">Confirmed (Processing)</option>
+                  <option value="Dispatched">Dispatched (In Transit)</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
 

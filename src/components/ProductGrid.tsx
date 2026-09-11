@@ -2,7 +2,7 @@ import React from 'react';
 import { SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
-import { ProductCategory } from '../types';
+import { ProductCategory, FilterOptions } from '../types';
 
 export const ProductGrid: React.FC = () => {
   const { products, filters, setFilters } = useStore();
@@ -127,7 +127,7 @@ export const ProductGrid: React.FC = () => {
             <span className="text-neutral-500 text-[11px]">Sort:</span>
             <select
               value={filters.sortBy}
-              onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as any }))}
+              onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as FilterOptions['sortBy'] }))}
               className="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-hidden focus:border-amber-500 cursor-pointer"
               id="sort-by-select"
             >

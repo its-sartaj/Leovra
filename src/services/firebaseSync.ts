@@ -1,5 +1,4 @@
 import { Product, Order } from '../types';
-import { INITIAL_PRODUCTS } from '../data/initialProducts';
 
 export const FIREBASE_DB_URL = 'https://leovra-9e869-default-rtdb.asia-southeast1.firebasedatabase.app';
 
@@ -51,14 +50,14 @@ export const fetchRemoteOrders = async (): Promise<Order[] | null> => {
     const res = await fetch(`${FIREBASE_DB_URL}/orders.json`);
     if (!res.ok) return null;
     const data = await res.json();
-    if (!data) return [];
+    if (!data) return null;
     if (Array.isArray(data)) {
       return data.filter(Boolean);
     }
     if (typeof data === 'object') {
       return Object.values(data);
     }
-    return [];
+    return null;
   } catch (err) {
     console.warn('[Firebase] fetchRemoteOrders error:', err);
     return null;
@@ -96,6 +95,7 @@ export const subscribeRemoteProducts = (
 
   let eventSource: EventSource | null = null;
   let isClosed = false;
+  let retryCount = 0;
 
   const connect = () => {
     if (isClosed) return;
@@ -103,6 +103,7 @@ export const subscribeRemoteProducts = (
       eventSource = new EventSource(`${FIREBASE_DB_URL}/products.json`);
 
       eventSource.addEventListener('put', (event: MessageEvent) => {
+        retryCount = 0;
         try {
           const parsed = JSON.parse(event.data);
           if (parsed && parsed.path === '/') {
@@ -125,6 +126,7 @@ export const subscribeRemoteProducts = (
       });
 
       eventSource.addEventListener('patch', () => {
+        retryCount = 0;
         fetchRemoteProducts().then((prods) => {
           if (prods && prods.length > 0) {
             onUpdate(prods);
@@ -138,13 +140,17 @@ export const subscribeRemoteProducts = (
           eventSource = null;
         }
         if (!isClosed) {
-          setTimeout(connect, 3000);
+          const delay = Math.min(3000 * Math.pow(1.5, retryCount), 30000);
+          retryCount++;
+          setTimeout(connect, delay);
         }
       };
     } catch (err) {
       console.warn('[Firebase SSE] connect error:', err);
       if (!isClosed) {
-        setTimeout(connect, 5000);
+        const delay = Math.min(5000 * Math.pow(1.5, retryCount), 30000);
+        retryCount++;
+        setTimeout(connect, delay);
       }
     }
   };
@@ -172,6 +178,7 @@ export const subscribeRemoteOrders = (
 
   let eventSource: EventSource | null = null;
   let isClosed = false;
+  let retryCount = 0;
 
   const connect = () => {
     if (isClosed) return;
@@ -179,6 +186,7 @@ export const subscribeRemoteOrders = (
       eventSource = new EventSource(`${FIREBASE_DB_URL}/orders.json`);
 
       eventSource.addEventListener('put', (event: MessageEvent) => {
+        retryCount = 0;
         try {
           const parsed = JSON.parse(event.data);
           if (parsed && parsed.path === '/') {
@@ -198,6 +206,7 @@ export const subscribeRemoteOrders = (
       });
 
       eventSource.addEventListener('patch', () => {
+        retryCount = 0;
         fetchRemoteOrders().then((ords) => {
           if (ords) onUpdate(ords);
         });
@@ -209,13 +218,17 @@ export const subscribeRemoteOrders = (
           eventSource = null;
         }
         if (!isClosed) {
-          setTimeout(connect, 3000);
+          const delay = Math.min(3000 * Math.pow(1.5, retryCount), 30000);
+          retryCount++;
+          setTimeout(connect, delay);
         }
       };
     } catch (err) {
       console.warn('[Firebase SSE Orders] connect error:', err);
       if (!isClosed) {
-        setTimeout(connect, 5000);
+        const delay = Math.min(5000 * Math.pow(1.5, retryCount), 30000);
+        retryCount++;
+        setTimeout(connect, delay);
       }
     }
   };

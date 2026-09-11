@@ -8,14 +8,20 @@ interface LeovraLogoIconProps {
 
 export const LeovraLogoIcon: React.FC<LeovraLogoIconProps> = ({ 
   className = '',
-  size = 48,
+  size,
   includeBackground = true
 }) => {
+  const hasDimensionClass = /\b(w-|h-)/.test(className);
+  const inlineStyle: React.CSSProperties = {
+    aspectRatio: '260/200',
+    ...(size ? { width: size, height: 'auto' } : hasDimensionClass ? {} : { width: 48, height: 'auto' })
+  };
+
   return (
     <svg
       viewBox="0 0 260 200"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ width: size, height: 'auto', aspectRatio: '260/200' }}
+      style={inlineStyle}
       className={`shrink-0 drop-shadow-sm select-none ${className}`}
       aria-label="Leovra Brand Logo"
     >

@@ -166,7 +166,7 @@ export const MobileBottomNav: React.FC = () => {
             )}
           </div>
           <span className="text-[10px] tracking-tight leading-tight mt-0.5 truncate max-w-[55px]">
-            {currentCustomer ? currentCustomer.name.split(' ')[0] : 'Account'}
+            {currentCustomer ? (currentCustomer.name?.trim().split(' ')[0] || 'Account') : 'Account'}
           </span>
         </button>
 

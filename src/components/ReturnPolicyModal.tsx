@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { 
   X, 
   RotateCcw, 
@@ -21,11 +21,15 @@ export const ReturnPolicyModal: React.FC = () => {
   if (!isReturnPolicyOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto cursor-pointer"
+      onClick={() => setIsReturnPolicyOpen(false)}
+    >
       <div 
-        className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-neutral-200 overflow-hidden animate-in fade-in zoom-in duration-200"
+        className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-neutral-200 overflow-hidden animate-in fade-in zoom-in duration-200 cursor-default"
         role="dialog"
         aria-labelledby="return-policy-title"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-neutral-100 flex items-center justify-between bg-neutral-950 text-white">

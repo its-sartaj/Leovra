@@ -94,6 +94,15 @@ export const exportShiprocketCSV = (orders: Order[]) => {
 
   const rows: string[] = [];
 
+  const sanitizeCsv = (val: string): string => {
+    let clean = (val || '').replace(/"/g, '""');
+    // Prevent CSV Formula Injection vulnerability
+    if (/^[=+\-@\t\r]/.test(clean)) {
+      clean = `'${clean}`;
+    }
+    return `"${clean}"`;
+  };
+
   orders.forEach((order) => {
     const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
     const isCod = order.paymentMethod === 'Cash on Delivery';
@@ -102,35 +111,38 @@ export const exportShiprocketCSV = (orders: Order[]) => {
     const city = order.customerCity || 'New Delhi';
 
     order.items.forEach((item) => {
+      const lineItemTotal = item.quantity * item.product.price;
       const row = [
-        `"${order.id}"`,
-        `"${new Date(order.createdAt).toISOString().split('T')[0]}"`,
+        sanitizeCsv(order.id),
+        sanitizeCsv(new Date(order.createdAt).toISOString().split('T')[0]),
         `"Custom API - Leovra"`,
         `"${isCod ? 'COD' : 'Prepaid'}"`,
-        `"${(order.customerName || 'Customer').replace(/"/g, '""')}"`,
+        sanitizeCsv(order.customerName || 'Customer'),
         `"${cleanPhone}"`,
-        `"${(order.customerAddress || '').replace(/"/g, '""')}"`,
-        `"${city.replace(/"/g, '""')}"`,
+        sanitizeCsv(order.customerAddress || ''),
+        sanitizeCsv(city),
         `"${pincode}"`,
-        `"Delhi"`,
+        sanitizeCsv(order.customerCity || 'Delhi'),
         `"India"`,
-        `"${item.product.name.replace(/"/g, '""')} (${item.selectedSize})"`,
+        sanitizeCsv(`${item.product.name} (${item.selectedSize})`),
         `"${item.product.id}-${item.selectedSize}"`,
         `${item.quantity}`,
         `${item.product.price}`,
-        `${order.totalAmount}`,
-        `"${SHIPROCKET_CONFIG.pickupLocation}"`
+        `${lineItemTotal}`,
+        sanitizeCsv(SHIPROCKET_CONFIG.pickupLocation)
       ];
       rows.push(row.join(','));
     });
   });
 
-  const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
-  const encodedUri = encodeURI(csvContent);
+  const csvContent = [headers.join(','), ...rows].join('\r\n');
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
+  link.setAttribute('href', url);
   link.setAttribute('download', `Shiprocket_Orders_Export_${new Date().toISOString().split('T')[0]}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };

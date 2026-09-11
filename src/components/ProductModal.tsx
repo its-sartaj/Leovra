@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   ShoppingBag, 
@@ -32,6 +32,18 @@ export const ProductModal: React.FC = () => {
   const [isAdded, setIsAdded] = useState(false);
   const [pincodeInput, setPincodeInput] = useState('');
   const [pincodeResult, setPincodeResult] = useState<PincodeEstimation | null>(null);
+
+  // Synchronize state whenever a new product is selected
+  useEffect(() => {
+    if (selectedProduct) {
+      setSelectedSize(selectedProduct.sizes && selectedProduct.sizes.length > 0 ? selectedProduct.sizes[0] : 'Standard');
+      setSelectedColor(selectedProduct.colors && selectedProduct.colors.length > 0 ? selectedProduct.colors[0] : undefined);
+      setQuantity(1);
+      setIsAdded(false);
+      setPincodeInput('');
+      setPincodeResult(null);
+    }
+  }, [selectedProduct]);
 
   const handleCheckPincode = (e: React.FormEvent) => {
     e.preventDefault();

@@ -773,7 +773,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCart((prev) => prev.filter((item) => !(
       item.product.id === productId && 
       item.selectedSize === size &&
-      (color ? item.selectedColor === color : true)
+      (color !== undefined ? item.selectedColor === color : !item.selectedColor)
     )));
   }, []);
 
@@ -787,7 +787,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (
           item.product.id === productId && 
           item.selectedSize === size &&
-          (color ? item.selectedColor === color : true)
+          (color !== undefined ? item.selectedColor === color : !item.selectedColor)
         ) {
           const maxStock = item.product.stock;
           return { ...item, quantity: Math.min(quantity, maxStock) };
@@ -801,8 +801,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCart([]);
   }, []);
 
-  const cartTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = useMemo(() => cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0), [cart]);
+  const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart]);
 
   // Place Order
   const placeOrder = useCallback((orderData: {
@@ -816,7 +816,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }): Order => {
     const finalTotal = typeof orderData.totalAmount === 'number' ? orderData.totalAmount : cartTotal;
     const newOrder: Order = {
-      id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+      id: 'ORD-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1000).toString(36).toUpperCase(),
       customerId: currentCustomer?.id,
       customerName: orderData.customerName,
       customerPhone: orderData.customerPhone,
@@ -858,26 +858,35 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
 
-    // Deduct stock in real-time
-    const updatedProducts = products.map((prod) => {
-      const boughtItem = cart.find((c) => c.product.id === prod.id);
-      if (boughtItem) {
-        const remaining = Math.max(0, prod.stock - boughtItem.quantity);
-        return {
-          ...prod,
-          stock: remaining,
-          isOutOfStock: remaining <= 0,
-        };
-      }
-      return prod;
+    // Deduct stock in real-time using functional updater to avoid stale closure
+    setProducts((prevProducts) => {
+      const updatedProducts = prevProducts.map((prod) => {
+        const boughtItem = cart.find((c) => c.product.id === prod.id);
+        if (boughtItem) {
+          const remaining = Math.max(0, prod.stock - boughtItem.quantity);
+          return {
+            ...prod,
+            stock: remaining,
+            isOutOfStock: remaining <= 0,
+          };
+        }
+        return prod;
+      });
+      saveProducts(updatedProducts);
+      return updatedProducts;
     });
 
-    saveProducts(updatedProducts);
-    saveOrders([newOrder, ...orders]);
+    // Add order using functional updater to avoid stale closure
+    setOrders((prevOrders) => {
+      const updatedOrders = [newOrder, ...prevOrders];
+      saveOrders(updatedOrders);
+      return updatedOrders;
+    });
+
     clearCart();
     showToast(`Order #${newOrder.id} placed! Real-time stock updated.`);
     return newOrder;
-  }, [cart, cartTotal, products, orders, saveProducts, saveOrders, clearCart, showToast, currentCustomer]);
+  }, [cart, cartTotal, saveProducts, saveOrders, clearCart, showToast, currentCustomer]);
 
   // Update order status, courier and AWB (Shiprocket integration)
   const updateOrderStatus = useCallback((
@@ -910,12 +919,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     restoreInventory = true,
     cancellationReason?: string
   ) => {
-    let orderToCancel: Order | undefined;
+    // Check if order exists and if it was already cancelled to prevent double inventory restoration
+    const targetOrder = orders.find((o) => o.id === orderId);
+    if (!targetOrder) return;
+    if (targetOrder.status === 'Cancelled') {
+      showToast(`Order #${orderId} is already cancelled.`);
+      return;
+    }
 
     setOrders((prev) => {
       const updated = prev.map((ord) => {
         if (ord.id === orderId) {
-          orderToCancel = ord;
           return {
             ...ord,
             status: 'Cancelled' as const,
@@ -928,13 +942,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return updated;
     });
 
-    if (restoreInventory) {
+    if (restoreInventory && targetOrder.items && targetOrder.items.length > 0) {
       setProducts((prevProducts) => {
-        const currentOrder = orderToCancel || orders.find(o => o.id === orderId);
-        if (!currentOrder) return prevProducts;
-
         const updatedProducts = prevProducts.map((prod) => {
-          const item = currentOrder.items.find((i) => i.product.id === prod.id);
+          const item = targetOrder.items.find((i) => i.product.id === prod.id);
           if (item) {
             const restoredStock = prod.stock + item.quantity;
             return {

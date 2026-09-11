@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { 
-  Phone, 
   ShoppingBag, 
   Search, 
   X, 
   Menu, 
-  Sparkles,
   MessageCircle,
   User
 } from 'lucide-react';
@@ -28,7 +26,6 @@ export const Header: React.FC = () => {
     businessPhone
   } = useStore();
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSearchInput, setShowSearchInput] = useState(false);
 
   const handleCategoryClick = (cat: 'all' | ProductCategory) => {
@@ -245,55 +242,6 @@ export const Header: React.FC = () => {
           })}
         </nav>
       </div>
-
-      {/* Mobile Drawer Navigation */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 shadow-lg animate-in slide-in-from-top-2 duration-200">
-          <div className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">
-            Categories / श्रेणियां
-          </div>
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            {navCategories.map((cat) => {
-              const isActive = currentView === 'store' && filters.category === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => handleCategoryClick(cat.id)}
-                  className={`p-2.5 rounded-xl text-left border transition-all ${
-                    isActive
-                      ? 'bg-neutral-900 text-white border-neutral-900'
-                      : 'bg-neutral-50 text-neutral-800 border-neutral-200 hover:bg-neutral-100'
-                  }`}
-                  id={`mobile-nav-cat-${cat.id}`}
-                >
-                  <div className="font-semibold text-xs">{cat.label}</div>
-                  <div className={`text-[10px] ${isActive ? 'text-neutral-300' : 'text-neutral-500'}`}>
-                    {cat.sub}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="pt-2 border-t border-neutral-100 flex flex-col gap-2">
-            <a
-              href={`tel:${businessPhone}`}
-              className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-neutral-900 text-white text-xs font-semibold"
-            >
-              <Phone className="w-3.5 h-3.5 text-amber-400" />
-              <span>Call Now: +91 {businessPhone}</span>
-            </a>
-            <a
-              href={`https://wa.me/91${businessPhone}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold"
-            >
-              <span>Order via WhatsApp (+91 {businessPhone})</span>
-            </a>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

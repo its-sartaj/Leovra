@@ -39,13 +39,13 @@ export const HeroBanner: React.FC = () => {
   const { products, filters, setFilters, businessPhone } = useStore();
   const [activeSlide, setActiveSlide] = useState(0);
 
-  // Unconditional auto-slide transition every 3.5 seconds
+  // Smooth auto-slide transition every 4 seconds, smoothly resetting on any slide change
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length);
-    }, 3500);
+    }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [activeSlide]);
 
   const currentBg = BACKGROUND_SLIDES[activeSlide];
 

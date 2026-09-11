@@ -80,10 +80,24 @@ export const CartDrawer: React.FC = () => {
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(upiUrl)}`;
 
   const handleCopyUpi = (upi: string) => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(upi);
-      setCopiedUpi(true);
-      setTimeout(() => setCopiedUpi(false), 2000);
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(upi)
+        .then(() => {
+          setCopiedUpi(true);
+          setTimeout(() => setCopiedUpi(false), 2000);
+        })
+        .catch(() => {
+          try {
+            const el = document.createElement('textarea');
+            el.value = upi;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            setCopiedUpi(true);
+            setTimeout(() => setCopiedUpi(false), 2000);
+          } catch {}
+        });
     }
   };
 
