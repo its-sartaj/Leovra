@@ -67,6 +67,7 @@ interface StoreContextType {
     paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
     totalAmount?: number;
     transactionId?: string;
+  }) => Order;
   updateOrderStatus: (orderId: string, status: Order['status'], awbCode?: string, courierName?: string) => void;
   cancelOrder: (orderId: string, restoreInventory?: boolean, cancellationReason?: string) => void;
   deleteOrder: (orderId: string) => void;
