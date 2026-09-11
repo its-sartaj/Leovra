@@ -156,12 +156,8 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="pt-8 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>
-            &copy; {new Date().getFullYear()} <strong>Leovra Enterprises</strong>. All rights reserved.
-          </div>
-          
+        {/* Bottom Bar */}
+        <div className="pt-8 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-500 flex items-center justify-center">
           <div className="flex items-center gap-4 text-[11px] text-neutral-500">
             <span>Specialists in Earrings, T-Shirts & Lowers</span>
           </div>

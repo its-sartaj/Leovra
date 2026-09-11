@@ -4,8 +4,7 @@ import {
   ShieldCheck, 
   Truck, 
   ArrowRight, 
-  CheckCircle2,
-  ChevronLeft,
+  ChevronLeft, 
   ChevronRight
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
@@ -166,22 +165,6 @@ export const HeroBanner: React.FC = () => {
                 <span>Order via WhatsApp</span>
                 <ArrowRight className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               </a>
-            </div>
-
-            {/* Trust Badges under CTA */}
-            <div className="pt-2 flex flex-wrap items-center gap-2.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-900/80 border border-neutral-800 text-xs text-neutral-300">
-                <Truck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span className="font-semibold">Fast Delhi Dispatch</span>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-900/80 border border-neutral-800 text-xs text-neutral-300">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="font-semibold">100% Inspected Items</span>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-900/80 border border-neutral-800 text-xs text-neutral-300">
-                <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                <span className="font-semibold">Shiprocket Express COD</span>
-              </div>
             </div>
           </div>
 

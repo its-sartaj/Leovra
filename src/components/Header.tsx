@@ -243,14 +243,6 @@ export const Header: React.FC = () => {
               </button>
             );
           })}
-
-          <div className="ml-auto flex items-center gap-3 text-xs text-neutral-500 font-medium">
-            <span className="flex items-center gap-1 text-amber-700">
-              <Sparkles className="w-3.5 h-3.5" /> 100% Genuine Quality Products
-            </span>
-            <span>•</span>
-            <span>Fast Doorstep Delivery</span>
-          </div>
         </nav>
       </div>
 
