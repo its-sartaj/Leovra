@@ -23,11 +23,21 @@ import {
   ShieldCheck,
   Upload,
   Image as ImageIcon,
-  Check
+  Check,
+  Truck,
+  Download,
+  MapPin,
+  Building,
+  ChevronRight
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { Product, ProductCategory } from '../types';
+import { Product, ProductCategory, Order } from '../types';
 import { Logo } from './Logo';
+import { 
+  SHIPROCKET_CONFIG, 
+  exportShiprocketCSV, 
+  getShiprocketTrackingUrl 
+} from '../services/shiprocket';
 
 // Preset high quality images for quick 1-click photo selection when adding product
 const SAMPLE_IMAGE_PRESETS: { label: string; cat: ProductCategory; url: string }[] = [
@@ -89,6 +99,7 @@ export const AdminDashboard: React.FC = () => {
     resetInventoryToDefaults,
     setCurrentView,
     orders,
+    updateOrderStatus,
     isAdminLoggedIn,
     loginAdmin,
     logoutAdmin
@@ -112,11 +123,31 @@ export const AdminDashboard: React.FC = () => {
     setAuthError('');
   };
 
-  const [activeTab, setActiveTab] = useState<'inventory' | 'orders'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'shiprocket'>('inventory');
   const [adminSearch, setAdminSearch] = useState('');
   const [adminCategory, setAdminCategory] = useState<'all' | ProductCategory>('all');
   const [adminStockFilter, setAdminStockFilter] = useState<'all' | 'in_stock' | 'out_of_stock' | 'low_stock'>('all');
   
+  // Shiprocket dispatch state
+  const [dispatchOrder, setDispatchOrder] = useState<Order | null>(null);
+  const [dispatchStatus, setDispatchStatus] = useState<Order['status']>('shipped');
+  const [dispatchAwb, setDispatchAwb] = useState('');
+  const [dispatchCourier, setDispatchCourier] = useState('Delhivery');
+
+  const openDispatchModal = (order: Order) => {
+    setDispatchOrder(order);
+    setDispatchStatus(order.status || 'shipped');
+    setDispatchAwb(order.awbCode || '');
+    setDispatchCourier(order.courierName || 'Delhivery');
+  };
+
+  const handleSaveDispatch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dispatchOrder) return;
+    updateOrderStatus(dispatchOrder.id, dispatchStatus, dispatchAwb.trim(), dispatchCourier.trim());
+    setDispatchOrder(null);
+  };
+
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -573,6 +604,20 @@ export const AdminDashboard: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setActiveTab('shiprocket')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'shiprocket'
+              ? 'bg-gradient-to-r from-purple-800 to-indigo-800 text-white shadow-xs'
+              : 'bg-white text-neutral-700 hover:bg-purple-50 border border-neutral-200'
+          }`}
+          id="admin-tab-shiprocket"
+        >
+          <Truck className="w-3.5 h-3.5 text-purple-400" />
+          <span>Shiprocket Logistics</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-0.5" title="Shiprocket Connected" />
+        </button>
+
+        <button
           onClick={resetInventoryToDefaults}
           className="ml-auto text-xs font-semibold text-neutral-500 hover:text-rose-600 p-2 rounded-lg hover:bg-neutral-100 transition-colors inline-flex items-center gap-1"
           title="Reset back to standard initial products"
@@ -583,7 +628,7 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      {activeTab === 'inventory' ? (
+      {activeTab === 'inventory' && (
         <div className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden space-y-4 p-4 sm:p-5">
           
           {/* Controls: Search, Category Filter, Stock Status Filter */}
@@ -799,17 +844,31 @@ export const AdminDashboard: React.FC = () => {
             </div>
           )}
         </div>
-      ) : (
-        /* Orders Tab */
+      )}
+
+      {/* Orders Tab */}
+      {activeTab === 'orders' && (
         <div className="bg-white rounded-3xl border border-neutral-200 shadow-sm p-4 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-neutral-100 gap-2">
             <div>
               <h3 className="font-extrabold text-base text-neutral-900">Customer Orders History</h3>
               <p className="text-xs text-neutral-500">Real-time orders placed via storefront or customer inquiry</p>
             </div>
-            <span className="text-xs font-bold text-neutral-700 bg-neutral-100 px-3 py-1 rounded-full">
-              {orders.length} Total Orders
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => exportShiprocketCSV(orders)}
+                disabled={orders.length === 0}
+                className="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Download CSV formatted for Shiprocket Bulk Import"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Shiprocket CSV</span>
+              </button>
+              <span className="text-xs font-bold text-neutral-700 bg-neutral-100 px-3 py-1.5 rounded-full">
+                {orders.length} Total Orders
+              </span>
+            </div>
           </div>
 
           {orders.length === 0 ? (
@@ -824,11 +883,17 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-3 divide-y divide-neutral-100">
               {orders.map((order) => (
                 <div key={order.id} className="pt-3 flex flex-col sm:flex-row justify-between gap-3 text-xs">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-black text-neutral-900">{order.id}</span>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                        {order.status}
+                  <div className="space-y-1 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-black text-neutral-900 font-mono">{order.id}</span>
+                      <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] uppercase ${
+                        order.status === 'delivered' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                        order.status === 'shipped' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                        order.status === 'processing' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
+                        order.status === 'cancelled' ? 'bg-rose-100 text-rose-800 border border-rose-300' :
+                        'bg-neutral-100 text-neutral-800 border border-neutral-200'
+                      }`}>
+                        {order.status || 'pending'}
                       </span>
                       <span className="text-neutral-400 text-[10px]">
                         {new Date(order.createdAt).toLocaleString()}
@@ -844,14 +909,35 @@ export const AdminDashboard: React.FC = () => {
 
                     <div className="pt-1 text-[11px] text-neutral-700 space-y-0.5">
                       {order.items.map((it, idx) => (
-                        <div key={idx}>
-                          • {it.quantity}x {it.product.name} ({it.selectedSize}) - ₹{it.quantity * it.product.price}
+                        <div key={idx} className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                          <span>{it.quantity}x <strong>{it.product.name}</strong> ({it.selectedSize}) - ₹{it.quantity * it.product.price}</span>
                         </div>
                       ))}
                     </div>
+
+                    {/* Shiprocket AWB Badge & Live Track if available */}
+                    {order.awbCode && (
+                      <div className="mt-2 inline-flex flex-wrap items-center gap-2 p-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-[11px]">
+                        <Truck className="w-3.5 h-3.5 text-purple-600" />
+                        <span className="font-semibold">{order.courierName || 'Shiprocket'} AWB:</span>
+                        <span className="font-mono font-bold bg-white px-1.5 py-0.2 rounded border border-purple-200">
+                          {order.awbCode}
+                        </span>
+                        <a
+                          href={getShiprocketTrackingUrl(order.awbCode)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-700 hover:text-purple-900 font-bold underline ml-1 inline-flex items-center gap-0.5"
+                        >
+                          <span>Live Track</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="sm:text-right flex sm:flex-col justify-between items-end gap-2">
+                  <div className="sm:text-right flex sm:flex-col justify-between items-end gap-2 shrink-0">
                     <div>
                       <div className="text-xs text-neutral-400">Total Amount:</div>
                       <div className="text-base font-black text-neutral-950">₹{order.totalAmount}</div>
@@ -863,19 +949,311 @@ export const AdminDashboard: React.FC = () => {
                       )}
                     </div>
 
-                    <a
-                      href={`https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${order.customerName}! We received your order #${order.id} at Leovra Enterprises.`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 hover:bg-emerald-100 transition-colors"
-                    >
-                      WhatsApp Customer
-                    </a>
+                    <div className="flex flex-wrap sm:flex-col items-end gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => openDispatchModal(order)}
+                        className="px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      >
+                        <Truck className="w-3.5 h-3.5 text-purple-400" />
+                        <span>{order.awbCode ? 'Edit AWB / Status' : 'Dispatch & AWB'}</span>
+                      </button>
+
+                      <a
+                        href={
+                          order.awbCode
+                            ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                `Hello ${order.customerName}!\nYour Leovra Order #${order.id} has been dispatched via Shiprocket (${order.courierName || 'Express Courier'}).\nAWB Tracking No: ${order.awbCode}\nLive Tracking: ${getShiprocketTrackingUrl(order.awbCode)}\nThank you for shopping with Leovra Enterprises!`
+                              )}`
+                            : `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                `Hello ${order.customerName}! We received your order #${order.id} at Leovra Enterprises.`
+                              )}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 hover:bg-emerald-100 transition-colors inline-flex items-center gap-1"
+                      >
+                        <span>{order.awbCode ? 'WhatsApp Tracking' : 'WhatsApp Customer'}</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Shiprocket Logistics Tab */}
+      {activeTab === 'shiprocket' && (
+        <div className="space-y-4">
+          {/* Header Banner */}
+          <div className="p-6 bg-gradient-to-r from-purple-900 via-indigo-900 to-neutral-900 text-white rounded-3xl shadow-lg relative overflow-hidden">
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold border border-emerald-500/30 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    CONNECTED & ACTIVE
+                  </span>
+                  <span className="text-xs text-neutral-400">Company ID: {SHIPROCKET_CONFIG.companyId}</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                  <span>Shiprocket Logistics Integration</span>
+                </h3>
+                <p className="text-xs text-neutral-300 max-w-xl">
+                  Automated logistics dispatch, multi-courier network (Blue Dart, Delhivery, Shadowfax, DTDC), and live tracking for Leovra Enterprises.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => exportShiprocketCSV(orders)}
+                  disabled={orders.length === 0}
+                  className="px-4 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold text-xs transition-colors flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download Bulk Orders CSV</span>
+                </button>
+                <a
+                  href={SHIPROCKET_CONFIG.dashboardUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors flex items-center gap-1.5 border border-white/20"
+                >
+                  <span>Open Shiprocket Panel</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Metrics & Pickup Hub Details */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {/* Account Info */}
+            <div className="p-4 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-2">
+              <div className="flex items-center gap-2 text-purple-700 font-bold text-xs">
+                <Building className="w-4 h-4" />
+                <span>Account Credentials</span>
+              </div>
+              <div className="text-xs space-y-1">
+                <div><span className="text-neutral-500">Email:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.accountEmail}</strong></div>
+                <div><span className="text-neutral-500">Merchant:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.companyName}</strong></div>
+                <div><span className="text-neutral-500">Account Status:</span> <span className="text-emerald-700 font-bold">Verified & Active</span></div>
+              </div>
+            </div>
+
+            {/* Pickup Hub */}
+            <div className="p-4 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-2">
+              <div className="flex items-center gap-2 text-amber-700 font-bold text-xs">
+                <MapPin className="w-4 h-4" />
+                <span>Primary Pickup Location</span>
+              </div>
+              <div className="text-xs space-y-1">
+                <div><span className="text-neutral-500">Location Tag:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.pickupLocation}</strong></div>
+                <div><span className="text-neutral-500">Hub Pincode:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.pickupPincode} ({SHIPROCKET_CONFIG.pickupCity})</strong></div>
+                <div><span className="text-neutral-500">Pickup Contact:</span> <strong className="text-neutral-900">Sartaj (7979968347)</strong></div>
+              </div>
+            </div>
+
+            {/* Courier Partners */}
+            <div className="p-4 rounded-2xl bg-white border border-neutral-200 shadow-2xs space-y-2">
+              <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs">
+                <Truck className="w-4 h-4" />
+                <span>Active Courier Network</span>
+              </div>
+              <div className="text-xs text-neutral-600 space-y-1">
+                <p>Shiprocket assigns the fastest courier automatically:</p>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {['Blue Dart', 'Delhivery', 'Shadowfax', 'DTDC', 'XpressBees', 'Ekart'].map((c) => (
+                    <span key={c} className="px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-700 text-[10px] font-bold border border-neutral-200">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Step-by-Step Dispatch Guide */}
+          <div className="p-5 rounded-3xl bg-white border border-neutral-200 shadow-sm space-y-4">
+            <h4 className="font-black text-sm text-neutral-900 flex items-center gap-2">
+              <span>🚀 3-Step Shiprocket Dispatch Workflow</span>
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2">
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center">1</div>
+                <div className="font-bold text-xs text-neutral-900">Download Orders CSV</div>
+                <p className="text-[11px] text-neutral-500 leading-relaxed">
+                  Click "Download Bulk Orders CSV" button above. It formats all customer names, addresses, pincodes, and items for Shiprocket.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2">
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center">2</div>
+                <div className="font-bold text-xs text-neutral-900">Bulk Upload on Shiprocket</div>
+                <p className="text-[11px] text-neutral-500 leading-relaxed">
+                  Go to <a href="https://app.shiprocket.in/orders" target="_blank" rel="noopener noreferrer" className="text-purple-700 font-bold underline">Shiprocket Orders</a> &gt; Add Order &gt; Bulk Import. Upload your CSV and print shipping labels.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2">
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center">3</div>
+                <div className="font-bold text-xs text-neutral-900">Paste AWB in Leovra</div>
+                <p className="text-[11px] text-neutral-500 leading-relaxed">
+                  In Customer Orders, click "Dispatch & AWB" and enter the generated AWB number. Customers will see live Shiprocket tracking in their account!
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="pt-2 border-t border-neutral-100 flex flex-wrap gap-2">
+              <a
+                href="https://app.shiprocket.in/orders"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold transition-colors inline-flex items-center gap-1"
+              >
+                <span>Manage Orders in Shiprocket</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <a
+                href="https://app.shiprocket.in/shipments"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold transition-colors inline-flex items-center gap-1"
+              >
+                <span>Track Active Shipments</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <a
+                href="https://app.shiprocket.in/billing/wallet"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold transition-colors inline-flex items-center gap-1"
+              >
+                <span>Recharge Shipping Wallet</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <a
+                href="https://app.shiprocket.in/rate-calculator"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold transition-colors inline-flex items-center gap-1"
+              >
+                <span>Shipping Rate Calculator</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shiprocket Dispatch / AWB Modal */}
+      {dispatchOrder && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDispatchOrder(null);
+          }}
+        >
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100 bg-purple-50">
+              <div className="flex items-center gap-2">
+                <Truck className="w-5 h-5 text-purple-700" />
+                <div>
+                  <h3 className="text-sm font-black text-neutral-900">Shiprocket Order Dispatch</h3>
+                  <p className="text-[11px] text-purple-700 font-mono">Order ID: {dispatchOrder.id}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDispatchOrder(null)}
+                className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-white transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveDispatch} className="p-5 space-y-3.5 text-xs">
+              <div>
+                <div className="text-[11px] text-neutral-500 font-semibold mb-0.5">Customer & Address:</div>
+                <div className="font-bold text-neutral-900">{dispatchOrder.customerName} ({dispatchOrder.customerPhone})</div>
+                <div className="text-[11px] text-neutral-600 truncate">{dispatchOrder.customerAddress}</div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-neutral-700 mb-1">
+                  Order Status
+                </label>
+                <select
+                  value={dispatchStatus}
+                  onChange={(e) => setDispatchStatus(e.target.value as any)}
+                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing (Packing)</option>
+                  <option value="shipped">Shipped (In Transit)</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-neutral-700 mb-1">
+                  Courier Partner
+                </label>
+                <select
+                  value={dispatchCourier}
+                  onChange={(e) => setDispatchCourier(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="Delhivery">Delhivery</option>
+                  <option value="Blue Dart">Blue Dart</option>
+                  <option value="Shadowfax">Shadowfax</option>
+                  <option value="DTDC">DTDC</option>
+                  <option value="XpressBees">XpressBees</option>
+                  <option value="Ekart">Ekart Logistics</option>
+                  <option value="Ecom Express">Ecom Express</option>
+                  <option value="Shiprocket Express">Shiprocket Express</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-neutral-700 mb-1">
+                  Shiprocket AWB / Tracking Code
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 143242314543 or SR12345678"
+                  value={dispatchAwb}
+                  onChange={(e) => setDispatchAwb(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                <p className="text-[10px] text-neutral-400 mt-1">
+                  Customers can live-track their parcel on Shiprocket once AWB is entered.
+                </p>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-neutral-100">
+                <button
+                  type="button"
+                  onClick={() => setDispatchOrder(null)}
+                  className="px-4 py-2 rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold cursor-pointer shadow-sm"
+                >
+                  Save & Update Tracking
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

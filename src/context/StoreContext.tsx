@@ -68,6 +68,7 @@ interface StoreContextType {
     totalAmount?: number;
     transactionId?: string;
   }) => Order;
+  updateOrderStatus: (orderId: string, status: Order['status'], awbCode?: string, courierName?: string) => void;
   generateWhatsAppOrderUrl: (orderItems?: CartItem[], customerInfo?: { name: string; phone: string; address: string }) => string;
   
   // Toast notifications
@@ -873,6 +874,31 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return newOrder;
   }, [cart, cartTotal, products, orders, saveProducts, saveOrders, clearCart, showToast, currentCustomer]);
 
+  // Update order status, courier and AWB (Shiprocket integration)
+  const updateOrderStatus = useCallback((
+    orderId: string, 
+    status: Order['status'], 
+    awbCode?: string, 
+    courierName?: string
+  ) => {
+    setOrders((prev) => {
+      const updated = prev.map((ord) => {
+        if (ord.id === orderId) {
+          return {
+            ...ord,
+            status,
+            ...(awbCode ? { awbCode } : {}),
+            ...(courierName ? { courierName } : {}),
+          };
+        }
+        return ord;
+      });
+      saveOrders(updated);
+      return updated;
+    });
+    showToast(`Order #${orderId} updated to ${status}!`);
+  }, [saveOrders, showToast]);
+
   // WhatsApp Order Link generator with contact phone 7979968347
   const generateWhatsAppOrderUrl = useCallback((
     orderItems = cart,
@@ -941,6 +967,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cartTotal,
         cartCount,
         placeOrder,
+        updateOrderStatus,
         generateWhatsAppOrderUrl,
         toastMessage,
         showToast,

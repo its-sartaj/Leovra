@@ -47,6 +47,8 @@ export interface Order {
   status: 'Pending' | 'Confirmed' | 'Dispatched' | 'Delivered';
   paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
   transactionId?: string;
+  awbCode?: string;
+  courierName?: string;
   createdAt: string;
 }
 

@@ -6,9 +6,12 @@ import {
   PhoneCall, 
   Star, 
   Check, 
-  AlertCircle
+  AlertCircle,
+  Truck,
+  MapPin
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { estimateDeliveryByPincode, PincodeEstimation } from '../services/shiprocket';
 
 export const ProductModal: React.FC = () => {
   const { 
@@ -25,6 +28,15 @@ export const ProductModal: React.FC = () => {
   );
   const [quantity, setQuantity] = useState<number>(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [pincodeInput, setPincodeInput] = useState('');
+  const [pincodeResult, setPincodeResult] = useState<PincodeEstimation | null>(null);
+
+  const handleCheckPincode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pincodeInput.trim()) return;
+    const res = estimateDeliveryByPincode(pincodeInput.trim());
+    setPincodeResult(res);
+  };
 
   if (!selectedProduct) return null;
 
@@ -227,10 +239,67 @@ export const ProductModal: React.FC = () => {
                 </span>
               </div>
             )}
+
+            {/* Shiprocket Delivery Pincode Checker */}
+            <div className="pt-3 border-t border-neutral-100 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-neutral-800 flex items-center gap-1.5">
+                  <Truck className="w-3.5 h-3.5 text-purple-700" />
+                  <span>Check Delivery & COD:</span>
+                </span>
+                <span className="text-[10px] text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                  Shiprocket Express
+                </span>
+              </div>
+              <form onSubmit={handleCheckPincode} className="flex gap-2">
+                <div className="relative flex-1">
+                  <MapPin className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5" />
+                  <input
+                    type="text"
+                    maxLength={6}
+                    placeholder="Enter 6-digit Pincode (e.g. 110001)"
+                    value={pincodeInput}
+                    onChange={(e) => {
+                      setPincodeInput(e.target.value.replace(/\D/g, ''));
+                      if (pincodeResult) setPincodeResult(null);
+                    }}
+                    className="w-full pl-8 pr-2 py-1.5 text-xs rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 font-mono"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-purple-700 hover:bg-purple-800 text-white cursor-pointer transition-colors shadow-2xs"
+                >
+                  Check
+                </button>
+              </form>
+
+              {pincodeResult && (
+                <div className={`p-2.5 rounded-xl text-[11px] ${
+                  pincodeResult.isValid 
+                    ? 'bg-purple-50 border border-purple-200 text-purple-900' 
+                    : 'bg-rose-50 border border-rose-200 text-rose-800'
+                }`}>
+                  {pincodeResult.isValid ? (
+                    <div className="space-y-0.5">
+                      <div className="font-bold text-purple-950 flex items-center gap-1.5">
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Estimated Delivery: {pincodeResult.estimatedDays}</span>
+                      </div>
+                      <div className="text-neutral-600 text-[10px]">
+                        Cash on Delivery Available • Delhi Hub Dispatch via Blue Dart / Delhivery
+                      </div>
+                    </div>
+                  ) : (
+                    <span>{pincodeResult.message}</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Action CTAs */}
-          <div className="pt-5 mt-4 border-t border-neutral-100 space-y-2.5">
+          <div className="pt-4 mt-2 border-t border-neutral-100 space-y-2.5">
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={handleAddToCart}

@@ -16,9 +16,11 @@ import {
   UserPlus, 
   LogIn,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { getShiprocketTrackingUrl } from '../services/shiprocket';
 
 export const CustomerAccountModal: React.FC = () => {
   const {
@@ -503,10 +505,49 @@ export const CustomerAccountModal: React.FC = () => {
                           </div>
                         </div>
 
+                        {/* Shiprocket Live Tracking Status */}
+                        {order.awbCode ? (
+                          <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200/80 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <Truck className="w-4 h-4 text-purple-700" />
+                                <span className="font-extrabold text-neutral-900 text-xs">Shiprocket Express Shipping</span>
+                              </div>
+                              <span className="px-2 py-0.5 rounded-full bg-purple-700 text-white font-black text-[10px] uppercase">
+                                {order.courierName || 'In Transit'}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between text-[11px] text-neutral-700">
+                              <span>AWB / Tracking Number:</span>
+                              <span className="font-mono font-bold text-neutral-950 bg-white px-2 py-0.5 rounded border border-purple-200">
+                                {order.awbCode}
+                              </span>
+                            </div>
+                            <a
+                              href={getShiprocketTrackingUrl(order.awbCode)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full py-2 px-3 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer text-center"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              <span>Track Live on Shiprocket</span>
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="text-[11px] text-neutral-500 bg-neutral-100/60 p-2 rounded-xl flex items-center gap-1.5">
+                            <Clock className="w-3 h-3 text-neutral-400" />
+                            <span>Order confirmed • Preparing for Shiprocket courier pickup from Delhi hub.</span>
+                          </div>
+                        )}
+
                         {/* Actions */}
                         <div className="pt-1 flex items-center gap-2">
                           <a
-                            href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(`Hello Leovra Enterprises! Please provide tracking status for my Order ID: ${order.id} (Total: ₹${order.totalAmount.toLocaleString('en-IN')}). Customer Phone: ${currentCustomer?.phone || order.customerPhone || ''}`)}`}
+                            href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(
+                              order.awbCode 
+                                ? `Hello Leovra Enterprises! Regarding my Order #${order.id} (AWB: ${order.awbCode}): Please provide an update on delivery.`
+                                : `Hello Leovra Enterprises! Please provide tracking status for my Order ID: ${order.id} (Total: ₹${order.totalAmount.toLocaleString('en-IN')}). Customer Phone: ${currentCustomer?.phone || order.customerPhone || ''}`
+                            )}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer text-center"
