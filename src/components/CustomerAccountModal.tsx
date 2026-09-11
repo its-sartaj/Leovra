@@ -17,7 +17,8 @@ import {
   LogIn,
   ShieldCheck,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  XCircle
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { getShiprocketTrackingUrl } from '../services/shiprocket';
@@ -452,8 +453,12 @@ export const CustomerAccountModal: React.FC = () => {
                               <span className="text-xs font-black text-neutral-900 font-mono tracking-tight">
                                 {order.id}
                               </span>
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                <CheckCircle2 className="w-3 h-3" />
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
+                                order.status === 'Cancelled'
+                                  ? 'bg-rose-100 text-rose-800 border-rose-200'
+                                  : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                              }`}>
+                                {order.status === 'Cancelled' ? <XCircle className="w-3 h-3 text-rose-600" /> : <CheckCircle2 className="w-3 h-3" />}
                                 {order.status || 'Confirmed'}
                               </span>
                             </div>
@@ -533,6 +538,11 @@ export const CustomerAccountModal: React.FC = () => {
                               <span>Track Live on Shiprocket</span>
                             </a>
                           </div>
+                        ) : order.status === 'Cancelled' ? (
+                          <div className="text-[11px] text-rose-800 bg-rose-50 border border-rose-200/80 p-2.5 rounded-xl flex items-center gap-1.5 font-medium">
+                            <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                            <span>This order was cancelled ({order.cancellationReason || 'Contact helpline for refund/queries'}).</span>
+                          </div>
                         ) : (
                           <div className="text-[11px] text-neutral-500 bg-neutral-100/60 p-2 rounded-xl flex items-center gap-1.5">
                             <Clock className="w-3 h-3 text-neutral-400" />
@@ -544,7 +554,9 @@ export const CustomerAccountModal: React.FC = () => {
                         <div className="pt-1 flex items-center gap-2">
                           <a
                             href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(
-                              order.awbCode 
+                              order.status === 'Cancelled'
+                                ? `Hello Leovra Enterprises! My order #${order.id} was cancelled. I would like to inquire about refund or re-ordering.`
+                                : order.awbCode 
                                 ? `Hello Leovra Enterprises! Regarding my Order #${order.id} (AWB: ${order.awbCode}): Please provide an update on delivery.`
                                 : `Hello Leovra Enterprises! Please provide tracking status for my Order ID: ${order.id} (Total: ₹${order.totalAmount.toLocaleString('en-IN')}). Customer Phone: ${currentCustomer?.phone || order.customerPhone || ''}`
                             )}`}

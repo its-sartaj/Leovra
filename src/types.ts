@@ -44,7 +44,8 @@ export interface Order {
   customerCity?: string;
   items: CartItem[];
   totalAmount: number;
-  status: 'Pending' | 'Confirmed' | 'Dispatched' | 'Delivered';
+  status: 'Pending' | 'Confirmed' | 'Dispatched' | 'Delivered' | 'Cancelled';
+  cancellationReason?: string;
   paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
   transactionId?: string;
   awbCode?: string;

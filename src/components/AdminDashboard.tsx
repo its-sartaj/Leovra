@@ -28,7 +28,10 @@ import {
   Download,
   MapPin,
   Building,
-  ChevronRight
+  ChevronRight,
+  Ban,
+  XCircle,
+  Undo2
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Product, ProductCategory, Order } from '../types';
@@ -100,6 +103,8 @@ export const AdminDashboard: React.FC = () => {
     setCurrentView,
     orders,
     updateOrderStatus,
+    cancelOrder,
+    deleteOrder,
     isAdminLoggedIn,
     loginAdmin,
     logoutAdmin
@@ -146,6 +151,30 @@ export const AdminDashboard: React.FC = () => {
     if (!dispatchOrder) return;
     updateOrderStatus(dispatchOrder.id, dispatchStatus, dispatchAwb.trim(), dispatchCourier.trim());
     setDispatchOrder(null);
+  };
+
+  // Order cancellation state
+  const [cancellingOrder, setCancellingOrder] = useState<Order | null>(null);
+  const [cancelReason, setCancelReason] = useState('Customer requested cancellation');
+  const [restoreStockOnCancel, setRestoreStockOnCancel] = useState(true);
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
+
+  const openCancelModal = (order: Order) => {
+    setCancellingOrder(order);
+    setCancelReason('Customer requested cancellation');
+    setRestoreStockOnCancel(true);
+  };
+
+  const handleConfirmCancelOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cancellingOrder) return;
+    cancelOrder(cancellingOrder.id, restoreStockOnCancel, cancelReason);
+    setCancellingOrder(null);
+  };
+
+  const handleConfirmDeleteOrder = (orderId: string) => {
+    deleteOrder(orderId);
+    setDeletingOrderId(null);
   };
 
   // Modal states
@@ -935,6 +964,14 @@ export const AdminDashboard: React.FC = () => {
                         </a>
                       </div>
                     )}
+
+                    {/* Cancelled Banner if cancelled */}
+                    {order.status === 'Cancelled' && (
+                      <div className="mt-2 inline-flex items-center gap-1.5 p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-semibold">
+                        <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                        <span>Order Cancelled: {order.cancellationReason || 'Cancelled by store admin'}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="sm:text-right flex sm:flex-col justify-between items-end gap-2 shrink-0">
@@ -959,9 +996,46 @@ export const AdminDashboard: React.FC = () => {
                         <span>{order.awbCode ? 'Edit AWB / Status' : 'Dispatch & AWB'}</span>
                       </button>
 
+                      {order.status === 'Cancelled' ? (
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => updateOrderStatus(order.id, 'Pending')}
+                            className="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Re-open this order"
+                          >
+                            <Undo2 className="w-3.5 h-3.5 text-amber-700" />
+                            <span>Re-open</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeletingOrderId(order.id)}
+                            className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Delete order permanently"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Delete</span>
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => openCancelModal(order)}
+                          className="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                          title="Cancel this customer order"
+                        >
+                          <Ban className="w-3.5 h-3.5 text-rose-600" />
+                          <span>Cancel Order</span>
+                        </button>
+                      )}
+
                       <a
                         href={
-                          order.awbCode
+                          order.status === 'Cancelled'
+                            ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                `Hello ${order.customerName}!\nYour order #${order.id} at Leovra Enterprises has been cancelled.\nReason: ${order.cancellationReason || 'Cancelled by store admin'}.\nIf you have any questions or would like to re-order, please reply here.`
+                              )}`
+                            : order.awbCode
                             ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
                                 `Hello ${order.customerName}!\nYour Leovra Order #${order.id} has been dispatched via Shiprocket (${order.courierName || 'Express Courier'}).\nAWB Tracking No: ${order.awbCode}\nLive Tracking: ${getShiprocketTrackingUrl(order.awbCode)}\nThank you for shopping with Leovra Enterprises!`
                               )}`
@@ -973,7 +1047,7 @@ export const AdminDashboard: React.FC = () => {
                         rel="noopener noreferrer"
                         className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 hover:bg-emerald-100 transition-colors inline-flex items-center gap-1"
                       >
-                        <span>{order.awbCode ? 'WhatsApp Tracking' : 'WhatsApp Customer'}</span>
+                        <span>{order.status === 'Cancelled' ? 'WhatsApp Cancel Msg' : order.awbCode ? 'WhatsApp Tracking' : 'WhatsApp Customer'}</span>
                       </a>
                     </div>
                   </div>
@@ -1253,6 +1327,151 @@ export const AdminDashboard: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Order Modal */}
+      {cancellingOrder && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setCancellingOrder(null);
+          }}
+        >
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden animate-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-rose-100 bg-rose-50/80">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center">
+                  <Ban className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-rose-950">Cancel Order #{cancellingOrder.id}</h3>
+                  <p className="text-[11px] text-rose-700">Customer: {cancellingOrder.customerName}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCancellingOrder(null)}
+                className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-white transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleConfirmCancelOrder} className="p-5 space-y-4 text-xs">
+              {/* Order Info summary */}
+              <div className="p-3 bg-neutral-50 rounded-2xl border border-neutral-200 space-y-1.5 text-[11px]">
+                <div className="flex justify-between text-neutral-600">
+                  <span>Customer Phone:</span>
+                  <span className="font-bold text-neutral-900">{cancellingOrder.customerPhone}</span>
+                </div>
+                <div className="flex justify-between text-neutral-600">
+                  <span>Total Amount:</span>
+                  <span className="font-bold text-neutral-900">₹{cancellingOrder.totalAmount} ({cancellingOrder.paymentMethod})</span>
+                </div>
+                <div className="text-neutral-500 pt-1 border-t border-neutral-200/60">
+                  <span>Items: </span>
+                  <span className="text-neutral-800 font-medium">
+                    {cancellingOrder.items.map(i => `${i.quantity}x ${i.product.name} (${i.selectedSize})`).join(', ')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Cancellation Reason */}
+              <div>
+                <label className="block font-bold text-neutral-700 mb-1">
+                  Reason for Cancellation / रद्द करने का कारण
+                </label>
+                <select
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                >
+                  <option value="Customer requested cancellation">Customer requested cancellation (ग्राहक का अनुरोध)</option>
+                  <option value="Item out of stock / Inventory issue">Item out of stock (स्टॉक उपलब्ध नहीं)</option>
+                  <option value="Customer phone unreachable / Invalid address">Customer unreachable / Address issue (संपर्क नहीं हो पाया)</option>
+                  <option value="Delivery location not serviceable">Delivery location not serviceable (डिलीवरी संभव नहीं)</option>
+                  <option value="Duplicate or test order">Duplicate or test order (डुप्लिकेट या टेस्ट ऑर्डर)</option>
+                  <option value="Payment not completed / Fraud alert">Payment not received / COD cancelled (भुगतान नहीं हुआ)</option>
+                  <option value="Other / Store policy">Other (अन्य कारण)</option>
+                </select>
+              </div>
+
+              {/* Restore Stock Checkbox */}
+              <label className="flex items-start gap-2.5 p-3 rounded-2xl bg-amber-50/60 border border-amber-200/70 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={restoreStockOnCancel}
+                  onChange={(e) => setRestoreStockOnCancel(e.target.checked)}
+                  className="mt-0.5 rounded text-amber-600 focus:ring-amber-500 w-4 h-4 cursor-pointer"
+                />
+                <div className="text-[11px] leading-snug">
+                  <span className="font-bold text-neutral-900 block">Restore Stock to Catalog (स्टॉक वापस जोड़ें)</span>
+                  <span className="text-neutral-500">
+                    Automatically adds {cancellingOrder.items.reduce((s, i) => s + i.quantity, 0)} units back to the shop's live product stock.
+                  </span>
+                </div>
+              </label>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-between gap-2 border-t border-neutral-100">
+                <button
+                  type="button"
+                  onClick={() => setCancellingOrder(null)}
+                  className="px-4 py-2 rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 font-bold cursor-pointer"
+                >
+                  Don't Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold cursor-pointer shadow-sm flex items-center gap-1.5"
+                >
+                  <Ban className="w-3.5 h-3.5" />
+                  <span>Confirm Cancellation</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Permanent Delete Confirmation Modal */}
+      {deletingOrderId && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDeletingOrderId(null);
+          }}
+        >
+          <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-neutral-200 p-5 space-y-3.5 animate-in zoom-in-95 duration-150">
+            <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <div className="text-center space-y-1">
+              <h3 className="font-black text-neutral-900 text-sm">Delete Order #{deletingOrderId}?</h3>
+              <p className="text-[11px] text-neutral-500">
+                This will permanently remove this order from order history and Firebase. This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeletingOrderId(null)}
+                className="flex-1 py-2 rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 font-bold text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfirmDeleteOrder(deletingOrderId)}
+                className="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs cursor-pointer shadow-sm"
+              >
+                Delete Permanently
+              </button>
+            </div>
           </div>
         </div>
       )}

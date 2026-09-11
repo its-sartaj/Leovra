@@ -67,8 +67,9 @@ interface StoreContextType {
     paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
     totalAmount?: number;
     transactionId?: string;
-  }) => Order;
   updateOrderStatus: (orderId: string, status: Order['status'], awbCode?: string, courierName?: string) => void;
+  cancelOrder: (orderId: string, restoreInventory?: boolean, cancellationReason?: string) => void;
+  deleteOrder: (orderId: string) => void;
   generateWhatsAppOrderUrl: (orderItems?: CartItem[], customerInfo?: { name: string; phone: string; address: string }) => string;
   
   // Toast notifications
@@ -899,6 +900,65 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast(`Order #${orderId} updated to ${status}!`);
   }, [saveOrders, showToast]);
 
+  // Cancel order & optionally restore inventory
+  const cancelOrder = useCallback((
+    orderId: string, 
+    restoreInventory = true,
+    cancellationReason?: string
+  ) => {
+    let orderToCancel: Order | undefined;
+
+    setOrders((prev) => {
+      const updated = prev.map((ord) => {
+        if (ord.id === orderId) {
+          orderToCancel = ord;
+          return {
+            ...ord,
+            status: 'Cancelled' as const,
+            cancellationReason: cancellationReason || 'Cancelled by Store Admin',
+          };
+        }
+        return ord;
+      });
+      saveOrders(updated);
+      return updated;
+    });
+
+    if (restoreInventory) {
+      setProducts((prevProducts) => {
+        const currentOrder = orderToCancel || orders.find(o => o.id === orderId);
+        if (!currentOrder) return prevProducts;
+
+        const updatedProducts = prevProducts.map((prod) => {
+          const item = currentOrder.items.find((i) => i.product.id === prod.id);
+          if (item) {
+            const restoredStock = prod.stock + item.quantity;
+            return {
+              ...prod,
+              stock: restoredStock,
+              isOutOfStock: restoredStock <= 0,
+            };
+          }
+          return prod;
+        });
+        saveProducts(updatedProducts);
+        return updatedProducts;
+      });
+    }
+
+    showToast(`Order #${orderId} has been cancelled.${restoreInventory ? ' Stock restored.' : ''}`);
+  }, [orders, saveOrders, saveProducts, showToast]);
+
+  // Permanently delete an order from history
+  const deleteOrder = useCallback((orderId: string) => {
+    setOrders((prev) => {
+      const updated = prev.filter((ord) => ord.id !== orderId);
+      saveOrders(updated);
+      return updated;
+    });
+    showToast(`Order #${orderId} deleted permanently.`);
+  }, [saveOrders, showToast]);
+
   // WhatsApp Order Link generator with contact phone 7979968347
   const generateWhatsAppOrderUrl = useCallback((
     orderItems = cart,
@@ -968,6 +1028,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cartCount,
         placeOrder,
         updateOrderStatus,
+        cancelOrder,
+        deleteOrder,
         generateWhatsAppOrderUrl,
         toastMessage,
         showToast,
