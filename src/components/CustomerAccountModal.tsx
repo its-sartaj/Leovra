@@ -18,10 +18,21 @@ import {
   ShieldCheck,
   ChevronRight,
   ExternalLink,
-  XCircle
+  XCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { Order } from '../types';
 import { getShiprocketTrackingUrl } from '../services/shiprocket';
+
+const CUSTOMER_CANCEL_REASONS = [
+  'Ordered by mistake / गलती से ऑर्डर हो गया',
+  'Changed my mind / अब जरूरत नहीं है',
+  'Want to change size or delivery address / साइज या पता बदलना है',
+  'Delivery time is too long / डिलीवरी में समय लग रहा है',
+  'Found better deal or price / कहीं और पसंद आ गया',
+  'Other reason / अन्य कारण',
+];
 
 export const CustomerAccountModal: React.FC = () => {
   const {
@@ -35,6 +46,7 @@ export const CustomerAccountModal: React.FC = () => {
     logoutCustomer,
     updateCustomerProfile,
     customerOrders,
+    cancelOrder,
     businessPhone
   } = useStore();
 
@@ -65,6 +77,37 @@ export const CustomerAccountModal: React.FC = () => {
       setEditEmail(currentCustomer.email || '');
     }
   }, [currentCustomer]);
+
+  // Customer Order Cancellation State
+  const [cancellingOrder, setCancellingOrder] = useState<Order | null>(null);
+  const [customerCancelReason, setCustomerCancelReason] = useState(CUSTOMER_CANCEL_REASONS[0]);
+  const [customReasonText, setCustomReasonText] = useState('');
+  const [cancelSuccessMsg, setCancelSuccessMsg] = useState<string | null>(null);
+
+  const handleOpenCancelModal = (order: Order) => {
+    setCancellingOrder(order);
+    setCustomerCancelReason(CUSTOMER_CANCEL_REASONS[0]);
+    setCustomReasonText('');
+    setCancelSuccessMsg(null);
+  };
+
+  const handleConfirmCustomerCancel = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cancellingOrder) return;
+
+    const finalReason = customerCancelReason.startsWith('Other') && customReasonText.trim()
+      ? `Customer cancelled: ${customReasonText.trim()}`
+      : `Customer cancelled: ${customerCancelReason}`;
+
+    // Cancel order and automatically restore stock back to catalog
+    cancelOrder(cancellingOrder.id, true, finalReason);
+    setCancelSuccessMsg(`Order #${cancellingOrder.id} has been cancelled successfully.`);
+
+    setTimeout(() => {
+      setCancellingOrder(null);
+      setCancelSuccessMsg(null);
+    }, 2000);
+  };
 
   if (!isAccountModalOpen) return null;
 
@@ -539,9 +582,14 @@ export const CustomerAccountModal: React.FC = () => {
                             </a>
                           </div>
                         ) : order.status === 'Cancelled' ? (
-                          <div className="text-[11px] text-rose-800 bg-rose-50 border border-rose-200/80 p-2.5 rounded-xl flex items-center gap-1.5 font-medium">
-                            <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                            <span>This order was cancelled ({order.cancellationReason || 'Contact helpline for refund/queries'}).</span>
+                          <div className="text-[11px] text-rose-800 bg-rose-50 border border-rose-200/80 p-2.5 rounded-xl flex items-center justify-between gap-2 font-medium">
+                            <div className="flex items-center gap-1.5">
+                              <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                              <span>Order Cancelled: <strong>{order.cancellationReason || 'Cancelled by customer'}</strong></span>
+                            </div>
+                            <span className="text-[10px] text-rose-600 font-bold bg-white px-2 py-0.5 rounded border border-rose-200 shrink-0">
+                              Stock Restored
+                            </span>
                           </div>
                         ) : (
                           <div className="text-[11px] text-neutral-500 bg-neutral-100/60 p-2 rounded-xl flex items-center gap-1.5">
@@ -551,18 +599,18 @@ export const CustomerAccountModal: React.FC = () => {
                         )}
 
                         {/* Actions */}
-                        <div className="pt-1 flex items-center gap-2">
+                        <div className="pt-1 flex flex-wrap items-center gap-2">
                           <a
                             href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(
                               order.status === 'Cancelled'
-                                ? `Hello Leovra Enterprises! My order #${order.id} was cancelled. I would like to inquire about refund or re-ordering.`
+                                ? `Hello Leovra Enterprises! My order #${order.id} was cancelled (${order.cancellationReason || ''}). Please guide regarding refund or re-ordering.`
                                 : order.awbCode 
                                 ? `Hello Leovra Enterprises! Regarding my Order #${order.id} (AWB: ${order.awbCode}): Please provide an update on delivery.`
                                 : `Hello Leovra Enterprises! Please provide tracking status for my Order ID: ${order.id} (Total: ₹${order.totalAmount.toLocaleString('en-IN')}). Customer Phone: ${currentCustomer?.phone || order.customerPhone || ''}`
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer text-center"
+                            className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer text-center min-w-[130px]"
                           >
                             <MessageCircle className="w-3.5 h-3.5" />
                             <span>Track on WhatsApp</span>
@@ -574,8 +622,21 @@ export const CustomerAccountModal: React.FC = () => {
                             title="Call customer support for this order"
                           >
                             <Phone className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">Call Support</span>
+                            <span className="hidden sm:inline">Support</span>
                           </a>
+
+                          {/* Customer Self-Cancellation Button (Only for active / non-cancelled orders) */}
+                          {order.status !== 'Cancelled' && (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenCancelModal(order)}
+                              className="py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 hover:border-rose-300 font-bold text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer active:scale-95"
+                              title="Cancel this order / ऑर्डर रद्द करें"
+                            >
+                              <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                              <span>Cancel Order</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
@@ -731,6 +792,103 @@ export const CustomerAccountModal: React.FC = () => {
           </a>
         </div>
       </div>
+
+      {/* Customer Order Cancellation Confirmation Dialog */}
+      {cancellingOrder && (
+        <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-neutral-200 space-y-4 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-900">Cancel Order #{cancellingOrder.id}?</h3>
+                  <p className="text-xs text-neutral-500">
+                    Total: ₹{cancellingOrder.totalAmount.toLocaleString('en-IN')} • {cancellingOrder.paymentMethod}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCancellingOrder(null)}
+                className="p-1 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {cancelSuccessMsg ? (
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <span className="font-semibold">{cancelSuccessMsg}</span>
+              </div>
+            ) : (
+              <form onSubmit={handleConfirmCustomerCancel} className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-bold text-neutral-800 mb-1.5">
+                    Reason for Cancellation / रद्द करने का कारण <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={customerCancelReason}
+                    onChange={(e) => setCustomerCancelReason(e.target.value)}
+                    className="w-full text-xs p-2.5 rounded-xl border border-neutral-300 bg-neutral-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium text-neutral-800 cursor-pointer"
+                  >
+                    {CUSTOMER_CANCEL_REASONS.map((r, i) => (
+                      <option key={i} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {customerCancelReason.startsWith('Other') && (
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 mb-1">
+                      Please specify your reason:
+                    </label>
+                    <textarea
+                      required
+                      rows={2}
+                      value={customReasonText}
+                      onChange={(e) => setCustomReasonText(e.target.value)}
+                      placeholder="Type your reason here..."
+                      className="w-full text-xs p-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                    />
+                  </div>
+                )}
+
+                <div className="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl text-[11px] text-amber-900 space-y-1">
+                  <div className="font-bold flex items-center gap-1 text-amber-950">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Instant Action & Stock Restored</span>
+                  </div>
+                  <p className="text-neutral-600 leading-relaxed">
+                    Order cancel hone ke baad product ka stock turant wapas live catalog me add ho jayega. Agar UPI/online payment tha to hamari support team se WhatsApp par refund status confirm karein.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setCancellingOrder(null)}
+                    className="flex-1 py-2 px-3 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold transition-colors cursor-pointer text-center"
+                  >
+                    No, Keep Order
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Confirm Cancel</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -15,7 +15,8 @@ import {
   Copy,
   Check,
   Banknote,
-  ExternalLink
+  ExternalLink,
+  XCircle
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Order } from '../types';
@@ -312,6 +313,19 @@ export const CartDrawer: React.FC = () => {
                     className="w-full py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs transition-colors cursor-pointer"
                   >
                     Continue Shopping
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetCheckoutModal();
+                      setAccountModalTab('orders');
+                      setIsAccountModalOpen(true);
+                    }}
+                    className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline py-1 flex items-center justify-center gap-1 cursor-pointer mx-auto transition-colors"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Ordered by mistake? Cancel this order in My Orders</span>
                   </button>
                 </div>
               </div>
