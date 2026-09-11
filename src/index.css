@@ -88,3 +88,17 @@ body {
 .animate-hero-shimmer {
   animation: heroShimmerSweep 3s ease-in-out infinite;
 }
+
+@keyframes heroProgress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-hero-progress {
+  transform-origin: left;
+  animation: heroProgress 3.5s linear forwards;
+}

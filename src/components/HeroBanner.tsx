@@ -4,7 +4,9 @@ import {
   ShieldCheck, 
   Truck, 
   ArrowRight, 
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
@@ -13,36 +15,37 @@ const BACKGROUND_SLIDES = [
   {
     id: 'earrings' as ProductCategory,
     label: 'Artisanal Jewelry',
+    hindiTag: 'शाही झुमके संग्रह',
     image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=1600&q=80',
-    glowColor: 'from-amber-500/25 via-orange-500/15 to-transparent',
+    glowColor: 'from-amber-500/35 via-orange-500/20 to-transparent',
   },
   {
     id: 'tshirts' as ProductCategory,
     label: 'Streetwear Apparel',
+    hindiTag: 'ट्रेंडिंग टी-शर्ट्स',
     image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80',
-    glowColor: 'from-purple-500/25 via-indigo-500/15 to-transparent',
+    glowColor: 'from-purple-500/35 via-indigo-500/20 to-transparent',
   },
   {
     id: 'lowers' as ProductCategory,
     label: 'Comfort Lowers & Joggers',
+    hindiTag: 'फ्लेक्सिबल लोअर',
     image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=1600&q=80',
-    glowColor: 'from-emerald-500/25 via-teal-500/15 to-transparent',
+    glowColor: 'from-emerald-500/35 via-teal-500/20 to-transparent',
   },
 ];
 
 export const HeroBanner: React.FC = () => {
   const { products, filters, setFilters, businessPhone } = useStore();
   const [activeSlide, setActiveSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
 
-  // Auto-slide transition every 4.5 seconds
+  // Unconditional auto-slide transition every 3.5 seconds
   useEffect(() => {
-    if (isPaused) return;
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length);
-    }, 4500);
+    }, 3500);
     return () => clearInterval(timer);
-  }, [isPaused]);
+  }, []);
 
   const currentBg = BACKGROUND_SLIDES[activeSlide];
 
@@ -79,11 +82,16 @@ export const HeroBanner: React.FC = () => {
   return (
     <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6 overflow-hidden" id="hero-banner-section">
       {/* Top Banner Hero Card with Background Slider */}
-      <div 
-        className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[300px] sm:min-h-[340px] flex items-center"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-      >
+      <div className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[300px] sm:min-h-[340px] flex items-center">
+        
+        {/* Animated Top Progress Bar (Auto-slide Timer) */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-neutral-900/80 z-30 overflow-hidden">
+          <div 
+            key={activeSlide} 
+            className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 w-full animate-hero-progress" 
+          />
+        </div>
+
         {/* Background Slider Images with Smooth Crossfade & Subtle Zoom */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           {BACKGROUND_SLIDES.map((slide, index) => (
@@ -91,21 +99,21 @@ export const HeroBanner: React.FC = () => {
               key={slide.id}
               className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${
                 activeSlide === index
-                  ? 'opacity-35 scale-105'
-                  : 'opacity-0 scale-100'
+                  ? 'opacity-65 scale-105'
+                  : 'opacity-0 scale-100 pointer-events-none'
               }`}
             >
               <img
                 src={slide.image}
                 alt={slide.label}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-right md:object-center"
               />
             </div>
           ))}
 
-          {/* Luxury Multi-layer Gradient Dark Overlays for Ultra-Clear Text Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/65" />
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/50" />
+          {/* Luxury Multi-layer Gradient Dark Overlays: Darker on left for text, semi-transparent on right for image */}
+          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/40" />
 
           {/* Dynamic Background Ambient Glow */}
           <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentBg.glowColor} rounded-full blur-3xl pointer-events-none transition-all duration-1000 animate-hero-glow`} />
@@ -116,9 +124,11 @@ export const HeroBanner: React.FC = () => {
         <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
           {/* Left Column: Heading, Pitch & CTAs */}
           <div className="max-w-xl space-y-3 sm:space-y-4 w-full min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] sm:text-xs font-semibold backdrop-blur-xs">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] sm:text-xs font-semibold backdrop-blur-xs transition-all">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate">Express Doorstep Delivery • Artisanal & Streetwear</span>
+              <span className="truncate">
+                Express Dispatch • <span className="text-white font-bold">{currentBg.hindiTag}</span> ({currentBg.label})
+              </span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-serif break-words">
@@ -190,6 +200,25 @@ export const HeroBanner: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Side Arrows for Manual Navigation */}
+        <button
+          type="button"
+          onClick={() => setActiveSlide((prev) => (prev - 1 + BACKGROUND_SLIDES.length) % BACKGROUND_SLIDES.length)}
+          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
+          aria-label="Previous Slide"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length)}
+          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
+          aria-label="Next Slide"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
 
         {/* Background Slide Indicators (Bottom Right Pills) */}
         <div className="absolute bottom-2.5 right-3 sm:bottom-3 sm:right-6 z-20 flex items-center gap-1.5 bg-neutral-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-neutral-800/80 text-[10px]">
