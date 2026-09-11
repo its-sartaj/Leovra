@@ -31,6 +31,8 @@ interface StoreContextType {
   setIsAccountModalOpen: (open: boolean) => void;
   accountModalTab: 'login' | 'register' | 'profile' | 'orders';
   setAccountModalTab: (tab: 'login' | 'register' | 'profile' | 'orders') => void;
+  isReturnPolicyOpen: boolean;
+  setIsReturnPolicyOpen: (open: boolean) => void;
   registerCustomer: (name: string, phone: string, email?: string, address?: string, city?: string) => { success: boolean; message: string };
   loginCustomer: (phone: string, name?: string) => { success: boolean; message: string };
   logoutCustomer: () => void;
@@ -226,6 +228,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isSideNavOpen, setIsSideNavOpen] = useState<boolean>(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState<boolean>(false);
   const [accountModalTab, setAccountModalTab] = useState<'login' | 'register' | 'profile' | 'orders'>('login');
+  const [isReturnPolicyOpen, setIsReturnPolicyOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = useCallback((msg: string) => {
@@ -1004,6 +1007,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsAccountModalOpen,
         accountModalTab,
         setAccountModalTab,
+        isReturnPolicyOpen,
+        setIsReturnPolicyOpen,
         currentCustomer,
         registerCustomer,
         loginCustomer,

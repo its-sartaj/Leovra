@@ -19,7 +19,8 @@ import {
   ChevronRight,
   ExternalLink,
   XCircle,
-  AlertTriangle
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Order } from '../types';
@@ -47,7 +48,8 @@ export const CustomerAccountModal: React.FC = () => {
     updateCustomerProfile,
     customerOrders,
     cancelOrder,
-    businessPhone
+    businessPhone,
+    setIsReturnPolicyOpen
   } = useStore();
 
   // Registration Form State
@@ -436,6 +438,23 @@ export const CustomerAccountModal: React.FC = () => {
                 <span className="font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full text-[10px]">
                   {customerOrders.length} {customerOrders.length === 1 ? 'Order' : 'Orders'}
                 </span>
+              </div>
+
+              {/* 3-Day Return Policy Notice */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-[11px] text-neutral-600">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <RotateCcw className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span className="truncate">
+                    <strong>3-Day Return Guarantee:</strong> Valid for defective or wrong items received.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsReturnPolicyOpen(true)}
+                  className="text-amber-700 font-bold hover:underline cursor-pointer shrink-0 ml-2"
+                >
+                  View Policy
+                </button>
               </div>
 
               {customerOrders.length === 0 ? (

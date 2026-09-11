@@ -12,7 +12,7 @@ import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
 
 export const Footer: React.FC = () => {
-  const { businessPhone, businessEmail, setFilters, setCurrentView } = useStore();
+  const { businessPhone, businessEmail, setFilters, setCurrentView, setIsReturnPolicyOpen } = useStore();
 
   const handleCategory = (cat: 'all' | ProductCategory) => {
     setCurrentView('store');
@@ -46,15 +46,20 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-amber-400 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsReturnPolicyOpen(true)}
+            className="flex items-center gap-2 sm:gap-3 min-w-0 text-left hover:opacity-90 transition-opacity cursor-pointer group"
+            title="Read 3-Day Return Policy"
+          >
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-amber-400 shrink-0 group-hover:border-amber-500/50 transition-colors">
               <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0">
-              <div className="font-bold text-white text-[11px] sm:text-xs truncate">Easy Exchange</div>
-              <div className="text-neutral-400 text-[9px] sm:text-[11px] truncate">Size replacement</div>
+              <div className="font-bold text-white text-[11px] sm:text-xs truncate">3-Day Return</div>
+              <div className="text-neutral-400 text-[9px] sm:text-[11px] truncate group-hover:text-amber-400 transition-colors">Defective / wrong item</div>
             </div>
-          </div>
+          </button>
 
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-emerald-400 shrink-0">
@@ -152,15 +157,33 @@ export const Footer: React.FC = () => {
               <div className="text-[11px] text-neutral-500 pt-1">
                 Express Fast Dispatch Across India
               </div>
+
+              <div className="pt-2 border-t border-neutral-900">
+                <button
+                  type="button"
+                  onClick={() => setIsReturnPolicyOpen(true)}
+                  className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 font-semibold transition-colors cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>3-Day Return Policy (View Details)</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-500 flex items-center justify-center">
+        <div className="pt-8 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-500 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-4 text-[11px] text-neutral-500">
             <span>Specialists in Earrings, T-Shirts & Lowers</span>
           </div>
+          <button
+            type="button"
+            onClick={() => setIsReturnPolicyOpen(true)}
+            className="text-[11px] text-neutral-400 hover:text-amber-400 transition-colors cursor-pointer font-medium"
+          >
+            Return & Refund Policy (3 Days)
+          </button>
         </div>
       </div>
     </footer>

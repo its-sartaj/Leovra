@@ -8,7 +8,8 @@ import {
   Check, 
   AlertCircle,
   Truck,
-  MapPin
+  MapPin,
+  RotateCcw
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { estimateDeliveryByPincode, PincodeEstimation } from '../services/shiprocket';
@@ -18,7 +19,8 @@ export const ProductModal: React.FC = () => {
     selectedProduct, 
     setSelectedProduct, 
     addToCart, 
-    businessPhone 
+    businessPhone,
+    setIsReturnPolicyOpen
   } = useStore();
 
   // IMPORTANT: All hooks must be called before any early return (Rules of Hooks)
@@ -295,6 +297,23 @@ export const ProductModal: React.FC = () => {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* 3-Day Return Policy Note */}
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-[11px] text-neutral-700">
+              <div className="flex items-center gap-2">
+                <RotateCcw className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>
+                  <strong>3-Day Return Policy:</strong> Defective / wrong items only
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsReturnPolicyOpen(true)}
+                className="text-amber-800 font-bold hover:underline cursor-pointer shrink-0"
+              >
+                View Policy
+              </button>
             </div>
           </div>
 

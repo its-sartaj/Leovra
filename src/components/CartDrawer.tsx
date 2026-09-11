@@ -16,7 +16,8 @@ import {
   Check,
   Banknote,
   ExternalLink,
-  XCircle
+  XCircle,
+  RotateCcw
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Order } from '../types';
@@ -38,7 +39,8 @@ export const CartDrawer: React.FC = () => {
     products,
     currentCustomer,
     setIsAccountModalOpen,
-    setAccountModalTab
+    setAccountModalTab,
+    setIsReturnPolicyOpen
   } = useStore();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -327,6 +329,20 @@ export const CartDrawer: React.FC = () => {
                     <XCircle className="w-3.5 h-3.5" />
                     <span>Ordered by mistake? Cancel this order in My Orders</span>
                   </button>
+
+                  <div className="p-2.5 rounded-xl bg-neutral-100 border border-neutral-200 text-[11px] text-neutral-600 flex items-center justify-between gap-2 mt-1">
+                    <span className="flex items-center gap-1.5">
+                      <RotateCcw className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span>3-Day Return Policy on delivery for damaged/wrong items</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsReturnPolicyOpen(true)}
+                      className="text-amber-800 font-bold hover:underline cursor-pointer shrink-0"
+                    >
+                      Policy
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : isCheckingOut ? (
@@ -879,7 +895,7 @@ export const CartDrawer: React.FC = () => {
                 </a>
               </div>
 
-              <div className="flex items-center justify-center gap-3 text-[10px] text-neutral-500 pt-1">
+              <div className="flex items-center justify-center gap-2.5 text-[10px] text-neutral-500 pt-1 flex-wrap">
                 <span className="flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Safe Checkout
                 </span>
@@ -888,9 +904,13 @@ export const CartDrawer: React.FC = () => {
                   <Truck className="w-3.5 h-3.5 text-amber-600" /> Fast Delivery
                 </span>
                 <span>•</span>
-                <a href={`tel:${businessPhone}`} className="hover:text-neutral-900 font-medium">
-                  +91 {businessPhone}
-                </a>
+                <button
+                  type="button"
+                  onClick={() => setIsReturnPolicyOpen(true)}
+                  className="flex items-center gap-1 hover:text-amber-700 font-medium cursor-pointer text-neutral-600"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-amber-600" /> 3-Day Return Policy
+                </button>
               </div>
             </div>
           )}

@@ -38,7 +38,8 @@ export const SideNavDrawer: React.FC = () => {
     currentCustomer,
     setIsAccountModalOpen,
     setAccountModalTab,
-    customerOrders
+    customerOrders,
+    setIsReturnPolicyOpen
   } = useStore();
 
   if (!isSideNavOpen) return null;
@@ -358,6 +359,29 @@ export const SideNavDrawer: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* 3-Day Return Policy */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSideNavOpen(false);
+                    setIsReturnPolicyOpen(true);
+                  }}
+                  className="w-full text-left p-3 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3 hover:bg-amber-100/60 transition-colors cursor-pointer group"
+                >
+                  <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 shrink-0 group-hover:scale-105 transition-transform">
+                    <RotateCcw className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-bold text-neutral-900 flex items-center justify-between">
+                      <span>3-Day Return Policy</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-amber-600" />
+                    </div>
+                    <div className="text-[11px] text-neutral-600 mt-0.5 leading-relaxed">
+                      72-hour coverage for damaged or incorrectly delivered products. Click to read terms.
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
 

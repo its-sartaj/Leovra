@@ -8,6 +8,7 @@ import { ProductModal } from './components/ProductModal';
 import { CartDrawer } from './components/CartDrawer';
 import { SideNavDrawer } from './components/SideNavDrawer';
 import { CustomerAccountModal } from './components/CustomerAccountModal';
+import { ReturnPolicyModal } from './components/ReturnPolicyModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
 import { MessageCircle, ArrowUp } from 'lucide-react';
@@ -75,6 +76,7 @@ const MainLayout: React.FC = () => {
           <ProductModal />
           <CartDrawer />
           <CustomerAccountModal />
+          <ReturnPolicyModal />
           <SideNavDrawer />
           <MobileBottomNav />
           <Footer />
