@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { 
   Phone, 
-  Mail, 
   ShoppingBag, 
   Search, 
   X, 
   Menu, 
   Sparkles,
-  PhoneCall,
   MessageCircle,
   User
 } from 'lucide-react';
@@ -27,8 +25,7 @@ export const Header: React.FC = () => {
     setAccountModalTab,
     filters, 
     setFilters,
-    businessPhone,
-    businessEmail
+    businessPhone
   } = useStore();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,37 +48,6 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full max-w-full bg-white border-b border-neutral-200/90 shadow-2xs transform-gpu will-change-transform" id="main-header">
-      {/* Top Notification & Contact Bar */}
-      <div className="bg-neutral-900 text-neutral-200 px-2.5 sm:px-4 py-1.5 text-xs w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
-          {/* Left contact info */}
-          <div className="flex items-center gap-2 sm:gap-4 text-[11px] sm:text-xs font-medium truncate">
-            <a 
-              href={`tel:${businessPhone}`} 
-              className="flex items-center gap-1.5 hover:text-amber-400 transition-colors whitespace-nowrap"
-              id="top-call-link"
-            >
-              <PhoneCall className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 shrink-0" />
-              <span>Call / WhatsApp: <strong className="text-white">+{businessPhone}</strong></span>
-            </a>
-            <span className="hidden sm:inline text-neutral-600">|</span>
-            <a 
-              href={`mailto:${businessEmail}`} 
-              className="hidden md:flex items-center gap-1.5 hover:text-amber-400 transition-colors"
-              id="top-email-link"
-            >
-              <Mail className="w-3.5 h-3.5 text-amber-400" />
-              <span>{businessEmail}</span>
-            </a>
-          </div>
-
-          {/* Right Support Hours info - desktop only to prevent mobile overflow */}
-          <div className="hidden sm:flex items-center gap-3 ml-auto text-[11px] text-neutral-400 shrink-0">
-            <span>Customer Support: 9:00 AM – 9:00 PM</span>
-          </div>
-        </div>
-      </div>
-
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3.5 w-full">
         <div className="flex items-center justify-between gap-1.5 sm:gap-4 md:gap-6">
