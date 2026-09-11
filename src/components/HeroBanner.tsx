@@ -4,66 +4,29 @@ import {
   ShieldCheck, 
   Truck, 
   ArrowRight, 
-  Star, 
-  ChevronLeft, 
-  ChevronRight,
-  Zap,
   CheckCircle2
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
 
-const HERO_SLIDES = [
+const BACKGROUND_SLIDES = [
   {
     id: 'earrings' as ProductCategory,
-    categoryName: 'Artisanal Jewelry',
-    hindiTag: 'शाही झुमके संग्रह',
-    title: 'Royal Oxidized Silver Chandbali',
-    tagline: 'Handcrafted Heritage Design',
-    price: '₹399',
-    originalPrice: '₹799',
-    discount: '50% OFF',
-    rating: '4.9',
-    reviews: '142',
-    image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=800&q=80',
-    floatingBadge1: '✨ Pure Silver Finish',
-    floatingBadge2: '⭐ 4.9 (140+ Reviews)',
-    glowColor: 'from-amber-500/30 via-orange-500/20 to-transparent',
-    borderGlow: 'border-amber-500/40',
+    label: 'Artisanal Jewelry',
+    image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=1600&q=80',
+    glowColor: 'from-amber-500/25 via-orange-500/15 to-transparent',
   },
   {
     id: 'tshirts' as ProductCategory,
-    categoryName: 'Streetwear Apparel',
-    hindiTag: 'ट्रेंडिंग टी-शर्ट्स',
-    title: 'Oversized Streetwear Black Tee',
-    tagline: '240 GSM Pure Supima Cotton',
-    price: '₹499',
-    originalPrice: '₹999',
-    discount: '50% OFF',
-    rating: '4.8',
-    reviews: '98',
-    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80',
-    floatingBadge1: '🔥 Best Seller #1',
-    floatingBadge2: '⚡ Bio-Washed Cotton',
-    glowColor: 'from-purple-500/30 via-indigo-500/20 to-transparent',
-    borderGlow: 'border-purple-500/40',
+    label: 'Streetwear Apparel',
+    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80',
+    glowColor: 'from-purple-500/25 via-indigo-500/15 to-transparent',
   },
   {
     id: 'lowers' as ProductCategory,
-    categoryName: 'Utility Streetwear',
-    hindiTag: 'फ्लेक्सिबल लोअर',
-    title: 'Comfort Cargo Joggers with Pockets',
-    tagline: '4-Way Breathable Stretch Knit',
-    price: '₹599',
-    originalPrice: '₹1,199',
-    discount: '50% OFF',
-    rating: '4.9',
-    reviews: '116',
-    image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=800&q=80',
-    floatingBadge1: '👖 Deep Zipper Pockets',
-    floatingBadge2: '🚚 Free COD Available',
-    glowColor: 'from-emerald-500/30 via-teal-500/20 to-transparent',
-    borderGlow: 'border-emerald-500/40',
+    label: 'Comfort Lowers & Joggers',
+    image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=1600&q=80',
+    glowColor: 'from-emerald-500/25 via-teal-500/15 to-transparent',
   },
 ];
 
@@ -72,24 +35,16 @@ export const HeroBanner: React.FC = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Auto-slide transition every 3.8s
+  // Auto-slide transition every 4.5 seconds
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 3800);
+      setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length);
+    }, 4500);
     return () => clearInterval(timer);
   }, [isPaused]);
 
-  const currentSlide = HERO_SLIDES[activeSlide];
-
-  const handleExploreCategory = (cat: ProductCategory) => {
-    setFilters((prev) => ({ ...prev, category: cat }));
-    const catalogEl = document.getElementById('products-catalog-section');
-    if (catalogEl) {
-      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+  const currentBg = BACKGROUND_SLIDES[activeSlide];
 
   const getCategoryInStock = (cat: ProductCategory) => {
     return products.filter((p) => p.category === cat && !p.isOutOfStock && p.stock > 0).length;
@@ -123,14 +78,42 @@ export const HeroBanner: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6 overflow-hidden" id="hero-banner-section">
-      {/* Top Banner Hero Card */}
-      <div className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu">
-        {/* Dynamic Background gradient decorative glow */}
-        <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentSlide.glowColor} rounded-full blur-3xl pointer-events-none transition-all duration-1000 animate-hero-glow`} />
-        <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
+      {/* Top Banner Hero Card with Background Slider */}
+      <div 
+        className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[300px] sm:min-h-[340px] flex items-center"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {/* Background Slider Images with Smooth Crossfade & Subtle Zoom */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          {BACKGROUND_SLIDES.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${
+                activeSlide === index
+                  ? 'opacity-35 scale-105'
+                  : 'opacity-0 scale-100'
+              }`}
+            >
+              <img
+                src={slide.image}
+                alt={slide.label}
+                className="w-full h-full object-cover object-center"
+              />
+            </div>
+          ))}
 
-        <div className="relative z-10 p-4 sm:p-8 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10 w-full">
-          
+          {/* Luxury Multi-layer Gradient Dark Overlays for Ultra-Clear Text Contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/65" />
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/50" />
+
+          {/* Dynamic Background Ambient Glow */}
+          <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentBg.glowColor} rounded-full blur-3xl pointer-events-none transition-all duration-1000 animate-hero-glow`} />
+          <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
+        </div>
+
+        {/* Foreground Content */}
+        <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
           {/* Left Column: Heading, Pitch & CTAs */}
           <div className="max-w-xl space-y-3 sm:space-y-4 w-full min-w-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] sm:text-xs font-semibold backdrop-blur-xs">
@@ -184,123 +167,47 @@ export const HeroBanner: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Hero Animation Showcase */}
-          <div 
-            className="w-full lg:w-[420px] xl:w-[460px] flex flex-col items-center justify-center relative py-2 select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            {/* Top-Left Floating Badge */}
-            <div className="absolute -top-2 left-2 sm:-left-2 z-20 animate-hero-float pointer-events-none">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-neutral-900/95 border border-amber-500/40 text-white shadow-xl backdrop-blur-md">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 shrink-0" />
-                <span className="text-[11px] font-bold">{currentSlide.floatingBadge2}</span>
+          {/* Right Column: Quick Value Points (Restored from user's screenshot) */}
+          <div className="w-full md:w-auto grid grid-cols-2 md:grid-cols-1 gap-2.5 shrink-0 pt-2 sm:pt-0 border-t border-neutral-800/80 md:border-t-0">
+            <div className="flex items-center gap-2.5 bg-neutral-900/90 border border-neutral-800/90 p-2.5 sm:px-4 sm:py-2.5 rounded-xl text-left min-w-0 shadow-lg backdrop-blur-md">
+              <div className="p-2 rounded-lg bg-amber-500/15 text-amber-400 shrink-0">
+                <Truck className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs sm:text-sm font-bold text-white truncate">Fast Delivery</div>
+                <div className="text-[10px] sm:text-xs text-neutral-400 truncate">Doorstep shipping</div>
               </div>
             </div>
 
-            {/* Bottom-Right Floating Badge */}
-            <div className="absolute -bottom-2 right-2 sm:-right-2 z-20 animate-hero-float-reverse pointer-events-none">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-neutral-900/95 border border-emerald-500/40 text-white shadow-xl backdrop-blur-md">
-                <Zap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="text-[11px] font-bold">{currentSlide.floatingBadge1}</span>
+            <div className="flex items-center gap-2.5 bg-neutral-900/90 border border-neutral-800/90 p-2.5 sm:px-4 sm:py-2.5 rounded-xl text-left min-w-0 shadow-lg backdrop-blur-md">
+              <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-400 shrink-0">
+                <ShieldCheck className="w-4 h-4" />
               </div>
-            </div>
-
-            {/* Main Interactive 3D Showcase Card */}
-            <div 
-              onClick={() => handleExploreCategory(currentSlide.id)}
-              className={`group relative w-full max-w-[340px] sm:max-w-[390px] h-[300px] sm:h-[340px] rounded-3xl overflow-hidden bg-neutral-900/90 border ${currentSlide.borderGlow} shadow-2xl transition-all duration-500 cursor-pointer`}
-            >
-              {/* Image with smooth transition */}
-              <img
-                src={currentSlide.image}
-                alt={currentSlide.title}
-                key={currentSlide.image}
-                className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 animate-in fade-in zoom-in-95 duration-500"
-              />
-
-              {/* Shimmer Light Sweep Overlay */}
-              <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none animate-hero-shimmer" />
-
-              {/* Gradient Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent" />
-
-              {/* Top Tags */}
-              <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between z-10">
-                <span className="px-2.5 py-1 rounded-xl bg-neutral-950/80 backdrop-blur-md text-amber-400 border border-amber-400/30 text-[10px] font-extrabold uppercase tracking-wider">
-                  {currentSlide.hindiTag}
-                </span>
-                <span className="px-2.5 py-1 rounded-xl bg-emerald-500 text-neutral-950 font-black text-[10px] uppercase shadow-md">
-                  {currentSlide.discount}
-                </span>
+              <div className="min-w-0">
+                <div className="text-xs sm:text-sm font-bold text-white truncate">Quality Checked</div>
+                <div className="text-[10px] sm:text-xs text-neutral-400 truncate">Inspected items</div>
               </div>
-
-              {/* Bottom Card Content */}
-              <div className="absolute bottom-3.5 left-3.5 right-3.5 z-10 space-y-1.5">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                  {currentSlide.categoryName}
-                </div>
-                <h3 className="text-base sm:text-lg font-black text-white leading-snug line-clamp-1 drop-shadow-sm">
-                  {currentSlide.title}
-                </h3>
-                <p className="text-[11px] text-neutral-300 line-clamp-1">
-                  {currentSlide.tagline}
-                </p>
-
-                <div className="flex items-center justify-between pt-1 border-t border-white/15">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-base sm:text-lg font-black text-white">{currentSlide.price}</span>
-                    <span className="text-xs text-neutral-400 line-through">{currentSlide.originalPrice}</span>
-                  </div>
-
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
-                    <span>Explore</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Slider Navigation Dots & Controls */}
-            <div className="flex items-center justify-center gap-2 mt-3 z-10 w-full">
-              <button
-                type="button"
-                onClick={() => setActiveSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)}
-                className="p-1.5 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
-                title="Previous Collection"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-
-              <div className="flex items-center gap-1.5">
-                {HERO_SLIDES.map((slide, idx) => (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    onClick={() => setActiveSlide(idx)}
-                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
-                      activeSlide === idx
-                        ? 'bg-amber-400 text-neutral-950 shadow-md scale-105'
-                        : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-neutral-200'
-                    }`}
-                  >
-                    {slide.id === 'earrings' && '💎 Jewelry'}
-                    {slide.id === 'tshirts' && '👕 T-Shirts'}
-                    {slide.id === 'lowers' && '👖 Lowers'}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length)}
-                className="p-1.5 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
-                title="Next Collection"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
             </div>
           </div>
+        </div>
+
+        {/* Background Slide Indicators (Bottom Right Pills) */}
+        <div className="absolute bottom-2.5 right-3 sm:bottom-3 sm:right-6 z-20 flex items-center gap-1.5 bg-neutral-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-neutral-800/80 text-[10px]">
+          <span className="text-[10px] text-neutral-400 hidden sm:inline font-medium mr-1">
+            {currentBg.label}
+          </span>
+          {BACKGROUND_SLIDES.map((slide, idx) => (
+            <button
+              key={slide.id}
+              onClick={() => setActiveSlide(idx)}
+              className={`transition-all rounded-full cursor-pointer ${
+                activeSlide === idx 
+                  ? 'w-5 h-1.5 bg-amber-400 shadow-xs' 
+                  : 'w-1.5 h-1.5 bg-neutral-600 hover:bg-neutral-400'
+              }`}
+              title={slide.label}
+            />
+          ))}
         </div>
       </div>
 
