@@ -1,0 +1,6 @@
+﻿User-agent: *
+Allow: /
+
+# Host & Sitemap
+Host: https://its-sartaj.github.io
+Sitemap: https://its-sartaj.github.io/Leovra/sitemap.xml
