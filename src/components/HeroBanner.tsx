@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
-import heroTshirtImg from '../assets/hero-tshirt.png';
+import heroTshirtImg from '../assets/hero-tshirt.jpg';
 
 const BACKGROUND_SLIDES = [
   {
@@ -273,6 +273,10 @@ export const HeroBanner: React.FC = () => {
                 <img
                   src={card.image}
                   alt={card.title}
+                  loading="lazy"
+                  decoding="async"
+                  width={300}
+                  height={180}
                   className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700"
                 />
                 {/* Multi-layer Dark Gradient for 100% Readability */}

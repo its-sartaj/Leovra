@@ -549,87 +549,73 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
     window.addEventListener('leovra_sync_products', handleCustomSync);
 
-    // 4. Heartbeat polling (checks version every 1200ms for tabs where events are throttled)
-    const heartbeatTimer = setInterval(() => {
-      try {
-        const remoteVerStr = localStorage.getItem(STORAGE_KEY_PRODUCTS_VER);
-        if (remoteVerStr) {
-          const remoteVer = Number(remoteVerStr);
-          if (remoteVer > currentVersionRef.current) {
-            const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              if (Array.isArray(parsed)) {
-                currentVersionRef.current = remoteVer;
-                setProducts(parsed);
-                showToast('⚡ Live Inventory updated in real time');
-              }
-            }
+    // 4. Firebase Cloud Realtime Database: Deferred background sync
+    // Defers network connection by 3s to keep LCP, FCP, and TBT fast on mobile devices
+    let unsubscribeProducts: (() => void) | null = null;
+    let unsubscribeOrders: (() => void) | null = null;
+
+    const initCloudSyncTimer = setTimeout(() => {
+      fetchRemoteProducts().then((remoteProds) => {
+        if (remoteProds && remoteProds.length > 0) {
+          currentVersionRef.current = Date.now();
+          setProducts(remoteProds);
+          try {
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
+          } catch {
+            // ignore
           }
         }
-      } catch {
-        // ignore
-      }
-    }, 1200);
+      });
 
-    // 5. Firebase Cloud Realtime Database: Initial fetch + Live Server-Sent Events (SSE) Stream
-    fetchRemoteProducts().then((remoteProds) => {
-      if (remoteProds && remoteProds.length > 0) {
-        currentVersionRef.current = Date.now();
-        setProducts(remoteProds);
-        try {
-          localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
-        } catch {
-          // ignore
+      unsubscribeProducts = subscribeRemoteProducts((remoteProds) => {
+        if (remoteProds && remoteProds.length > 0) {
+          currentVersionRef.current = Date.now();
+          setProducts(remoteProds);
+          try {
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
+          } catch {
+            // ignore
+          }
+          showToast('⚡ Live Inventory updated in real time');
         }
-      }
-    });
+      });
 
-    fetchRemoteOrders().then((remoteOrders) => {
-      if (remoteOrders && remoteOrders.length > 0) {
-        setOrders(remoteOrders);
-        try {
-          localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
-        } catch {
-          // ignore
-        }
-      }
-    });
+      // Only sync orders if admin is active or customer has placed orders
+      if (typeof window !== 'undefined' && (window.location.hash.includes('admin') || localStorage.getItem(STORAGE_KEY_ADMIN_AUTH) === 'true')) {
+        fetchRemoteOrders().then((remoteOrders) => {
+          if (remoteOrders && remoteOrders.length > 0) {
+            setOrders(remoteOrders);
+            try {
+              localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
+            } catch {
+              // ignore
+            }
+          }
+        });
 
-    const unsubscribeProducts = subscribeRemoteProducts((remoteProds) => {
-      if (remoteProds && remoteProds.length > 0) {
-        currentVersionRef.current = Date.now();
-        setProducts(remoteProds);
-        try {
-          localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
-        } catch {
-          // ignore
-        }
-        showToast('⚡ Live Inventory updated in real time');
+        unsubscribeOrders = subscribeRemoteOrders((remoteOrders) => {
+          if (remoteOrders) {
+            setOrders(remoteOrders);
+            try {
+              localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
+            } catch {
+              // ignore
+            }
+          }
+        });
       }
-    });
-
-    const unsubscribeOrders = subscribeRemoteOrders((remoteOrders) => {
-      if (remoteOrders) {
-        setOrders(remoteOrders);
-        try {
-          localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
-        } catch {
-          // ignore
-        }
-      }
-    });
+    }, 3000);
 
     return () => {
-      unsubscribeProducts();
-      unsubscribeOrders();
+      clearTimeout(initCloudSyncTimer);
+      if (unsubscribeProducts) unsubscribeProducts();
+      if (unsubscribeOrders) unsubscribeOrders();
       if (broadcastChannelRef.current) {
         broadcastChannelRef.current.close();
         broadcastChannelRef.current = null;
       }
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('leovra_sync_products', handleCustomSync);
-      clearInterval(heartbeatTimer);
     };
   }, [showToast]);
 
