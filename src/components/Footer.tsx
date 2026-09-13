@@ -108,24 +108,24 @@ export const Footer: React.FC = () => {
             <h2 className="text-xs font-bold text-white uppercase tracking-wider">
               Categories / उत्पाद श्रेणियां
             </h2>
-            <ul className="space-y-2 text-xs text-neutral-400 font-medium">
+            <ul className="space-y-1 text-xs text-neutral-300 font-medium">
               <li>
-                <button onClick={() => handleCategory('earrings')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
+                <button onClick={() => handleCategory('earrings')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
                   Designer Earrings (झुमके व बालियां)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleCategory('tshirts')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
+                <button onClick={() => handleCategory('tshirts')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
                   Streetwear T-Shirts (टी-शर्ट्स)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleCategory('lowers')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
+                <button onClick={() => handleCategory('lowers')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
                   Comfort Lowers & Joggers (लोअर व ट्रैक पैंट)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleCategory('all')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
+                <button onClick={() => handleCategory('all')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
                   Full Catalog (सभी उत्पाद)
                 </button>
               </li>
@@ -137,12 +137,12 @@ export const Footer: React.FC = () => {
             <h2 className="text-xs font-bold text-white uppercase tracking-wider">
               Contact & Store Info
             </h2>
-            <div className="space-y-2.5 text-xs text-neutral-400">
+            <div className="space-y-2.5 text-xs text-neutral-300">
               <div className="flex items-start gap-2">
                 <Phone className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
                   <div className="text-white font-bold">+91 {businessPhone}</div>
-                  <div className="text-[11px] text-neutral-500">Available for calls & WhatsApp orders</div>
+                  <div className="text-[11px] text-neutral-400">Available for calls & WhatsApp orders</div>
                 </div>
               </div>
 
@@ -150,11 +150,11 @@ export const Footer: React.FC = () => {
                 <Mail className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
                   <div className="text-white font-bold">{businessEmail}</div>
-                  <div className="text-[11px] text-neutral-500">Official business correspondence</div>
+                  <div className="text-[11px] text-neutral-400">Official business correspondence</div>
                 </div>
               </div>
 
-              <div className="text-[11px] text-neutral-500 pt-1">
+              <div className="text-[11px] text-neutral-400 pt-1">
                 Express Fast Dispatch Across India
               </div>
 
@@ -180,8 +180,8 @@ export const Footer: React.FC = () => {
           <p className="text-[11px] text-neutral-400 leading-relaxed">
             Welcome to <strong>Leovra Enterprises</strong>, your trusted online destination for handcrafted designer earrings, trendy oversized graphic t-shirts, and premium activewear lowers. From royal Kundan jhumkas and oxidized statement jewelry to breathable 100% cotton streetwear and flexible training trackpants, we bring you unmatched quality at fair prices. Shop with complete peace of mind with <strong>Cash on Delivery (COD)</strong>, real-time stock sync, a 3-day return policy, and express doorstep delivery across all Indian pincodes.
           </p>
-          <div className="flex flex-wrap gap-2 pt-1 text-[10px] text-neutral-500">
-            <span className="text-neutral-400 font-semibold">Popular Searches:</span>
+          <div className="flex flex-wrap gap-2 pt-1 text-[10px] text-neutral-400">
+            <span className="text-neutral-300 font-semibold">Popular Searches:</span>
             <span>Buy Designer Earrings Online</span> •
             <span>Kundan Jhumka</span> •
             <span>Oxidized Silver Earrings</span> •
@@ -194,14 +194,14 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-6 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-4 text-[11px] text-neutral-500">
+        <div className="pt-6 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-4 text-[11px] text-neutral-400">
             <span>Specialists in Earrings, T-Shirts & Lowers</span>
           </div>
           <button
             type="button"
             onClick={() => setIsReturnPolicyOpen(true)}
-            className="text-[11px] text-neutral-400 hover:text-amber-400 transition-colors cursor-pointer font-medium"
+            className="py-1.5 px-2 text-[11px] text-neutral-300 hover:text-amber-400 transition-colors cursor-pointer font-medium"
           >
             Return & Refund Policy (3 Days)
           </button>

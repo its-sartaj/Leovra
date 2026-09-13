@@ -18,7 +18,7 @@ export const Logo: React.FC<LogoProps> = ({
   const emblemHeight = {
     sm: 'h-7 sm:h-8',
     md: 'h-8 sm:h-9 md:h-10',
-    lg: 'h-11 sm:h-13',
+    lg: 'h-11 sm:h-12',
     xl: 'h-14 sm:h-16',
   }[size];
 

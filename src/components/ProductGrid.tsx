@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
@@ -7,49 +7,50 @@ import { ProductCategory, FilterOptions } from '../types';
 export const ProductGrid: React.FC = () => {
   const { products, filters, setFilters } = useStore();
 
-  // Filter and sort products
-  const filteredProducts = products.filter((product) => {
-    // Category filter
-    if (filters.category !== 'all' && product.category !== filters.category) {
-      return false;
-    }
-    // Search query
-    if (filters.searchQuery.trim()) {
-      const q = filters.searchQuery.toLowerCase();
-      const matchName = product.name.toLowerCase().includes(q);
-      const matchDesc = product.description.toLowerCase().includes(q);
-      const matchCat = product.category.toLowerCase().includes(q);
-      if (!matchName && !matchDesc && !matchCat) {
+  // Filter and sort products with memoization for performance
+  const sortedProducts = useMemo(() => {
+    const filtered = products.filter((product) => {
+      // Category filter
+      if (filters.category !== 'all' && product.category !== filters.category) {
         return false;
       }
-    }
-    // In-Stock only filter
-    if (filters.inStockOnly && (product.isOutOfStock || product.stock <= 0)) {
-      return false;
-    }
-    return true;
-  });
+      // Search query
+      if (filters.searchQuery.trim()) {
+        const q = filters.searchQuery.toLowerCase();
+        const matchName = product.name.toLowerCase().includes(q);
+        const matchDesc = product.description.toLowerCase().includes(q);
+        const matchCat = product.category.toLowerCase().includes(q);
+        if (!matchName && !matchDesc && !matchCat) {
+          return false;
+        }
+      }
+      // In-Stock only filter
+      if (filters.inStockOnly && (product.isOutOfStock || product.stock <= 0)) {
+        return false;
+      }
+      return true;
+    });
 
-  // Sort
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (filters.sortBy === 'price-low') {
-      return a.price - b.price;
-    }
-    if (filters.sortBy === 'price-high') {
-      return b.price - a.price;
-    }
-    if (filters.sortBy === 'rating') {
-      return b.rating - a.rating;
-    }
-    if (filters.sortBy === 'stock') {
-      return b.stock - a.stock;
-    }
-    // featured: put in-stock first, then by date
-    if (a.isOutOfStock !== b.isOutOfStock) {
-      return a.isOutOfStock ? 1 : -1;
-    }
-    return 0;
-  });
+    return [...filtered].sort((a, b) => {
+      if (filters.sortBy === 'price-low') {
+        return a.price - b.price;
+      }
+      if (filters.sortBy === 'price-high') {
+        return b.price - a.price;
+      }
+      if (filters.sortBy === 'rating') {
+        return b.rating - a.rating;
+      }
+      if (filters.sortBy === 'stock') {
+        return b.stock - a.stock;
+      }
+      // featured: put in-stock first, then by date
+      if (a.isOutOfStock !== b.isOutOfStock) {
+        return a.isOutOfStock ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [products, filters]);
 
   const inStockCount = products.filter(p => !p.isOutOfStock && p.stock > 0).length;
   const outOfStockCount = products.filter(p => p.isOutOfStock || p.stock <= 0).length;
@@ -88,12 +89,13 @@ export const ProductGrid: React.FC = () => {
           </div>
 
           {/* In-Stock Only Toggle Switch */}
-          <label className="inline-flex items-center gap-2 cursor-pointer select-none bg-neutral-50 px-2.5 py-1.5 rounded-xl border border-neutral-200 hover:bg-neutral-100 transition-colors text-xs font-semibold text-neutral-800 self-start sm:self-auto shrink-0 min-h-[38px]">
+          <label htmlFor="in-stock-filter-toggle" className="inline-flex items-center gap-2 cursor-pointer select-none bg-neutral-50 px-2.5 py-1.5 rounded-xl border border-neutral-200 hover:bg-neutral-100 transition-colors text-xs font-semibold text-neutral-800 self-start sm:self-auto shrink-0 min-h-[38px]">
             <input
+              id="in-stock-filter-toggle"
               type="checkbox"
               checked={filters.inStockOnly}
               onChange={(e) => setFilters(prev => ({ ...prev, inStockOnly: e.target.checked }))}
-              className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 border-neutral-300"
+              className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 border-neutral-300 cursor-pointer"
             />
             <span>In-Stock Only</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">

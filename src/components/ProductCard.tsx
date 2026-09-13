@@ -42,13 +42,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleDirectWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
     const msg = `Hello Leovra Enterprises! I want to order "${product.name}" (Size: ${selectedSize}, Price: ₹${product.price}). Is it ready for shipping?`;
-    window.open(`https://wa.me/91${businessPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(`https://wa.me/91${businessPhone}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setSelectedProduct(product);
+    }
   };
 
   return (
     <div
       onClick={() => setSelectedProduct(product)}
-      className={`group relative flex flex-col bg-white rounded-2xl border transition-all duration-200 overflow-hidden cursor-pointer shadow-2xs hover:shadow-md product-card-optimize transform-gpu ${
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`View details for ${product.name}`}
+      className={`group relative flex flex-col bg-white rounded-2xl border transition-all duration-200 overflow-hidden cursor-pointer shadow-2xs hover:shadow-md product-card-optimize transform-gpu focus:outline-hidden focus:ring-2 focus:ring-amber-500 ${
         isOutOfStock 
           ? 'border-neutral-200 opacity-85 hover:border-neutral-300' 
           : 'border-neutral-200 hover:border-amber-400/80'
@@ -64,6 +75,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           height={500}
           referrerPolicy="no-referrer"
           decoding="async"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.jpg`;
+          }}
           className={`w-full h-full object-cover object-center transition-transform duration-300 transform-gpu group-hover:scale-105 ${
             isOutOfStock ? 'grayscale-40 contrast-95' : ''
           }`}

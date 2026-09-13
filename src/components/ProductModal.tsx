@@ -95,7 +95,13 @@ export const ProductModal: React.FC = () => {
           <img
             src={selectedProduct.image}
             alt={selectedProduct.name}
+            width={600}
+            height={600}
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.jpg`;
+            }}
             className={`w-full h-full object-cover object-center ${
               isOutOfStock ? 'grayscale-40' : ''
             }`}
@@ -270,6 +276,9 @@ export const ProductModal: React.FC = () => {
                   <MapPin className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5" />
                   <input
                     type="text"
+                    id="modal-pincode-input"
+                    name="pincode"
+                    aria-label="Enter 6-digit delivery pincode"
                     maxLength={6}
                     placeholder="Enter 6-digit Pincode (e.g. 110001)"
                     value={pincodeInput}
@@ -282,6 +291,7 @@ export const ProductModal: React.FC = () => {
                 </div>
                 <button
                   type="submit"
+                  aria-label="Check delivery pincode"
                   className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-purple-700 hover:bg-purple-800 text-white cursor-pointer transition-colors shadow-2xs"
                 >
                   Check

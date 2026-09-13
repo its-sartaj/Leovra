@@ -27,7 +27,6 @@ import {
   Download,
   MapPin,
   Building,
-  ChevronRight,
   Ban,
   XCircle,
   Undo2
@@ -38,8 +37,7 @@ import { Logo } from './Logo';
 import { 
   SHIPROCKET_CONFIG, 
   exportShiprocketCSV, 
-  getShiprocketTrackingUrl,
-  estimateDeliveryByPincode 
+  getShiprocketTrackingUrl
 } from '../services/shiprocket';
 import { 
   getAdminLockoutStatus, 

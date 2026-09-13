@@ -58,12 +58,12 @@ export const CartDrawer: React.FC = () => {
   const [honeypotValue, setHoneypotValue] = useState('');
   const [formMountedAt, setFormMountedAt] = useState<number>(Date.now());
 
-  // Reset form start time when checkout drawer opens
+  // Record start time when user begins checkout flow
   React.useEffect(() => {
-    if (isCartOpen) {
+    if (isCartOpen && isCheckingOut) {
       setFormMountedAt(Date.now());
     }
-  }, [isCartOpen, checkoutStep]);
+  }, [isCartOpen, isCheckingOut]);
 
   // Auto-fill from logged-in customer profile
   React.useEffect(() => {
@@ -131,6 +131,11 @@ export const CartDrawer: React.FC = () => {
 
     if (!cleanAddress || cleanAddress.length < 8) {
       setFormError('Please enter complete house/flat no., street, and locality.');
+      return;
+    }
+
+    if (customerPincode.trim() && !/^\d{6}$/.test(customerPincode.trim())) {
+      setFormError('Please enter a valid 6-digit Indian pincode.');
       return;
     }
 
@@ -668,6 +673,9 @@ export const CartDrawer: React.FC = () => {
                           <img 
                             src={qrCodeUrl} 
                             alt="Scan to Pay via UPI" 
+                            width={160}
+                            height={160}
+                            loading="lazy"
                             className="w-40 h-40 object-contain rounded-lg border border-neutral-100"
                           />
                           <div className="text-[10px] text-neutral-400 font-bold mt-1.5 uppercase tracking-wider">
@@ -821,6 +829,11 @@ export const CartDrawer: React.FC = () => {
                         <img
                           src={item.product.image}
                           alt={item.product.name}
+                          width={80}
+                          height={80}
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = `${import.meta.env.BASE_URL}hero-earring.jpg`;
+                          }}
                           className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl bg-neutral-100 border border-neutral-200 shrink-0"
                         />
                         <div className="flex-1 min-w-0 flex flex-col justify-between">
@@ -831,10 +844,11 @@ export const CartDrawer: React.FC = () => {
                               </h3>
                               <button
                                 onClick={() => removeFromCart(item.product.id, item.selectedSize, item.selectedColor)}
-                                className="text-neutral-400 hover:text-rose-600 p-1 cursor-pointer transition-colors"
+                                className="text-neutral-400 hover:text-rose-600 p-2 cursor-pointer transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center -mr-1"
                                 title="Remove item"
+                                aria-label={`Remove ${item.product.name} from bag`}
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
                             
@@ -861,7 +875,8 @@ export const CartDrawer: React.FC = () => {
                             <div className="flex items-center border border-neutral-200 rounded-lg bg-neutral-50 overflow-hidden">
                               <button
                                 onClick={() => updateCartQuantity(item.product.id, item.selectedSize, item.quantity - 1, item.selectedColor)}
-                                className="px-2.5 py-1 text-neutral-700 hover:bg-neutral-200 text-xs font-bold cursor-pointer transition-colors"
+                                className="px-3 py-1.5 min-w-[36px] min-h-[36px] text-neutral-700 hover:bg-neutral-200 text-xs font-bold cursor-pointer transition-colors flex items-center justify-center"
+                                aria-label={`Decrease quantity of ${item.product.name}`}
                               >
                                 -
                               </button>
@@ -871,12 +886,13 @@ export const CartDrawer: React.FC = () => {
                               <button
                                 onClick={() => updateCartQuantity(item.product.id, item.selectedSize, item.quantity + 1, item.selectedColor)}
                                 disabled={item.quantity >= liveProduct.stock}
-                                className={`px-2.5 py-1 text-xs font-bold cursor-pointer transition-colors ${
+                                className={`px-3 py-1.5 min-w-[36px] min-h-[36px] text-xs font-bold cursor-pointer transition-colors flex items-center justify-center ${
                                   item.quantity >= liveProduct.stock
                                     ? 'text-neutral-300 cursor-not-allowed bg-neutral-100'
                                     : 'text-neutral-700 hover:bg-neutral-200'
                                 }`}
                                 title={item.quantity >= liveProduct.stock ? 'Maximum available stock reached' : 'Add 1 more'}
+                                aria-label={`Increase quantity of ${item.product.name}`}
                               >
                                 +
                               </button>

@@ -33,7 +33,6 @@ export const Header: React.FC = () => {
     if (currentView !== 'store') {
       setCurrentView('store');
     }
-    setIsMobileMenuOpen(false);
   };
 
   const navCategories: { id: 'all' | ProductCategory; label: string; sub: string }[] = [

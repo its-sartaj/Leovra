@@ -121,6 +121,9 @@ export const HeroBanner: React.FC = () => {
                 decoding="async"
                 width={800}
                 height={400}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = heroEarringImg;
+                }}
                 className="w-full h-full object-cover object-right md:object-center"
               />
             </div>
@@ -280,6 +283,9 @@ export const HeroBanner: React.FC = () => {
                   decoding="async"
                   width={300}
                   height={180}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = heroEarringImg;
+                  }}
                   className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700"
                 />
                 {/* Multi-layer Dark Gradient for 100% Readability */}
@@ -307,9 +313,9 @@ export const HeroBanner: React.FC = () => {
 
               {/* Bottom Content: Title, Subtitle, & Explore CTA */}
               <div className="relative z-10 w-full space-y-0.5 sm:space-y-1">
-                <h2 className="text-xs sm:text-base md:text-lg font-extrabold text-white leading-tight truncate group-hover:text-amber-400 transition-colors">
+                <span className="block text-xs sm:text-base md:text-lg font-extrabold text-white leading-tight truncate group-hover:text-amber-400 transition-colors">
                   {card.shortTitle}
-                </h2>
+                </span>
                 
                 <p className="hidden sm:block text-[11px] text-neutral-300 truncate font-normal">
                   {card.subtitle}

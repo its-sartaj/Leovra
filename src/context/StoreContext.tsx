@@ -831,7 +831,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const cleanCustomerCity = orderData.customerCity ? sanitizeInput(orderData.customerCity) : undefined;
     const cleanTransactionId = orderData.transactionId ? sanitizeInput(orderData.transactionId) : undefined;
 
-    const finalTotal = typeof orderData.totalAmount === 'number' ? orderData.totalAmount : cartTotal;
+    const freeDeliveryThreshold = 499;
+    const deliveryCharge = cartTotal >= freeDeliveryThreshold ? 0 : 49;
+    const finalTotal = cartTotal + deliveryCharge;
     const newOrder: Order = {
       id: 'ORD-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1000).toString(36).toUpperCase(),
       customerId: currentCustomer?.id,
@@ -915,6 +917,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     courierName?: string
   ) => {
     setOrders((prev) => {
+      const existingOrder = prev.find((ord) => ord.id === orderId);
+      // If reactivating a cancelled order, re-deduct stock
+      if (existingOrder && existingOrder.status === 'Cancelled' && status !== 'Cancelled') {
+        setProducts((prevProducts) => {
+          const updatedProds = prevProducts.map((prod) => {
+            const boughtItem = existingOrder.items.find((item) => item.product.id === prod.id);
+            if (boughtItem) {
+              const remaining = Math.max(0, prod.stock - boughtItem.quantity);
+              return {
+                ...prod,
+                stock: remaining,
+                isOutOfStock: remaining <= 0,
+              };
+            }
+            return prod;
+          });
+          saveProducts(updatedProds);
+          return updatedProds;
+        });
+      }
+
       const updated = prev.map((ord) => {
         if (ord.id === orderId) {
           return {
@@ -930,7 +953,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return updated;
     });
     showToast(`Order #${orderId} updated to ${status}!`);
-  }, [saveOrders, showToast]);
+  }, [saveOrders, saveProducts, showToast]);
 
   // Cancel order & optionally restore inventory
   const cancelOrder = useCallback((
@@ -993,12 +1016,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast(`Order #${orderId} deleted permanently.`);
   }, [saveOrders, showToast]);
 
-  // WhatsApp Order Link generator with contact phone 7979968347
+  // WhatsApp Order Link generator with contact phone
   const generateWhatsAppOrderUrl = useCallback((
     orderItems = cart,
     customerInfo?: { name: string; phone: string; address: string }
   ) => {
-    const phoneNum = '917979968347';
+    const phoneNum = `91${businessPhone}`;
     let text = `*New Order Inquiry - Leovra Enterprises*\n\n`;
 
     if (orderItems.length > 0) {
@@ -1017,7 +1040,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     text += `Please confirm my order for doorstep delivery. Thank you!`;
 
     return `https://wa.me/${phoneNum}?text=${encodeURIComponent(text)}`;
-  }, [cart]);
+  }, [cart, businessPhone]);
 
   return (
     <StoreContext.Provider

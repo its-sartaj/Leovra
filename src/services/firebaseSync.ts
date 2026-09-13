@@ -223,6 +223,10 @@ export const subscribeRemoteProducts = (
           eventSource = null;
         }
         if (!isClosed) {
+          if (retryCount >= 15) {
+            console.warn('[Firebase SSE] Max retries reached, pausing connection.');
+            return;
+          }
           const delay = Math.min(3000 * Math.pow(1.5, retryCount), 30000);
           retryCount++;
           setTimeout(connect, delay);
@@ -231,6 +235,7 @@ export const subscribeRemoteProducts = (
     } catch (err) {
       console.warn('[Firebase SSE] connect error:', err);
       if (!isClosed) {
+        if (retryCount >= 15) return;
         const delay = Math.min(5000 * Math.pow(1.5, retryCount), 30000);
         retryCount++;
         setTimeout(connect, delay);
@@ -301,6 +306,10 @@ export const subscribeRemoteOrders = (
           eventSource = null;
         }
         if (!isClosed) {
+          if (retryCount >= 15) {
+            console.warn('[Firebase SSE Orders] Max retries reached, pausing connection.');
+            return;
+          }
           const delay = Math.min(3000 * Math.pow(1.5, retryCount), 30000);
           retryCount++;
           setTimeout(connect, delay);
@@ -309,6 +318,7 @@ export const subscribeRemoteOrders = (
     } catch (err) {
       console.warn('[Firebase SSE Orders] connect error:', err);
       if (!isClosed) {
+        if (retryCount >= 15) return;
         const delay = Math.min(5000 * Math.pow(1.5, retryCount), 30000);
         retryCount++;
         setTimeout(connect, delay);
