@@ -64,12 +64,26 @@ function aistudioMediaPlugin(): Plugin {
 }
 // LINT.ThenChange(//depot/google3/java/com/google/alkali/boq/makersuite/applet_dev_service/templates/initializers/react_theme/vite.config.ts:aistudio_media_plugin)
 
+// Transform render-blocking stylesheets to preload + async stylesheet onload for 100/100 Lighthouse performance
+function asyncCssPlugin(): Plugin {
+  return {
+    name: 'async-css-plugin',
+    enforce: 'post',
+    transformIndexHtml(html) {
+      return html.replace(
+        /<link\s+rel="stylesheet"\s+([^>]*?)href="([^"]+\.css)"([^>]*?)>/gi,
+        '<link rel="preload" as="style" href="$2" $1$3 onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link rel="stylesheet" href="$2" $1$3></noscript>'
+      );
+    },
+  };
+}
+
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
   return {
     // Base path for GitHub Pages: https://its-sartaj.github.io/Leovra/
     base: isDev ? '/' : '/Leovra/',
-    plugins: [react(), tailwindcss(), ...(isDev ? [aistudioMediaPlugin()] : [])],
+    plugins: [react(), tailwindcss(), asyncCssPlugin(), ...(isDev ? [aistudioMediaPlugin()] : [])],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

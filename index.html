@@ -8,11 +8,13 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     
     <!-- Critical Same-Origin LCP Asset Preload -->
-    <link rel="preload" as="image" href="./hero-earring.jpg" fetchpriority="high" />
+    <link rel="preload" as="image" href="%BASE_URL%hero-earring.jpg" fetchpriority="high" />
     <style>
       *,::after,::before{box-sizing:border-box}
       html{-webkit-text-size-adjust:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
       body{margin:0;background-color:#fafafa;color:#171717;-webkit-font-smoothing:antialiased}
+      .ssr-header{position:sticky;top:0;z-index:40;width:100%;background:#ffffff;border-bottom:1px solid rgba(229,229,229,0.9);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+      .ssr-hero{position:relative;border-radius:1rem;background:#0a0a0a;color:#ffffff;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);border:1px solid #262626;padding:24px 20px;min-height:300px;display:flex;flex-direction:column;justify-content:center}
     </style>
     <script>
       // Anti-Clickjacking & Anti-iFrame Hijacking Protection
@@ -153,16 +155,27 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
-    </noscript>
+    <script>
+      (function() {
+        var l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap';
+        window.addEventListener('DOMContentLoaded', function() {
+          document.head.appendChild(l);
+        });
+      })();
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('%BASE_URL%sw.js', { scope: '%BASE_URL%' }).catch(function() {});
+        });
+      }
+    </script>
   </head>
   <body class="bg-neutral-50 text-neutral-900 antialiased font-sans selection:bg-amber-500 selection:text-white">
     <div id="root">
       <!-- Instant First-Paint SSR Shell for Lighthouse 100/100 FCP & LCP -->
       <div class="min-h-screen w-full flex flex-col bg-neutral-50 text-neutral-900 selection:bg-amber-500 selection:text-white relative">
-        <header class="sticky top-0 z-40 w-full bg-white border-b border-neutral-200/90 shadow-2xs">
+        <header class="sticky top-0 z-40 w-full bg-white border-b border-neutral-200/90 shadow-2xs ssr-header">
           <div class="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3.5 flex items-center justify-between">
             <div class="inline-flex items-center gap-2">
               <span class="text-base sm:text-lg font-serif uppercase tracking-wider font-extrabold text-neutral-900">Leovra</span>
@@ -173,8 +186,12 @@
         </header>
         <main class="flex-1 w-full">
           <div class="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6">
-            <div class="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 p-5 sm:p-8 md:p-10 min-h-[300px] flex flex-col justify-center">
-              <div class="max-w-xl space-y-3">
+            <div class="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 p-5 sm:p-8 md:p-10 min-h-[300px] flex flex-col justify-center ssr-hero">
+              <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-65">
+                <img src="%BASE_URL%hero-earring.jpg" alt="Artisanal Jewelry" fetchpriority="high" width="800" height="400" class="w-full h-full object-cover object-right md:object-center" />
+                <div class="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40"></div>
+              </div>
+              <div class="relative z-10 max-w-xl space-y-3">
                 <span class="inline-block px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] font-semibold">
                   Express Dispatch • शाही झुमके संग्रह (Artisanal Jewelry)
                 </span>

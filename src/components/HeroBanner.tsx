@@ -9,9 +9,10 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
-import heroEarringImg from '../assets/hero-earring.jpg';
-import heroTshirtImg from '../assets/hero-tshirt.jpg';
-import heroLowersImg from '../assets/hero-lowers.jpg';
+const BASE_URL = import.meta.env.BASE_URL;
+const heroEarringImg = `${BASE_URL}hero-earring.jpg`;
+const heroTshirtImg = `${BASE_URL}hero-tshirt.jpg`;
+const heroLowersImg = `${BASE_URL}hero-lowers.jpg`;
 
 const BACKGROUND_SLIDES = [
   {
