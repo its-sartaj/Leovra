@@ -182,13 +182,15 @@ export const Footer: React.FC = () => {
           </p>
           <div className="flex flex-wrap gap-2 pt-1 text-[10px] text-neutral-400">
             <span className="text-neutral-300 font-semibold">Popular Searches:</span>
+            <span>Leovra Enterprises</span> •
+            <span>LeovraEnterprises</span> •
+            <span>Loevra Enterprises</span> •
             <span>Buy Designer Earrings Online</span> •
             <span>Kundan Jhumka</span> •
             <span>Oxidized Silver Earrings</span> •
             <span>Oversized T-Shirts India</span> •
             <span>Mens Gym Trackpants</span> •
             <span>Stretch Lowers</span> •
-            <span>Leovra Enterprises Official Store</span> •
             <span>Cash on Delivery Shopping India</span>
           </div>
         </div>
