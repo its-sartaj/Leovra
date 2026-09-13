@@ -9,14 +9,16 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
+import heroEarringImg from '../assets/hero-earring.jpg';
 import heroTshirtImg from '../assets/hero-tshirt.jpg';
+import heroLowersImg from '../assets/hero-lowers.jpg';
 
 const BACKGROUND_SLIDES = [
   {
     id: 'earrings' as ProductCategory,
     label: 'Artisanal Jewelry',
     hindiTag: 'शाही झुमके संग्रह',
-    image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=800&q=75',
+    image: heroEarringImg,
     glowColor: 'from-amber-500/35 via-orange-500/20 to-transparent',
   },
   {
@@ -30,7 +32,7 @@ const BACKGROUND_SLIDES = [
     id: 'lowers' as ProductCategory,
     label: 'Comfort Lowers & Joggers',
     hindiTag: 'फ्लेक्सिबल लोअर',
-    image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=800&q=75',
+    image: heroLowersImg,
     glowColor: 'from-emerald-500/35 via-teal-500/20 to-transparent',
   },
 ];
@@ -61,7 +63,7 @@ export const HeroBanner: React.FC = () => {
       hindiTitle: 'शाही झुमके',
       subtitle: 'Oxidized, Kundan & Studs',
       priceTag: 'From ₹249',
-      image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=500&q=75',
+      image: heroEarringImg,
       icon: '💎',
     },
     {
@@ -81,7 +83,7 @@ export const HeroBanner: React.FC = () => {
       hindiTitle: 'फ्लेक्सिबल लोअर',
       subtitle: 'Cargo Joggers & Stretch',
       priceTag: 'From ₹549',
-      image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=500&q=75',
+      image: heroLowersImg,
       icon: '👖',
     },
   ];
