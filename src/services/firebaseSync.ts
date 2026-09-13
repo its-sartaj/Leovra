@@ -24,22 +24,70 @@ export const fetchRemoteProducts = async (): Promise<Product[] | null> => {
   }
 };
 
+// Rate-limiting and Request Coalescing Guards to prevent Firebase quota exhaustion & spam
+let pendingProductsTimer: ReturnType<typeof setTimeout> | null = null;
+let latestProductsPayload: Product[] | null = null;
+let lastProductsWriteTime = 0;
+
+let pendingOrdersTimer: ReturnType<typeof setTimeout> | null = null;
+let latestOrdersPayload: Order[] | null = null;
+let lastOrdersWriteTime = 0;
+
+const MAX_PAYLOAD_SIZE = 500 * 1024; // 500 KB safety limit
+const MIN_WRITE_INTERVAL_MS = 1500; // Minimum 1.5s between cloud writes to prevent DoS
+
 /**
- * Save products to Firebase Realtime Database.
- * This triggers real-time updates to all connected devices.
+ * Execute actual HTTP PUT to Firebase for products with payload validation
  */
-export const saveRemoteProducts = async (products: Product[]): Promise<boolean> => {
+const executeSaveProducts = async (products: Product[]): Promise<boolean> => {
   try {
+    const jsonStr = JSON.stringify(products);
+    if (jsonStr.length > MAX_PAYLOAD_SIZE) {
+      console.warn('[Security Shield] Rejected oversized products payload:', jsonStr.length);
+      return false;
+    }
     const res = await fetch(`${FIREBASE_DB_URL}/products.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(products),
+      body: jsonStr,
     });
+    lastProductsWriteTime = Date.now();
     return res.ok;
   } catch (err) {
     console.warn('[Firebase] saveRemoteProducts error:', err);
     return false;
   }
+};
+
+/**
+ * Save products to Firebase Realtime Database with anti-spam coalescing.
+ * Protects Firebase against rapid bot loops by throttling writes to at most 1 every 1.5 seconds.
+ */
+export const saveRemoteProducts = async (products: Product[]): Promise<boolean> => {
+  latestProductsPayload = products;
+  const now = Date.now();
+  const timeSinceLast = now - lastProductsWriteTime;
+
+  if (timeSinceLast >= MIN_WRITE_INTERVAL_MS && !pendingProductsTimer) {
+    return executeSaveProducts(products);
+  }
+
+  // Queue debounced write
+  return new Promise<boolean>((resolve) => {
+    if (pendingProductsTimer) {
+      clearTimeout(pendingProductsTimer);
+    }
+    const delay = Math.max(200, MIN_WRITE_INTERVAL_MS - timeSinceLast);
+    pendingProductsTimer = setTimeout(async () => {
+      pendingProductsTimer = null;
+      if (latestProductsPayload) {
+        const ok = await executeSaveProducts(latestProductsPayload);
+        resolve(ok);
+      } else {
+        resolve(false);
+      }
+    }, delay);
+  });
 };
 
 /**
@@ -65,20 +113,55 @@ export const fetchRemoteOrders = async (): Promise<Order[] | null> => {
 };
 
 /**
- * Save orders to Firebase Realtime Database
+ * Execute actual HTTP PUT to Firebase for orders with payload validation
  */
-export const saveRemoteOrders = async (orders: Order[]): Promise<boolean> => {
+const executeSaveOrders = async (orders: Order[]): Promise<boolean> => {
   try {
+    const jsonStr = JSON.stringify(orders);
+    if (jsonStr.length > MAX_PAYLOAD_SIZE) {
+      console.warn('[Security Shield] Rejected oversized orders payload:', jsonStr.length);
+      return false;
+    }
     const res = await fetch(`${FIREBASE_DB_URL}/orders.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orders),
+      body: jsonStr,
     });
+    lastOrdersWriteTime = Date.now();
     return res.ok;
   } catch (err) {
     console.warn('[Firebase] saveRemoteOrders error:', err);
     return false;
   }
+};
+
+/**
+ * Save orders to Firebase Realtime Database with anti-spam coalescing.
+ */
+export const saveRemoteOrders = async (orders: Order[]): Promise<boolean> => {
+  latestOrdersPayload = orders;
+  const now = Date.now();
+  const timeSinceLast = now - lastOrdersWriteTime;
+
+  if (timeSinceLast >= MIN_WRITE_INTERVAL_MS && !pendingOrdersTimer) {
+    return executeSaveOrders(orders);
+  }
+
+  return new Promise<boolean>((resolve) => {
+    if (pendingOrdersTimer) {
+      clearTimeout(pendingOrdersTimer);
+    }
+    const delay = Math.max(200, MIN_WRITE_INTERVAL_MS - timeSinceLast);
+    pendingOrdersTimer = setTimeout(async () => {
+      pendingOrdersTimer = null;
+      if (latestOrdersPayload) {
+        const ok = await executeSaveOrders(latestOrdersPayload);
+        resolve(ok);
+      } else {
+        resolve(false);
+      }
+    }, delay);
+  });
 };
 
 /**

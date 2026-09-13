@@ -9,6 +9,7 @@ import {
   subscribeRemoteProducts,
   subscribeRemoteOrders 
 } from '../services/firebaseSync';
+import { validateOrderSecurity, recordOrderPlaced, sanitizeInput } from '../services/security';
 
 interface StoreContextType {
   products: Product[];
@@ -69,7 +70,9 @@ interface StoreContextType {
     paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
     totalAmount?: number;
     transactionId?: string;
-  }) => Order;
+    honeypotValue?: string;
+    formMountedAt?: number;
+  }) => Order | null;
   updateOrderStatus: (orderId: string, status: Order['status'], awbCode?: string, courierName?: string) => void;
   cancelOrder: (orderId: string, restoreInventory?: boolean, cancellationReason?: string) => void;
   deleteOrder: (orderId: string) => void;
@@ -804,7 +807,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const cartTotal = useMemo(() => cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0), [cart]);
   const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart]);
 
-  // Place Order
+  // Place Order with Anti-Bot & DDoS Protection
   const placeOrder = useCallback((orderData: {
     customerName: string;
     customerPhone: string;
@@ -813,37 +816,64 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     paymentMethod: 'Cash on Delivery' | 'UPI / Direct Call' | 'UPI / Online Payment';
     totalAmount?: number;
     transactionId?: string;
-  }): Order => {
+    honeypotValue?: string;
+    formMountedAt?: number;
+  }): Order | null => {
+    // 1. Anti-Bot & DDoS Security Validation
+    const secResult = validateOrderSecurity({
+      honeypotValue: orderData.honeypotValue,
+      formMountedAt: orderData.formMountedAt,
+      customerName: orderData.customerName,
+      customerPhone: orderData.customerPhone,
+      customerAddress: orderData.customerAddress,
+    });
+
+    if (!secResult.isValid) {
+      showToast(`🛡️ ${secResult.errorMessage || 'Security check failed. Request blocked.'}`);
+      return null;
+    }
+
+    if (cart.length === 0) {
+      showToast('Your cart is empty. Please add items to checkout.');
+      return null;
+    }
+
+    // 2. Sanitize user inputs against XSS and control character injection
+    const cleanCustomerName = sanitizeInput(orderData.customerName);
+    const cleanCustomerPhone = orderData.customerPhone.replace(/\D/g, '').slice(-10);
+    const cleanCustomerAddress = sanitizeInput(orderData.customerAddress);
+    const cleanCustomerCity = orderData.customerCity ? sanitizeInput(orderData.customerCity) : undefined;
+    const cleanTransactionId = orderData.transactionId ? sanitizeInput(orderData.transactionId) : undefined;
+
     const finalTotal = typeof orderData.totalAmount === 'number' ? orderData.totalAmount : cartTotal;
     const newOrder: Order = {
       id: 'ORD-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1000).toString(36).toUpperCase(),
       customerId: currentCustomer?.id,
-      customerName: orderData.customerName,
-      customerPhone: orderData.customerPhone,
-      customerAddress: orderData.customerAddress,
-      customerCity: orderData.customerCity,
+      customerName: cleanCustomerName,
+      customerPhone: cleanCustomerPhone,
+      customerAddress: cleanCustomerAddress,
+      customerCity: cleanCustomerCity,
       items: [...cart],
       totalAmount: finalTotal,
       status: 'Confirmed',
       paymentMethod: orderData.paymentMethod,
-      transactionId: orderData.transactionId,
+      transactionId: cleanTransactionId,
       createdAt: new Date().toISOString(),
     };
 
     // Auto-create/link customer account so customer sees their order under My Orders immediately
-    const cleanPhone = orderData.customerPhone.replace(/\D/g, '').slice(-10);
-    if (!currentCustomer && cleanPhone.length === 10) {
+    if (!currentCustomer && cleanCustomerPhone.length === 10) {
       const autoCust: CustomerUser = {
         id: 'CUST-' + Date.now(),
-        name: orderData.customerName,
-        phone: cleanPhone,
-        address: orderData.customerAddress,
-        city: orderData.customerCity || '',
+        name: cleanCustomerName,
+        phone: cleanCustomerPhone,
+        address: cleanCustomerAddress,
+        city: cleanCustomerCity || '',
         createdAt: new Date().toISOString()
       };
       setCurrentCustomer(autoCust);
       setAllCustomers(prev => {
-        const updatedAll = [...prev.filter(c => c.phone !== cleanPhone), autoCust];
+        const updatedAll = [...prev.filter(c => c.phone !== cleanCustomerPhone), autoCust];
         try {
           localStorage.setItem(STORAGE_KEY_ALL_CUSTOMERS, JSON.stringify(updatedAll));
         } catch (e) {
@@ -882,6 +912,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       saveOrders(updatedOrders);
       return updatedOrders;
     });
+
+    // Record order in sliding-window rate limiter to prevent automated flood
+    recordOrderPlaced();
 
     clearCart();
     showToast(`Order #${newOrder.id} placed! Real-time stock updated.`);

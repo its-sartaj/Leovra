@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Plus, 
   Trash2, 
@@ -38,8 +38,14 @@ import { Logo } from './Logo';
 import { 
   SHIPROCKET_CONFIG, 
   exportShiprocketCSV, 
-  getShiprocketTrackingUrl 
+  getShiprocketTrackingUrl,
+  estimateDeliveryByPincode 
 } from '../services/shiprocket';
+import { 
+  getAdminLockoutStatus, 
+  recordFailedAdminAttempt, 
+  clearAdminLockout 
+} from '../services/security';
 
 // Preset high quality images for quick 1-click photo selection when adding product
 const SAMPLE_IMAGE_PRESETS: { label: string; cat: ProductCategory; url: string }[] = [
@@ -111,20 +117,47 @@ export const AdminDashboard: React.FC = () => {
 
   const [passcode, setPasscode] = useState('');
   const [authError, setAuthError] = useState('');
+  const [lockoutSecs, setLockoutSecs] = useState<number>(() => getAdminLockoutStatus().remainingSeconds);
+
+  // Active countdown timer for security lockout
+  useEffect(() => {
+    if (lockoutSecs <= 0) return;
+    const timer = setInterval(() => {
+      setLockoutSecs((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setAuthError('');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [lockoutSecs]);
 
   const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const lockout = getAdminLockoutStatus();
+    if (lockout.isLocked || lockoutSecs > 0) {
+      const wait = lockoutSecs > 0 ? lockoutSecs : lockout.remainingSeconds;
+      setAuthError(`🛡️ Security Lockout: Too many failed attempts. Please wait ${wait}s.`);
+      return;
+    }
+
     if (loginAdmin(passcode)) {
+      clearAdminLockout();
       setAuthError('');
       setPasscode('');
+      setLockoutSecs(0);
     } else {
-      setAuthError('Incorrect passcode. Please enter valid owner PIN (e.g. 7979).');
+      const failStatus = recordFailedAdminAttempt();
+      if (failStatus.isLocked) {
+        setLockoutSecs(failStatus.remainingSeconds);
+        setAuthError(`🛡️ Security Lockout: Too many incorrect attempts (${failStatus.attempts}). Locked for ${failStatus.remainingSeconds}s.`);
+      } else {
+        setAuthError(`Incorrect passcode. Attempt ${failStatus.attempts} of 3 before temporary lockout.`);
+      }
     }
-  };
-
-  const handleQuickUnlock = () => {
-    loginAdmin('7979');
-    setAuthError('');
   };
 
   const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'shiprocket'>('inventory');
@@ -428,43 +461,49 @@ export const AdminDashboard: React.FC = () => {
                 <Key className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
-                  placeholder="Enter Passcode (Default PIN: 7979)"
+                  placeholder={lockoutSecs > 0 ? `Locked (${lockoutSecs}s)` : "Enter Passcode / PIN"}
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-semibold focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all"
+                  disabled={lockoutSecs > 0}
+                  className={`w-full pl-10 pr-4 py-3 bg-neutral-50 border rounded-xl text-sm font-semibold outline-hidden transition-all ${
+                    lockoutSecs > 0 
+                      ? 'border-rose-300 bg-rose-50/50 text-rose-500 cursor-not-allowed' 
+                      : 'border-neutral-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200'
+                  }`}
                   id="admin-passcode-input"
-                  autoFocus
+                  autoFocus={lockoutSecs === 0}
                 />
               </div>
               {authError && (
                 <p className="text-rose-600 text-xs mt-1.5 font-medium flex items-center gap-1">
-                  <AlertCircle className="w-3.5 h-3.5" />
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>{authError}</span>
+                </p>
+              )}
+              {lockoutSecs === 0 && (
+                <p className="text-[11px] text-neutral-400 mt-1 flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-emerald-600 shrink-0" />
+                  <span>Protected against brute-force & automated guessing.</span>
                 </p>
               )}
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-sm shadow-md transition-colors cursor-pointer flex items-center justify-center gap-2"
+              disabled={lockoutSecs > 0}
+              className={`w-full py-3 px-4 rounded-xl font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2 ${
+                lockoutSecs > 0
+                  ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
+                  : 'bg-neutral-900 hover:bg-neutral-800 text-white cursor-pointer'
+              }`}
               id="admin-login-submit-btn"
             >
               <Lock className="w-4 h-4 text-amber-400" />
-              <span>Unlock Admin Dashboard</span>
+              <span>{lockoutSecs > 0 ? `Locked (${lockoutSecs}s)` : 'Unlock Admin Dashboard'}</span>
             </button>
           </form>
 
           <div className="pt-2 border-t border-neutral-100 space-y-3 text-center">
-            <button
-              type="button"
-              onClick={handleQuickUnlock}
-              className="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-2"
-              id="admin-quick-unlock-btn"
-            >
-              <ShieldCheck className="w-4 h-4 text-amber-600" />
-              <span>1-Click Owner Access (PIN: 7979)</span>
-            </button>
-
             <button
               type="button"
               onClick={() => setCurrentView('store')}

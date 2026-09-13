@@ -55,6 +55,15 @@ export const CartDrawer: React.FC = () => {
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [lastConfirmedOrder, setLastConfirmedOrder] = useState<Order | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [honeypotValue, setHoneypotValue] = useState('');
+  const [formMountedAt, setFormMountedAt] = useState<number>(Date.now());
+
+  // Reset form start time when checkout drawer opens
+  React.useEffect(() => {
+    if (isCartOpen) {
+      setFormMountedAt(Date.now());
+    }
+  }, [isCartOpen, checkoutStep]);
 
   // Auto-fill from logged-in customer profile
   React.useEffect(() => {
@@ -128,7 +137,7 @@ export const CartDrawer: React.FC = () => {
     setCheckoutStep('payment');
   };
 
-  // Step 2: Finalize and place the order
+  // Step 2: Finalize and place the order with anti-bot protection
   const handlePlaceFinalOrder = () => {
     setFormError(null);
 
@@ -145,7 +154,14 @@ export const CartDrawer: React.FC = () => {
       paymentMethod,
       totalAmount: grandTotal,
       transactionId: transactionId.trim() || undefined,
+      honeypotValue,
+      formMountedAt,
     });
+
+    if (!order) {
+      setFormError('Order could not be submitted due to security verification. Please verify your details or wait a moment.');
+      return;
+    }
 
     setLastConfirmedOrder(order);
   };
@@ -170,6 +186,8 @@ export const CartDrawer: React.FC = () => {
     setTransactionId('');
     setCopiedUpi(false);
     setFormError(null);
+    setHoneypotValue('');
+    setFormMountedAt(Date.now());
     setIsCartOpen(false);
   };
 
@@ -412,6 +430,20 @@ export const CartDrawer: React.FC = () => {
                 {/* STEP 1: DELIVERY ADDRESS */}
                 {checkoutStep === 'address' && (
                   <form onSubmit={handleProceedToPayment} className="space-y-3.5">
+                    {/* Anti-Bot Honeypot Trap (Invisible to humans, automated spam bots auto-fill this) */}
+                    <div style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
+                      <label htmlFor="user_company_tax_id">Tax ID</label>
+                      <input
+                        id="user_company_tax_id"
+                        type="text"
+                        name="company_tax_reference"
+                        value={honeypotValue}
+                        onChange={(e) => setHoneypotValue(e.target.value)}
+                        autoComplete="off"
+                        tabIndex={-1}
+                      />
+                    </div>
+
                     <div className="space-y-3 text-xs">
                       <div>
                         <label className="block font-bold text-neutral-700 mb-1">
@@ -720,6 +752,11 @@ export const CartDrawer: React.FC = () => {
                         </button>
                       </div>
                     )}
+
+                    <div className="flex items-center justify-center gap-1.5 text-[10px] text-neutral-500 font-medium py-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>256-Bit SSL Encrypted & Anti-Bot Protected</span>
+                    </div>
 
                     <div className="text-center pt-1">
                       <a

@@ -1,0 +1,14 @@
+﻿{
+  "rules": {
+    "products": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["category", "isOutOfStock"]
+    },
+    "orders": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["createdAt", "status", "customerPhone"]
+    }
+  }
+}
