@@ -95,7 +95,7 @@ export const Header: React.FC = () => {
             {/* Mobile Search Toggle */}
             <button
               onClick={() => setShowSearchInput(!showSearchInput)}
-              className={`md:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95 border ${
+              className={`md:hidden flex items-center justify-center w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95 border ${
                 showSearchInput 
                   ? 'bg-amber-50 text-amber-700 border-amber-400 ring-2 ring-amber-400/20' 
                   : 'bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border-neutral-200/90'
@@ -131,7 +131,7 @@ export const Header: React.FC = () => {
                 }
                 setIsAccountModalOpen(true);
               }}
-              className="relative flex items-center justify-center gap-2 w-9 h-9 sm:w-10 sm:h-10 lg:w-auto lg:px-3.5 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border border-neutral-200/90 hover:border-neutral-300 transition-all shadow-2xs cursor-pointer active:scale-95"
+              className="relative flex items-center justify-center gap-2 w-10 h-10 min-w-[40px] min-h-[40px] lg:w-auto lg:px-3.5 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border border-neutral-200/90 hover:border-neutral-300 transition-all shadow-2xs cursor-pointer active:scale-95"
               id="header-account-btn"
               aria-label={currentCustomer ? `Account: ${currentCustomer.name}` : "Customer Account"}
               title={currentCustomer ? `Logged in: ${currentCustomer.name} - View Orders` : "Customer Account / Login"}
@@ -154,7 +154,7 @@ export const Header: React.FC = () => {
             {/* Desktop Quick Shopping Bag */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative hidden sm:flex items-center justify-center gap-2 w-10 h-10 lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all font-semibold text-xs border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
+              className="relative hidden sm:flex items-center justify-center gap-2 w-10 h-10 min-w-[40px] min-h-[40px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all font-semibold text-xs border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
               id="header-cart-btn"
               aria-label="View Cart"
               title="Shopping Cart"
@@ -171,7 +171,7 @@ export const Header: React.FC = () => {
             {/* 3-Row Menu Button - Opens Full Services & Store Drawer */}
             <button
               onClick={() => setIsSideNavOpen(true)}
-              className="flex items-center justify-center gap-2 w-9 h-9 sm:w-10 sm:h-10 lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
+              className="flex items-center justify-center gap-2 w-10 h-10 min-w-[40px] min-h-[40px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
               aria-label="Open Services and Navigation Menu"
               id="header-menu-btn"
               title="View all services, categories, and customer support"

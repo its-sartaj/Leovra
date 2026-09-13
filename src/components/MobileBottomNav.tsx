@@ -76,7 +76,8 @@ export const MobileBottomNav: React.FC = () => {
         <button
           type="button"
           onClick={handleHomeClick}
-          className={`group flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer active:scale-90 ${
+          aria-label="Home"
+          className={`group flex flex-col items-center justify-center min-h-[48px] py-1.5 px-1 rounded-xl transition-all cursor-pointer active:scale-90 ${
             isHomeActive
               ? 'text-neutral-950 font-bold'
               : 'text-neutral-500 font-medium hover:text-neutral-900'
@@ -95,7 +96,8 @@ export const MobileBottomNav: React.FC = () => {
         <button
           type="button"
           onClick={handleCategoriesClick}
-          className="group flex flex-col items-center justify-center py-1 px-1 rounded-xl text-neutral-500 font-medium hover:text-neutral-900 transition-all cursor-pointer active:scale-90"
+          aria-label="Categories"
+          className="group flex flex-col items-center justify-center min-h-[48px] py-1.5 px-1 rounded-xl text-neutral-500 font-medium hover:text-neutral-900 transition-all cursor-pointer active:scale-90"
           id="mobile-nav-categories"
           title="Browse All Categories & Collections"
         >
@@ -111,7 +113,8 @@ export const MobileBottomNav: React.FC = () => {
         <button
           type="button"
           onClick={handleTrendingClick}
-          className={`group flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer active:scale-90 ${
+          aria-label="Trending Products"
+          className={`group flex flex-col items-center justify-center min-h-[48px] py-1.5 px-1 rounded-xl transition-all cursor-pointer active:scale-90 ${
             isTrendingActive
               ? 'text-amber-600 font-bold'
               : 'text-neutral-500 font-medium hover:text-neutral-900'
@@ -134,7 +137,8 @@ export const MobileBottomNav: React.FC = () => {
         <button
           type="button"
           onClick={handleCartClick}
-          className="group relative flex flex-col items-center justify-center py-1 px-1 rounded-xl text-neutral-900 font-medium transition-all cursor-pointer active:scale-90"
+          aria-label="Shopping Cart"
+          className="group relative flex flex-col items-center justify-center min-h-[48px] py-1.5 px-1 rounded-xl text-neutral-900 font-medium transition-all cursor-pointer active:scale-90"
           id="mobile-nav-cart"
           title="Open Shopping Bag"
         >
@@ -155,7 +159,8 @@ export const MobileBottomNav: React.FC = () => {
         <button
           type="button"
           onClick={handleAccountClick}
-          className="group flex flex-col items-center justify-center py-1 px-1 rounded-xl text-neutral-600 font-medium hover:text-neutral-950 transition-all cursor-pointer active:scale-90"
+          aria-label="Customer Account"
+          className="group flex flex-col items-center justify-center min-h-[48px] py-1.5 px-1 rounded-xl text-neutral-600 font-medium hover:text-neutral-950 transition-all cursor-pointer active:scale-90"
           id="mobile-nav-account"
           title="Customer Account & My Orders"
         >

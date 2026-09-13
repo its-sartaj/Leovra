@@ -3,18 +3,29 @@ import { StoreProvider, useStore } from './context/StoreContext';
 import { Header } from './components/Header';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductGrid } from './components/ProductGrid';
-import { AdminDashboard } from './components/AdminDashboard';
-import { ProductModal } from './components/ProductModal';
-import { CartDrawer } from './components/CartDrawer';
-import { SideNavDrawer } from './components/SideNavDrawer';
-import { CustomerAccountModal } from './components/CustomerAccountModal';
-import { ReturnPolicyModal } from './components/ReturnPolicyModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
 import { MessageCircle, ArrowUp } from 'lucide-react';
 
+// Code-split heavy modals and admin portal to drastically reduce initial JavaScript load
+const AdminDashboard = React.lazy(() => import('./components/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const ProductModal = React.lazy(() => import('./components/ProductModal').then(m => ({ default: m.ProductModal })));
+const CartDrawer = React.lazy(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })));
+const CustomerAccountModal = React.lazy(() => import('./components/CustomerAccountModal').then(m => ({ default: m.CustomerAccountModal })));
+const ReturnPolicyModal = React.lazy(() => import('./components/ReturnPolicyModal').then(m => ({ default: m.ReturnPolicyModal })));
+const SideNavDrawer = React.lazy(() => import('./components/SideNavDrawer').then(m => ({ default: m.SideNavDrawer })));
+
 const MainLayout: React.FC = () => {
-  const { currentView, toastMessage, businessPhone } = useStore();
+  const { 
+    currentView, 
+    toastMessage, 
+    businessPhone,
+    selectedProduct,
+    isCartOpen,
+    isAccountModalOpen,
+    isReturnPolicyOpen,
+    isSideNavOpen
+  } = useStore();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -50,6 +61,7 @@ const MainLayout: React.FC = () => {
               onClick={scrollToTop}
               className="hidden md:flex w-10 h-10 rounded-full bg-white text-neutral-700 shadow-md border border-neutral-200 items-center justify-center hover:bg-neutral-100 transition-colors cursor-pointer"
               title="Back to top"
+              aria-label="Back to top"
               id="scroll-to-top-btn"
             >
               <ArrowUp className="w-4 h-4" />
@@ -62,6 +74,7 @@ const MainLayout: React.FC = () => {
               className="group flex items-center gap-2 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               id="floating-whatsapp-btn"
               title="Direct WhatsApp Support"
+              aria-label="Direct WhatsApp Support"
             >
               <div className="relative flex items-center justify-center">
                 <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />
@@ -73,18 +86,24 @@ const MainLayout: React.FC = () => {
             </a>
           </div>
 
-          <ProductModal />
-          <CartDrawer />
-          <CustomerAccountModal />
-          <ReturnPolicyModal />
-          <SideNavDrawer />
+          {/* Lazy loaded customer dialogs and drawers */}
+          <React.Suspense fallback={null}>
+            {selectedProduct && <ProductModal />}
+            {isCartOpen && <CartDrawer />}
+            {isAccountModalOpen && <CustomerAccountModal />}
+            {isReturnPolicyOpen && <ReturnPolicyModal />}
+            {isSideNavOpen && <SideNavDrawer />}
+          </React.Suspense>
+
           <MobileBottomNav />
           <Footer />
         </>
       ) : (
         /* DEDICATED ADMIN INVENTORY PORTAL */
         <main className="flex-1 bg-neutral-100/70 min-h-screen">
-          <AdminDashboard />
+          <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center text-neutral-500 font-semibold text-sm">Loading Admin Portal...</div>}>
+            <AdminDashboard />
+          </React.Suspense>
         </main>
       )}
     </div>

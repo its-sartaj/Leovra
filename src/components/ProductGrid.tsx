@@ -63,6 +63,7 @@ export const ProductGrid: React.FC = () => {
 
   return (
     <section className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 py-3 sm:py-6 overflow-hidden" id="products-catalog-section">
+      <h2 className="sr-only">Our Collection & Available Products</h2>
       {/* Control Bar: Categories, Filters, Sorting */}
       <div className="bg-white rounded-2xl p-3 sm:p-4 border border-neutral-200 shadow-xs mb-4 sm:mb-6 space-y-2.5 sm:space-y-3 w-full">
         {/* Top row: Category Pills & In-stock toggle */}
@@ -74,7 +75,7 @@ export const ProductGrid: React.FC = () => {
               <button
                 key={cat.id}
                 onClick={() => setFilters(prev => ({ ...prev, category: cat.id }))}
-                className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
+                className={`px-3 py-2 min-h-[38px] sm:min-h-[40px] rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
                   filters.category === cat.id
                     ? 'bg-neutral-900 text-white shadow-xs'
                     : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
@@ -87,7 +88,7 @@ export const ProductGrid: React.FC = () => {
           </div>
 
           {/* In-Stock Only Toggle Switch */}
-          <label className="inline-flex items-center gap-2 cursor-pointer select-none bg-neutral-50 px-2.5 py-1.5 rounded-xl border border-neutral-200 hover:bg-neutral-100 transition-colors text-xs font-semibold text-neutral-800 self-start sm:self-auto shrink-0">
+          <label className="inline-flex items-center gap-2 cursor-pointer select-none bg-neutral-50 px-2.5 py-1.5 rounded-xl border border-neutral-200 hover:bg-neutral-100 transition-colors text-xs font-semibold text-neutral-800 self-start sm:self-auto shrink-0 min-h-[38px]">
             <input
               type="checkbox"
               checked={filters.inStockOnly}
@@ -124,12 +125,15 @@ export const ProductGrid: React.FC = () => {
           {/* Sort By Dropdown */}
           <div className="flex items-center gap-1.5">
             <ArrowUpDown className="w-3 h-3 text-neutral-400" />
-            <span className="text-neutral-500 text-[11px]">Sort:</span>
+            <label htmlFor="sort-by-select" className="text-neutral-500 text-[11px] cursor-pointer">
+              Sort:
+            </label>
             <select
               value={filters.sortBy}
               onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as FilterOptions['sortBy'] }))}
               className="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-hidden focus:border-amber-500 cursor-pointer"
               id="sort-by-select"
+              aria-label="Sort products by"
             >
               <option value="featured">Featured & Availability</option>
               <option value="price-low">Price: Low to High</option>

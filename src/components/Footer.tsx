@@ -105,9 +105,9 @@ export const Footer: React.FC = () => {
 
           {/* Quick Categories */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+            <h2 className="text-xs font-bold text-white uppercase tracking-wider">
               Categories / उत्पाद श्रेणियां
-            </h4>
+            </h2>
             <ul className="space-y-2 text-xs text-neutral-400 font-medium">
               <li>
                 <button onClick={() => handleCategory('earrings')} className="hover:text-amber-400 transition-colors text-left cursor-pointer">
@@ -134,9 +134,9 @@ export const Footer: React.FC = () => {
 
           {/* Contact Details */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+            <h2 className="text-xs font-bold text-white uppercase tracking-wider">
               Contact & Store Info
-            </h4>
+            </h2>
             <div className="space-y-2.5 text-xs text-neutral-400">
               <div className="flex items-start gap-2">
                 <Phone className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
@@ -174,9 +174,9 @@ export const Footer: React.FC = () => {
 
         {/* SEO Overview & Search Engine Optimization Content */}
         <div className="pt-8 mt-6 border-t border-neutral-900 text-xs text-neutral-400 space-y-3">
-          <div className="font-bold text-neutral-200 text-xs uppercase tracking-wider">
+          <h2 className="font-bold text-neutral-200 text-xs uppercase tracking-wider">
             Online Shopping at Leovra Enterprises — Premium Fashion & Lifestyle
-          </div>
+          </h2>
           <p className="text-[11px] text-neutral-400 leading-relaxed">
             Welcome to <strong>Leovra Enterprises</strong>, your trusted online destination for handcrafted designer earrings, trendy oversized graphic t-shirts, and premium activewear lowers. From royal Kundan jhumkas and oxidized statement jewelry to breathable 100% cotton streetwear and flexible training trackpants, we bring you unmatched quality at fair prices. Shop with complete peace of mind with <strong>Cash on Delivery (COD)</strong>, real-time stock sync, a 3-day return policy, and express doorstep delivery across all Indian pincodes.
           </p>

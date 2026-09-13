@@ -16,7 +16,7 @@ const BACKGROUND_SLIDES = [
     id: 'earrings' as ProductCategory,
     label: 'Artisanal Jewelry',
     hindiTag: 'शाही झुमके संग्रह',
-    image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=1600&q=80',
+    image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=800&q=75',
     glowColor: 'from-amber-500/35 via-orange-500/20 to-transparent',
   },
   {
@@ -30,7 +30,7 @@ const BACKGROUND_SLIDES = [
     id: 'lowers' as ProductCategory,
     label: 'Comfort Lowers & Joggers',
     hindiTag: 'फ्लेक्सिबल लोअर',
-    image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=1600&q=80',
+    image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=800&q=75',
     glowColor: 'from-emerald-500/35 via-teal-500/20 to-transparent',
   },
 ];
@@ -61,7 +61,7 @@ export const HeroBanner: React.FC = () => {
       hindiTitle: 'शाही झुमके',
       subtitle: 'Oxidized, Kundan & Studs',
       priceTag: 'From ₹249',
-      image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=600&q=80',
+      image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=500&q=75',
       icon: '💎',
     },
     {
@@ -81,7 +81,7 @@ export const HeroBanner: React.FC = () => {
       hindiTitle: 'फ्लेक्सिबल लोअर',
       subtitle: 'Cargo Joggers & Stretch',
       priceTag: 'From ₹549',
-      image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=600&q=80',
+      image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=500&q=75',
       icon: '👖',
     },
   ];
@@ -113,6 +113,11 @@ export const HeroBanner: React.FC = () => {
               <img
                 src={slide.image}
                 alt={slide.label}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
+                decoding="async"
+                width={800}
+                height={400}
                 className="w-full h-full object-cover object-right md:object-center"
               />
             </div>
@@ -196,37 +201,42 @@ export const HeroBanner: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveSlide((prev) => (prev - 1 + BACKGROUND_SLIDES.length) % BACKGROUND_SLIDES.length)}
-          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
+          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
           aria-label="Previous Slide"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-5 h-5" />
         </button>
 
         <button
           type="button"
           onClick={() => setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length)}
-          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
+          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
           aria-label="Next Slide"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5" />
         </button>
 
         {/* Background Slide Indicators (Bottom Right Pills) */}
-        <div className="absolute bottom-2.5 right-3 sm:bottom-3 sm:right-6 z-20 flex items-center gap-1.5 bg-neutral-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-neutral-800/80 text-[10px]">
-          <span className="text-[10px] text-neutral-400 hidden sm:inline font-medium mr-1">
+        <div className="absolute bottom-2.5 right-3 sm:bottom-3 sm:right-6 z-20 flex items-center gap-1 bg-neutral-950/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-neutral-800/80 text-[10px]">
+          <span className="text-[10px] text-neutral-400 hidden sm:inline font-medium mr-1 select-none">
             {currentBg.label}
           </span>
           {BACKGROUND_SLIDES.map((slide, idx) => (
             <button
               key={slide.id}
+              type="button"
               onClick={() => setActiveSlide(idx)}
-              className={`transition-all rounded-full cursor-pointer ${
-                activeSlide === idx 
-                  ? 'w-5 h-1.5 bg-amber-400 shadow-xs' 
-                  : 'w-1.5 h-1.5 bg-neutral-600 hover:bg-neutral-400'
-              }`}
-              title={slide.label}
-            />
+              aria-label={`Show slide ${idx + 1}: ${slide.label}`}
+              className="p-2 min-w-[32px] min-h-[32px] flex items-center justify-center cursor-pointer transition-transform active:scale-95"
+            >
+              <span 
+                className={`transition-all rounded-full block ${
+                  activeSlide === idx 
+                    ? 'w-5 h-1.5 bg-amber-400 shadow-xs' 
+                    : 'w-1.5 h-1.5 bg-neutral-500 hover:bg-neutral-400'
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>
@@ -290,9 +300,9 @@ export const HeroBanner: React.FC = () => {
 
               {/* Bottom Content: Title, Subtitle, & Explore CTA */}
               <div className="relative z-10 w-full space-y-0.5 sm:space-y-1">
-                <h3 className="text-xs sm:text-base md:text-lg font-extrabold text-white leading-tight truncate group-hover:text-amber-400 transition-colors">
+                <h2 className="text-xs sm:text-base md:text-lg font-extrabold text-white leading-tight truncate group-hover:text-amber-400 transition-colors">
                   {card.shortTitle}
-                </h3>
+                </h2>
                 
                 <p className="hidden sm:block text-[11px] text-neutral-300 truncate font-normal">
                   {card.subtitle}
