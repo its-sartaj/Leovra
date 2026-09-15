@@ -20,6 +20,8 @@ export const LeovraLogoIcon: React.FC<LeovraLogoIconProps> = ({
   return (
     <svg
       viewBox="0 0 260 200"
+      width="260"
+      height="200"
       xmlns="http://www.w3.org/2000/svg"
       style={inlineStyle}
       className={`shrink-0 drop-shadow-sm select-none ${className}`}

@@ -67,22 +67,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       id={`product-card-${product.id}`}
     >
       {/* Product Image Area */}
-      <div className="relative aspect-[4/5] w-full bg-neutral-100 overflow-hidden">
+      <div className="relative aspect-[4/5] w-full bg-neutral-100 overflow-hidden" style={{ aspectRatio: '4/5' }}>
         <img
           src={product.image}
           alt={product.name}
           width={400}
           height={500}
+          style={{ aspectRatio: '4/5' }}
           referrerPolicy="no-referrer"
           decoding="async"
+          loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.jpg`;
+            e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.webp`;
           }}
           className={`w-full h-full object-cover object-center transition-transform duration-300 transform-gpu group-hover:scale-105 ${
             isOutOfStock ? 'grayscale-40 contrast-95' : ''
           }`}
-          loading="lazy"
         />
 
         {/* Top Badges */}

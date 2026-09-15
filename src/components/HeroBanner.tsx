@@ -10,9 +10,10 @@ import {
 import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
 const BASE_URL = import.meta.env.BASE_URL;
-const heroEarringImg = `${BASE_URL}hero-earring.jpg`;
-const heroTshirtImg = `${BASE_URL}hero-tshirt.jpg`;
-const heroLowersImg = `${BASE_URL}hero-lowers.jpg`;
+const heroEarringImg = `${BASE_URL}hero-earring.webp`;
+const heroTshirtImg = `${BASE_URL}hero-tshirt.webp`;
+const heroLowersImg = `${BASE_URL}hero-lowers.webp`;
+const heroEarringFallback = `${BASE_URL}hero-earring.jpg`;
 
 const BACKGROUND_SLIDES = [
   {
@@ -92,7 +93,7 @@ export const HeroBanner: React.FC = () => {
   return (
     <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6 overflow-hidden" id="hero-banner-section">
       {/* Top Banner Hero Card with Background Slider */}
-      <div className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[300px] sm:min-h-[340px] flex items-center">
+      <div className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[480px] sm:min-h-[360px] md:min-h-[340px] flex items-center">
         
         {/* Animated Top Progress Bar (Auto-slide Timer) */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-neutral-900/80 z-30 overflow-hidden">
@@ -121,8 +122,9 @@ export const HeroBanner: React.FC = () => {
                 decoding="async"
                 width={800}
                 height={400}
+                style={{ aspectRatio: '2/1' }}
                 onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = heroEarringImg;
+                  (e.currentTarget as HTMLImageElement).src = heroEarringFallback;
                 }}
                 className="w-full h-full object-cover object-right md:object-center"
               />
@@ -283,8 +285,9 @@ export const HeroBanner: React.FC = () => {
                   decoding="async"
                   width={300}
                   height={180}
+                  style={{ aspectRatio: '5/3' }}
                   onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = heroEarringImg;
+                    (e.currentTarget as HTMLImageElement).src = heroEarringFallback;
                   }}
                   className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700"
                 />
