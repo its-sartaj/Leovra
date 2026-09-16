@@ -173,9 +173,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="flex items-center gap-1.5 pt-1.5 border-t border-neutral-100 mt-auto">
           {/* Add to Cart button */}
           <button
+            type="button"
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`flex-1 min-h-[42px] flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl font-bold text-[11px] sm:text-xs transition-all ${
+            aria-label={isOutOfStock ? `${product.name} is sold out` : `Add ${product.name} to cart`}
+            className={`flex-1 min-h-[44px] flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl font-bold text-[11px] sm:text-xs transition-all ${
               isOutOfStock
                 ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200'
                 : isAddedRecently
@@ -201,11 +203,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Quick WhatsApp Buy Button */}
           <button
+            type="button"
             onClick={handleDirectWhatsApp}
-            className="min-w-[42px] min-h-[42px] flex items-center justify-center rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors active:scale-95 shrink-0"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors active:scale-95 shrink-0"
             id={`whatsapp-buy-btn-${product.id}`}
-            title="Order directly on WhatsApp"
-            aria-label="Order on WhatsApp"
+            title={`Order ${product.name} directly on WhatsApp`}
+            aria-label={`Order ${product.name} directly on WhatsApp`}
           >
             <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-100" />
           </button>

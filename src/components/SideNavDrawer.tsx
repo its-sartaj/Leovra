@@ -394,7 +394,7 @@ export const SideNavDrawer: React.FC = () => {
                 
                 {/* Direct Phone Call */}
                 <a
-                  href={`tel:${businessPhone}`}
+                  href={`tel:+91${businessPhone}`}
                   className="flex items-center justify-between p-3 rounded-xl bg-neutral-900 text-white font-bold hover:bg-neutral-800 transition-colors shadow-xs"
                 >
                   <div className="flex items-center gap-2.5">

@@ -171,7 +171,7 @@ export const HeroBanner: React.FC = () => {
             {/* Quick CTAs */}
             <div className="pt-1 flex flex-wrap items-center gap-2 sm:gap-3 w-full">
               <a
-                href={`tel:${businessPhone}`}
+                href={`tel:+91${businessPhone}`}
                 className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs sm:text-sm transition-all shadow-lg active:scale-95 text-center whitespace-nowrap cursor-pointer"
                 id="hero-call-now-btn"
               >

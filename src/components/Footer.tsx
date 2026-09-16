@@ -84,7 +84,7 @@ export const Footer: React.FC = () => {
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <a
-                href={`tel:${businessPhone}`}
+                href={`tel:+91${businessPhone}`}
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs border border-neutral-800 transition-colors"
               >
                 <Phone className="w-3.5 h-3.5 text-amber-400" />

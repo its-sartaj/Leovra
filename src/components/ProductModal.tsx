@@ -386,7 +386,7 @@ export const ProductModal: React.FC = () => {
             {/* Helpline Call Button */}
             <div className="flex items-center justify-center text-xs pt-1 text-neutral-500">
               <a
-                href={`tel:${businessPhone}`}
+                href={`tel:+91${businessPhone}`}
                 className="inline-flex items-center gap-1.5 font-semibold text-neutral-800 hover:text-amber-700"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-amber-600" />

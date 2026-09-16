@@ -971,7 +971,7 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div className="font-bold text-neutral-800">
-                      {order.customerName} • <a href={`tel:${order.customerPhone}`} className="text-amber-700 hover:underline">{order.customerPhone}</a>
+                      {order.customerName} • <a href={`tel:${order.customerPhone.startsWith('+') ? order.customerPhone : `+91${order.customerPhone}`}`} className="text-amber-700 hover:underline">{order.customerPhone}</a>
                     </div>
                     <div className="text-neutral-500 text-[11px] max-w-md">
                       Address: {order.customerAddress} {order.customerCity ? `(${order.customerCity})` : ''}
@@ -1287,6 +1287,7 @@ export const AdminDashboard: React.FC = () => {
                 type="button"
                 onClick={() => setDispatchOrder(null)}
                 className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-white transition-colors cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1396,6 +1397,7 @@ export const AdminDashboard: React.FC = () => {
                 type="button"
                 onClick={() => setCancellingOrder(null)}
                 className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-white transition-colors cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1557,6 +1559,7 @@ export const AdminDashboard: React.FC = () => {
                 }}
                 className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
                 title="Close"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>

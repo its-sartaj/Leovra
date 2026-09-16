@@ -555,17 +555,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     let unsubscribeOrders: (() => void) | null = null;
 
     const initCloudSyncTimer = setTimeout(() => {
-      fetchRemoteProducts().then((remoteProds) => {
-        if (remoteProds && remoteProds.length > 0) {
-          currentVersionRef.current = Date.now();
-          setProducts(remoteProds);
-          try {
-            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
-          } catch {
-            // ignore
+      fetchRemoteProducts()
+        .then((remoteProds) => {
+          if (remoteProds && remoteProds.length > 0) {
+            currentVersionRef.current = Date.now();
+            setProducts(remoteProds);
+            try {
+              localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
+            } catch {
+              // ignore
+            }
           }
-        }
-      });
+        })
+        .catch((err) => {
+          console.warn('[Firebase] Remote products sync deferred/offline:', err);
+        });
 
       unsubscribeProducts = subscribeRemoteProducts((remoteProds) => {
         if (remoteProds && remoteProds.length > 0) {
@@ -581,17 +585,28 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
 
       // Only sync orders if admin is active or customer has placed orders
-      if (typeof window !== 'undefined' && (window.location.hash.includes('admin') || localStorage.getItem(STORAGE_KEY_ADMIN_AUTH) === 'true')) {
-        fetchRemoteOrders().then((remoteOrders) => {
-          if (remoteOrders && remoteOrders.length > 0) {
-            setOrders(remoteOrders);
-            try {
-              localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
-            } catch {
-              // ignore
+      let isAdminActive = false;
+      try {
+        isAdminActive = localStorage.getItem(STORAGE_KEY_ADMIN_AUTH) === 'true';
+      } catch {
+        // ignore
+      }
+
+      if (typeof window !== 'undefined' && (window.location.hash.includes('admin') || isAdminActive)) {
+        fetchRemoteOrders()
+          .then((remoteOrders) => {
+            if (remoteOrders && remoteOrders.length > 0) {
+              setOrders(remoteOrders);
+              try {
+                localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
+              } catch {
+                // ignore
+              }
             }
-          }
-        });
+          })
+          .catch((err) => {
+            console.warn('[Firebase] Remote orders sync deferred/offline:', err);
+          });
 
         unsubscribeOrders = subscribeRemoteOrders((remoteOrders) => {
           if (remoteOrders) {

@@ -78,9 +78,11 @@ export const Header: React.FC = () => {
               
               {filters.searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 p-1 rounded-md hover:bg-neutral-200/60 cursor-pointer transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 p-1.5 rounded-md hover:bg-neutral-200/60 cursor-pointer transition-colors"
                   title="Clear search"
+                  aria-label="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -93,8 +95,9 @@ export const Header: React.FC = () => {
             
             {/* Mobile Search Toggle */}
             <button
+              type="button"
               onClick={() => setShowSearchInput(!showSearchInput)}
-              className={`md:hidden flex items-center justify-center w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95 border ${
+              className={`md:hidden flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95 border ${
                 showSearchInput 
                   ? 'bg-amber-50 text-amber-700 border-amber-400 ring-2 ring-amber-400/20' 
                   : 'bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border-neutral-200/90'
@@ -111,7 +114,7 @@ export const Header: React.FC = () => {
               href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I have an inquiry regarding your products.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-2 px-3.5 h-10 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 font-semibold text-xs border border-neutral-200/90 transition-all shadow-2xs hover:border-neutral-300 active:scale-95"
+              className="hidden lg:flex items-center gap-2 px-3.5 h-11 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 font-semibold text-xs border border-neutral-200/90 transition-all shadow-2xs hover:border-neutral-300 active:scale-95"
               id="header-whatsapp-chat-btn"
               title="Chat with Leovra Enterprises on WhatsApp"
             >
@@ -122,6 +125,7 @@ export const Header: React.FC = () => {
 
             {/* Customer Account Button */}
             <button
+              type="button"
               onClick={() => {
                 if (currentCustomer) {
                   setAccountModalTab('orders');
@@ -130,7 +134,7 @@ export const Header: React.FC = () => {
                 }
                 setIsAccountModalOpen(true);
               }}
-              className="relative flex items-center justify-center gap-2 w-10 h-10 min-w-[40px] min-h-[40px] lg:w-auto lg:px-3.5 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border border-neutral-200/90 hover:border-neutral-300 transition-all shadow-2xs cursor-pointer active:scale-95"
+              className="relative flex items-center justify-center gap-2 w-11 h-11 min-w-[44px] min-h-[44px] lg:w-auto lg:px-3.5 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border border-neutral-200/90 hover:border-neutral-300 transition-all shadow-2xs cursor-pointer active:scale-95"
               id="header-account-btn"
               aria-label={currentCustomer ? `Account: ${currentCustomer.name}` : "Customer Account"}
               title={currentCustomer ? `Logged in: ${currentCustomer.name} - View Orders` : "Customer Account / Login"}
@@ -152,8 +156,9 @@ export const Header: React.FC = () => {
 
             {/* Desktop Quick Shopping Bag */}
             <button
+              type="button"
               onClick={() => setIsCartOpen(true)}
-              className="relative hidden sm:flex items-center justify-center gap-2 w-10 h-10 min-w-[40px] min-h-[40px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all font-semibold text-xs border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
+              className="relative hidden sm:flex items-center justify-center gap-2 w-11 h-11 min-w-[44px] min-h-[44px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all font-semibold text-xs border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
               id="header-cart-btn"
               aria-label="View Cart"
               title="Shopping Cart"
@@ -169,8 +174,9 @@ export const Header: React.FC = () => {
 
             {/* 3-Row Menu Button - Opens Full Services & Store Drawer */}
             <button
+              type="button"
               onClick={() => setIsSideNavOpen(true)}
-              className="flex items-center justify-center gap-2 w-10 h-10 min-w-[40px] min-h-[40px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
+              className="flex items-center justify-center gap-2 w-11 h-11 min-w-[44px] min-h-[44px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
               aria-label="Open Services and Navigation Menu"
               id="header-menu-btn"
               title="View all services, categories, and customer support"
@@ -196,13 +202,16 @@ export const Header: React.FC = () => {
                 }}
                 className="w-full bg-neutral-100/90 hover:bg-neutral-100 focus:bg-white text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-10 py-2.5 h-10 rounded-xl border border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 outline-hidden shadow-2xs"
                 id="mobile-search-input-field"
+                aria-label="Search earrings, t-shirts, lowers"
                 autoFocus
               />
               {filters.searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 p-1 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 p-1.5 cursor-pointer"
                   title="Clear search"
+                  aria-label="Clear search"
                 >
                   <X className="w-4 h-4" />
                 </button>

@@ -75,8 +75,9 @@ export const ProductGrid: React.FC = () => {
             {categories.map((cat) => (
               <button
                 key={cat.id}
+                type="button"
                 onClick={() => setFilters(prev => ({ ...prev, category: cat.id }))}
-                className={`px-3 py-2 min-h-[38px] sm:min-h-[40px] rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
+                className={`px-3 py-2 min-h-[44px] rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
                   filters.category === cat.id
                     ? 'bg-neutral-900 text-white shadow-xs'
                     : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'

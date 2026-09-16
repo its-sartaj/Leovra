@@ -636,9 +636,10 @@ export const CustomerAccountModal: React.FC = () => {
                           </a>
 
                           <a
-                            href={`tel:${businessPhone}`}
+                            href={`tel:+91${businessPhone}`}
                             className="py-2 px-3 rounded-xl bg-neutral-200 hover:bg-neutral-300 text-neutral-800 font-bold text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer"
                             title="Call customer support for this order"
+                            aria-label="Call customer support for this order"
                           >
                             <Phone className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">Support</span>
