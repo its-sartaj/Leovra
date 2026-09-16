@@ -11,8 +11,11 @@ import { useStore } from '../context/StoreContext';
 import { ProductCategory } from '../types';
 const BASE_URL = import.meta.env.BASE_URL;
 const heroEarringImg = `${BASE_URL}hero-earring.webp`;
+const heroEarringMobile = `${BASE_URL}hero-earring-mobile.webp`;
 const heroTshirtImg = `${BASE_URL}hero-tshirt.webp`;
+const heroTshirtMobile = `${BASE_URL}hero-tshirt-mobile.webp`;
 const heroLowersImg = `${BASE_URL}hero-lowers.webp`;
+const heroLowersMobile = `${BASE_URL}hero-lowers-mobile.webp`;
 const heroEarringFallback = `${BASE_URL}hero-earring.jpg`;
 
 const BACKGROUND_SLIDES = [
@@ -21,6 +24,7 @@ const BACKGROUND_SLIDES = [
     label: 'Artisanal Jewelry',
     hindiTag: 'शाही झुमके संग्रह',
     image: heroEarringImg,
+    mobileImage: heroEarringMobile,
     glowColor: 'from-amber-500/35 via-orange-500/20 to-transparent',
   },
   {
@@ -28,6 +32,7 @@ const BACKGROUND_SLIDES = [
     label: 'Streetwear Apparel',
     hindiTag: 'क्लासिक टी-शर्ट्स',
     image: heroTshirtImg,
+    mobileImage: heroTshirtMobile,
     glowColor: 'from-amber-600/35 via-orange-500/20 to-transparent',
   },
   {
@@ -35,6 +40,7 @@ const BACKGROUND_SLIDES = [
     label: 'Comfort Lowers & Joggers',
     hindiTag: 'फ्लेक्सिबल लोअर',
     image: heroLowersImg,
+    mobileImage: heroLowersMobile,
     glowColor: 'from-emerald-500/35 via-teal-500/20 to-transparent',
   },
 ];
@@ -95,15 +101,15 @@ export const HeroBanner: React.FC = () => {
       {/* Top Banner Hero Card with Background Slider */}
       <div className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[480px] sm:min-h-[360px] md:min-h-[340px] flex items-center">
         
-        {/* Animated Top Progress Bar (Auto-slide Timer) */}
+        {/* Top Progress Bar (Stable gold on initial paint, animated on slide rotation) */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-neutral-900/80 z-30 overflow-hidden">
           <div 
             key={activeSlide} 
-            className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 w-full animate-hero-progress" 
+            className={`h-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 w-full ${activeSlide === 0 ? 'opacity-80' : 'animate-hero-progress'}`} 
           />
         </div>
 
-        {/* Background Slider Images with Smooth Crossfade & Subtle Zoom */}
+        {/* Background Slider Images with Smooth Crossfade */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           {BACKGROUND_SLIDES.map((slide, index) => (
             <div
@@ -114,20 +120,23 @@ export const HeroBanner: React.FC = () => {
                   : 'opacity-0 pointer-events-none'
               }`}
             >
-              <img
-                src={slide.image}
-                alt={slide.label}
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchPriority={index === 0 ? "high" : "auto"}
-                decoding="async"
-                width={800}
-                height={400}
-                style={{ aspectRatio: '2/1' }}
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = heroEarringFallback;
-                }}
-                className="w-full h-full object-cover object-right md:object-center"
-              />
+              <picture className="w-full h-full">
+                <source media="(max-width: 640px)" srcSet={slide.mobileImage} type="image/webp" />
+                <img
+                  src={slide.image}
+                  alt={slide.label}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                  decoding="async"
+                  width={800}
+                  height={400}
+                  style={{ aspectRatio: '2/1' }}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = heroEarringFallback;
+                  }}
+                  className="w-full h-full object-cover object-right md:object-center"
+                />
+              </picture>
             </div>
           ))}
 
@@ -135,8 +144,8 @@ export const HeroBanner: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/40" />
 
-          {/* Dynamic Background Ambient Glow (Hardware-accelerated compositor layer) */}
-          <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentBg.glowColor} rounded-full blur-2xl pointer-events-none transition-all duration-700 animate-hero-glow transform-gpu`} />
+          {/* Dynamic Background Ambient Glow (Static opacity eliminates continuous GPU layer invalidation) */}
+          <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentBg.glowColor} rounded-full blur-2xl pointer-events-none opacity-45`} />
           <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 

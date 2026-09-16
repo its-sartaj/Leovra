@@ -7,8 +7,20 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     
-    <!-- Critical Same-Origin LCP Asset Preload -->
-    <link rel="preload" as="image" href="%BASE_URL%hero-earring.webp" type="image/webp" fetchpriority="high" />
+    <!-- Critical Same-Origin LCP Asset Preload with Mobile Optimization -->
+    <link rel="preload" as="image" href="%BASE_URL%hero-earring-mobile.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="%BASE_URL%hero-earring.webp" type="image/webp" media="(min-width: 641px)" fetchpriority="high" />
+
+    <!-- Early Preconnections & Non-Blocking Font Preload -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" />
+    </noscript>
     <style>
       *,::after,::before{box-sizing:border-box}
       html{-webkit-text-size-adjust:100%;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
@@ -154,16 +166,6 @@
       ]
     }
     </script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-    <link rel="dns-prefetch" href="https://images.unsplash.com">
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
-    </noscript>
   </head>
   <body class="bg-neutral-50 text-neutral-900 antialiased font-sans selection:bg-amber-500 selection:text-white">
     <div id="root">
@@ -190,7 +192,10 @@
           <div class="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6">
             <div class="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 p-5 sm:p-8 md:p-10 min-h-[480px] sm:min-h-[360px] md:min-h-[340px] flex flex-col justify-center ssr-hero">
               <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-65">
-                <img src="%BASE_URL%hero-earring.webp" alt="Artisanal Jewelry" fetchpriority="high" loading="eager" width="800" height="400" style="aspect-ratio: 2/1;" class="w-full h-full object-cover object-right md:object-center" />
+                <picture class="w-full h-full">
+                  <source media="(max-width: 640px)" srcset="%BASE_URL%hero-earring-mobile.webp" type="image/webp" />
+                  <img src="%BASE_URL%hero-earring.webp" alt="Artisanal Jewelry" fetchpriority="high" loading="eager" width="800" height="400" style="aspect-ratio: 2/1;" class="w-full h-full object-cover object-right md:object-center" />
+                </picture>
                 <div class="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40"></div>
               </div>
               <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
