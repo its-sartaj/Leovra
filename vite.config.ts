@@ -83,7 +83,7 @@ export default defineConfig(({ command }) => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
     build: {
-      target: 'es2020',
+      target: 'es2022',
       cssMinify: true,
       minify: 'esbuild',
       rollupOptions: {

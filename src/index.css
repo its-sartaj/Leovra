@@ -28,25 +28,34 @@ body {
   will-change: scroll-position;
 }
 
-/* Off-screen rendering optimization for product grid */
+/* Off-screen rendering optimization for product grid and below-the-fold sections */
 .product-card-optimize {
   contain-intrinsic-size: 0 380px;
   content-visibility: auto;
 }
 
+#faq-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 420px;
+}
+
+#main-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 520px;
+}
+
 @keyframes heroGlowPulse {
   0%, 100% {
     opacity: 0.35;
-    transform: scale(0.95);
   }
   50% {
-    opacity: 0.75;
-    transform: scale(1.1);
+    opacity: 0.65;
   }
 }
 
 .animate-hero-glow {
-  animation: heroGlowPulse 4s ease-in-out infinite;
+  will-change: opacity;
+  animation: heroGlowPulse 5s ease-in-out infinite;
 }
 
 @keyframes heroProgress {

@@ -108,10 +108,10 @@ export const HeroBanner: React.FC = () => {
           {BACKGROUND_SLIDES.map((slide, index) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 activeSlide === index
-                  ? 'opacity-65 scale-105'
-                  : 'opacity-0 scale-100 pointer-events-none'
+                  ? 'opacity-65'
+                  : 'opacity-0 pointer-events-none'
               }`}
             >
               <img
@@ -135,8 +135,8 @@ export const HeroBanner: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/40" />
 
-          {/* Dynamic Background Ambient Glow */}
-          <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentBg.glowColor} rounded-full blur-3xl pointer-events-none transition-all duration-1000 animate-hero-glow`} />
+          {/* Dynamic Background Ambient Glow (Hardware-accelerated compositor layer) */}
+          <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentBg.glowColor} rounded-full blur-2xl pointer-events-none transition-all duration-700 animate-hero-glow transform-gpu`} />
           <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
