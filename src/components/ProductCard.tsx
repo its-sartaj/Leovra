@@ -70,7 +70,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="relative aspect-[4/5] w-full bg-neutral-100 overflow-hidden" style={{ aspectRatio: '4/5' }}>
         <img
           src={product.image}
-          alt={product.name}
+          alt={`${product.name} - Buy online at Leovra Enterprises`}
           width={400}
           height={500}
           style={{ aspectRatio: '4/5' }}

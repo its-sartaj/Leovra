@@ -1,28 +1,229 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- 1. Homepage -->
   <url>
     <loc>https://its-sartaj.github.io/Leovra/</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-earring.webp</image:loc>
+      <image:title>Leovra Enterprises - Royal Kundan &amp; Oxidized Earrings Collection</image:title>
+      <image:caption>Artisanal designer earrings, trendy streetwear t-shirts, and comfort gym lowers with Cash on Delivery in India.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-tshirt.webp</image:loc>
+      <image:title>Leovra Enterprises - Heavyweight Oversized Streetwear T-Shirts</image:title>
+      <image:caption>100% pure combed Supima cotton oversized tees with high-density graphics.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-lowers.webp</image:loc>
+      <image:title>Leovra Enterprises - Flexible Gym Trackpants &amp; Tactical Cargo Joggers</image:title>
+      <image:caption>4-way stretch gym trackpants and multi-pocket casual joggers for men.</image:caption>
+    </image:image>
   </url>
+
+  <!-- 2. Category Collections -->
   <url>
     <loc>https://its-sartaj.github.io/Leovra/?category=earrings</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-earring.webp</image:loc>
+      <image:title>Handcrafted Designer Earrings &amp; Kundan Jhumkas - Leovra</image:title>
+      <image:caption>Antique oxidized silver, meenakari chandbalis, and 18K gold plated chandelier earrings with Cash on Delivery across India.</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://its-sartaj.github.io/Leovra/?category=tshirts</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-tshirt.webp</image:loc>
+      <image:title>Oversized Graphic Streetwear T-Shirts - Leovra</image:title>
+      <image:caption>Heavyweight 240+ GSM streetwear t-shirts, acid wash vintage tees, and athletic training t-shirts in India.</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://its-sartaj.github.io/Leovra/?category=lowers</loc>
-    <lastmod>2026-09-13</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-lowers.webp</image:loc>
+      <image:title>Performance Trackpants &amp; Cargo Joggers - Leovra</image:title>
+      <image:caption>Multi-pocket cargo joggers, French terry lowers, and flexible running track pants with fast doorstep dispatch.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- 3. Individual Products -->
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-1</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Antique Oxidized Royal Silver Jhumkas - Leovra Enterprises</image:title>
+      <image:caption>Handcrafted floral motif oxidized silver jhumkas with tiny pearl drops. Hypoallergenic alloy with antique finish, ideal for ethnic wear and festivities. Buy online in India with Cash on Delivery (COD) for ₹399.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-2</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>18K Gold Plated Emerald Teardrop Earrings - Leovra Enterprises</image:title>
+      <image:caption>Luxurious teardrop chandelier earrings set with faux Colombian emerald green stones and sparkling cubic zirconia. Light-weight luxury feel. Buy online in India with Cash on Delivery (COD) for ₹549.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-3</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Minimalist Geometric Hexagon Studs - Leovra Enterprises</image:title>
+      <image:caption>Clean everyday modern hexagon stud earrings crafted in surgical-grade stainless steel with mirror polish. Water-resistant and tarnish-free. Buy online in India with Cash on Delivery (COD) for ₹249.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-4</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1611591475817-29807538a7c2?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Kundan Meenakari Chandbali Hoops - Leovra Enterprises</image:title>
+      <image:caption>Traditional Rajasthani Kundan crescent chandbali earrings adorned with hand-painted meenakari accents and beaded fringe. Buy online in India with Cash on Delivery (COD) for ₹699.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-5</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Freshwater Pearl Baroque Dangler Earrings - Leovra Enterprises</image:title>
+      <image:caption>Effortlessly chic asymmetric baroque pearl drops suspended from 14K gold-filled micro hoops. Ideal for modern dates and cocktail parties. Buy online in India with Cash on Delivery (COD) for ₹499.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-1</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Heavyweight Streetwear Oversized Graphic Tee - Leovra Enterprises</image:title>
+      <image:caption>240 GSM heavy combed cotton graphic tee with drop shoulder relaxed fit, high-density chest typography and ribbed crew collar. Pre-shrunk bio-washed. Buy online in India with Cash on Delivery (COD) for ₹649.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-2</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Pure Supima Cotton Minimalist Crewneck - Leovra Enterprises</image:title>
+      <image:caption>Made from 100% extra-long staple Supima cotton for exceptional softness, breathability, and rich color retention wash after wash. Buy online in India with Cash on Delivery (COD) for ₹499.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-3</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Vintage Acid Wash Boxy Fit T-Shirt - Leovra Enterprises</image:title>
+      <image:caption>Custom mineral wash streetwear silhouette with distressed edges and subtle vintage retro faded dye. Comfortable all-day cotton. Buy online in India with Cash on Delivery (COD) for ₹599.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-4</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1625910513413-5b8782a46c64?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Classic Honeycomb Pique Polo T-Shirt - Leovra Enterprises</image:title>
+      <image:caption>Premium textured pique cotton polo with contrast collar tipping and reinforced button placket. Suitable for casual and semi-formal wear. Buy online in India with Cash on Delivery (COD) for ₹699.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-5</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Quick-Dry Athletic Performance Training Tee - Leovra Enterprises</image:title>
+      <image:caption>Lightweight poly-spandex moisture-wicking workout t-shirt with mesh airflow panels and flatlock anti-chafing seams. Buy online in India with Cash on Delivery (COD) for ₹449.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-1</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Multi-Pocket Tactical Cargo Joggers - Leovra Enterprises</image:title>
+      <image:caption>Durable stretch cotton twill cargo pants featuring 6 tactical pockets, elasticated drawstring waistband, and snug cuffed ankles. Perfect casual utility. Buy online in India with Cash on Delivery (COD) for ₹899.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-2</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Heavy Terry Cotton Relaxed Fit Trackpants - Leovra Enterprises</image:title>
+      <image:caption>Ultra-soft 320 GSM French terry fleece lowers with deep zip pockets, wide cotton drawcord, and relaxed taper for lounging or travel. Buy online in India with Cash on Delivery (COD) for ₹749.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-3</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>4-Way Stretch Pro-Fit Gym &amp; Running Lower - Leovra Enterprises</image:title>
+      <image:caption>Engineered for gym workouts and athletic training. Sweat-resistant, ultra-elastic, reflective night safety trims, and secure phone zip pocket. Buy online in India with Cash on Delivery (COD) for ₹599.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-4</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Streetwear Tapered Ankle-Zip Track Pants - Leovra Enterprises</image:title>
+      <image:caption>Modern slim-taper silhouette with functional ankle zippers, contrast side piping, and breathable cotton blend fabric. Buy online in India with Cash on Delivery (COD) for ₹799.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-5</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&amp;fit=crop&amp;w=380&amp;q=75&amp;fm=webp</image:loc>
+      <image:title>Everyday Chino-Knit Comfort Casual Lower - Leovra Enterprises</image:title>
+      <image:caption>Smart hybrid between trousers and sweatpants. Clean flat-front look with hidden inner elastic waist and premium woven feel. Buy online in India with Cash on Delivery (COD) for ₹699.</image:caption>
+    </image:image>
   </url>
 </urlset>

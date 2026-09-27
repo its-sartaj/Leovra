@@ -289,7 +289,7 @@ export const HeroBanner: React.FC = () => {
               <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
                   src={card.image}
-                  alt={card.title}
+                  alt={`${card.title} (${card.hindiTitle}) - Leovra Enterprises`}
                   loading="lazy"
                   decoding="async"
                   width={300}

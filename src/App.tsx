@@ -6,6 +6,7 @@ import { ProductGrid } from './components/ProductGrid';
 import { FAQSection } from './components/FAQSection';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
+import { SEOHead } from './components/SEOHead';
 import { MessageCircle, ArrowUp } from 'lucide-react';
 
 // Code-split heavy modals and admin portal to drastically reduce initial JavaScript load
@@ -34,6 +35,8 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-neutral-50 text-neutral-900 selection:bg-amber-500 selection:text-white relative">
+      {/* Dynamic SEO Meta & Canonical Manager */}
+      <SEOHead />
       
       {/* Real-time Toast Notifications (Active on both Store and Admin) */}
       {toastMessage && (

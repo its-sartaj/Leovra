@@ -94,7 +94,7 @@ export const ProductModal: React.FC = () => {
         <div className="md:w-1/2 relative bg-neutral-100 min-h-[200px] max-h-[280px] md:max-h-none md:min-h-[420px] flex items-center justify-center overflow-hidden shrink-0">
           <img
             src={selectedProduct.image}
-            alt={selectedProduct.name}
+            alt={`${selectedProduct.name} - Handcrafted Premium Quality by Leovra Enterprises`}
             width={600}
             height={600}
             referrerPolicy="no-referrer"

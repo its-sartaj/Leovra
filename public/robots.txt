@@ -1,6 +1,27 @@
-﻿User-agent: *
+# robots.txt for Leovra Enterprises (https://its-sartaj.github.io/Leovra/)
+User-agent: *
 Allow: /
 
-# Host & Sitemap
+# Dedicated directives for search engine web & image spiders
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Host & XML Sitemap
 Host: https://its-sartaj.github.io
 Sitemap: https://its-sartaj.github.io/Leovra/sitemap.xml
+

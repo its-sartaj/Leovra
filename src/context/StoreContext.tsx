@@ -226,7 +226,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return [];
   });
 
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const prodId = params.get('product') || params.get('id');
+        if (prodId) {
+          const found = INITIAL_PRODUCTS.find(p => p.id === prodId);
+          if (found) return found;
+        }
+      } catch {}
+    }
+    return null;
+  });
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isSideNavOpen, setIsSideNavOpen] = useState<boolean>(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState<boolean>(false);
@@ -392,11 +404,28 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   }, [currentCustomer, orders]);
 
-  const [filters, setFilters] = useState<FilterOptions>({
-    category: 'all',
-    searchQuery: '',
-    sortBy: 'featured',
-    inStockOnly: false,
+  const [filters, setFilters] = useState<FilterOptions>(() => {
+    let initialCat: FilterOptions['category'] = 'all';
+    let initialSearch = '';
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const cat = params.get('category');
+        const q = params.get('search') || params.get('q');
+        if (cat === 'earrings' || cat === 'tshirts' || cat === 'lowers') {
+          initialCat = cat;
+        }
+        if (q) {
+          initialSearch = q;
+        }
+      } catch {}
+    }
+    return {
+      category: initialCat,
+      searchQuery: initialSearch,
+      sortBy: 'featured',
+      inStockOnly: false,
+    };
   });
 
   // Persistent refs for reliable cross-tab/window real-time synchronization
