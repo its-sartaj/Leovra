@@ -56,7 +56,7 @@ export const Logo: React.FC<LogoProps> = ({
           }`}>
             Leovra
           </span>
-          <span className={`${titleSize} bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent font-sans uppercase font-bold tracking-normal whitespace-nowrap`}>
+          <span className={`hidden sm:inline ${titleSize} bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent font-sans uppercase font-bold tracking-normal whitespace-nowrap`}>
             Enterprises
           </span>
         </div>

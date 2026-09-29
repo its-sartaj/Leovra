@@ -153,7 +153,7 @@ export const HeroBanner: React.FC = () => {
         <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
           {/* Left Column: Heading, Pitch & CTAs */}
           <div className="max-w-xl space-y-3 sm:space-y-4 w-full min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] sm:text-xs font-semibold backdrop-blur-xs transition-all">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] sm:text-xs font-semibold backdrop-blur-xs transition-all max-w-full overflow-hidden">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span className="truncate">
                 Express Dispatch • <span className="text-white font-bold">{currentBg.hindiTag}</span> ({currentBg.label})
