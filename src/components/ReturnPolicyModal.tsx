@@ -49,7 +49,7 @@ export const ReturnPolicyModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsReturnPolicyOpen(false)}
-            className="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+            className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />

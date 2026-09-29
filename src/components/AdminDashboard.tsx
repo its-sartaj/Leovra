@@ -979,7 +979,7 @@ export const AdminDashboard: React.FC = () => {
 
                     <div className="pt-1 text-[11px] text-neutral-700 space-y-0.5">
                       {order.items.map((it, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5">
+                        <div key={`${it.product.id}-${it.selectedSize}-${idx}`} className="flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                           <span>{it.quantity}x <strong>{it.product.name}</strong> ({it.selectedSize}) - ₹{it.quantity * it.product.price}</span>
                         </div>

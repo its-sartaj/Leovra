@@ -176,10 +176,10 @@ export const CustomerAccountModal: React.FC = () => {
 
           <button
             onClick={() => setIsAccountModalOpen(false)}
-            className="p-2 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+            className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
             aria-label="Close Account Modal"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -550,7 +550,7 @@ export const CustomerAccountModal: React.FC = () => {
                               const prodName = item.product?.name || (item as any).name || 'Fashion Item';
                               const prodPrice = item.product?.price ?? (item as any).price ?? 0;
                               return (
-                                <div key={idx} className="flex items-center justify-between text-xs text-neutral-800 bg-white px-2.5 py-1.5 rounded-lg border border-neutral-200/60">
+                                <div key={`${item.product?.id || idx}-${item.selectedSize}-${idx}`} className="flex items-center justify-between text-xs text-neutral-800 bg-white px-2.5 py-1.5 rounded-lg border border-neutral-200/60">
                                   <span className="font-semibold truncate max-w-[200px] sm:max-w-[260px]">
                                     {prodName} {item.selectedSize ? `(${item.selectedSize})` : ''}
                                   </span>
@@ -854,8 +854,8 @@ export const CustomerAccountModal: React.FC = () => {
                     onChange={(e) => setCustomerCancelReason(e.target.value)}
                     className="w-full text-xs p-2.5 rounded-xl border border-neutral-300 bg-neutral-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium text-neutral-800 cursor-pointer"
                   >
-                    {CUSTOMER_CANCEL_REASONS.map((r, i) => (
-                      <option key={i} value={r}>
+                    {CUSTOMER_CANCEL_REASONS.map((r) => (
+                      <option key={r} value={r}>
                         {r}
                       </option>
                     ))}

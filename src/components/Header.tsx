@@ -43,19 +43,21 @@ export const Header: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full max-w-full bg-white border-b border-neutral-200/90 shadow-2xs transform-gpu will-change-transform" id="main-header">
+    <header className="sticky top-0 z-50 w-full max-w-full bg-white/95 backdrop-blur-md border-b border-neutral-200/90 shadow-xs transform-gpu will-change-transform" id="main-header">
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3.5 w-full">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3 w-full">
         <div className="flex items-center justify-between gap-1.5 sm:gap-4 md:gap-6">
           
           {/* Brand Logo - shrink-0 ensures it NEVER gets compressed or overlapped */}
           <button 
+            type="button"
             onClick={() => {
               setCurrentView('store');
               setFilters(prev => ({ ...prev, category: 'all', searchQuery: '' }));
             }} 
             className="text-left focus:outline-hidden cursor-pointer shrink-0 z-10"
             id="header-logo-btn"
+            aria-label="Leovra Enterprises Home"
           >
             <Logo size="md" />
           </button>
@@ -72,15 +74,16 @@ export const Header: React.FC = () => {
                   setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
                   if (currentView !== 'store') setCurrentView('store');
                 }}
-                className="w-full bg-neutral-100/80 hover:bg-neutral-100 focus:bg-white text-xs sm:text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-9 py-2 h-10 rounded-xl border border-neutral-200/90 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 transition-all outline-hidden shadow-2xs"
+                className="w-full bg-neutral-100/80 hover:bg-neutral-100 focus:bg-white text-xs sm:text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-9 py-2 h-11 rounded-xl border border-neutral-200/90 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 transition-all outline-hidden shadow-2xs"
                 id="desktop-search-input"
+                aria-label="Search catalog"
               />
               
               {filters.searchQuery && (
                 <button
                   type="button"
                   onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 p-1.5 rounded-md hover:bg-neutral-200/60 cursor-pointer transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-8 h-8 flex items-center justify-center rounded-md hover:bg-neutral-200/60 cursor-pointer transition-colors"
                   title="Clear search"
                   aria-label="Clear search"
                 >
@@ -97,7 +100,7 @@ export const Header: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowSearchInput(!showSearchInput)}
-              className={`md:hidden flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95 border ${
+              className={`md:hidden flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95 border ${
                 showSearchInput 
                   ? 'bg-amber-50 text-amber-700 border-amber-400 ring-2 ring-amber-400/20' 
                   : 'bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border-neutral-200/90'
@@ -106,7 +109,7 @@ export const Header: React.FC = () => {
               id="mobile-search-toggle"
               title="Search products"
             >
-              <Search className="w-4.5 h-4.5 stroke-[1.8]" />
+              <Search className="w-5 h-5 stroke-[1.8]" />
             </button>
 
             {/* Direct WhatsApp Call / Inquire Button (Desktop & Tablet) */}
@@ -114,7 +117,7 @@ export const Header: React.FC = () => {
               href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I have an inquiry regarding your products.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-2 px-3.5 h-11 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 font-semibold text-xs border border-neutral-200/90 transition-all shadow-2xs hover:border-neutral-300 active:scale-95"
+              className="hidden lg:flex items-center gap-2 px-3.5 h-12 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 font-semibold text-xs border border-neutral-200/90 transition-all shadow-2xs hover:border-neutral-300 active:scale-95"
               id="header-whatsapp-chat-btn"
               title="Chat with Leovra Enterprises on WhatsApp"
             >
@@ -134,23 +137,23 @@ export const Header: React.FC = () => {
                 }
                 setIsAccountModalOpen(true);
               }}
-              className="relative flex items-center justify-center gap-2 w-11 h-11 min-w-[44px] min-h-[44px] lg:w-auto lg:px-3.5 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border border-neutral-200/90 hover:border-neutral-300 transition-all shadow-2xs cursor-pointer active:scale-95"
+              className="relative flex items-center justify-center gap-2 w-12 h-12 min-w-[48px] min-h-[48px] lg:w-auto lg:h-12 lg:px-3.5 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border border-neutral-200/90 hover:border-neutral-300 transition-all shadow-2xs cursor-pointer active:scale-95"
               id="header-account-btn"
               aria-label={currentCustomer ? `Account: ${currentCustomer.name}` : "Customer Account"}
               title={currentCustomer ? `Logged in: ${currentCustomer.name} - View Orders` : "Customer Account / Login"}
             >
               {currentCustomer ? (
-                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-500 to-amber-400 text-neutral-950 font-bold text-[10px] flex items-center justify-center shadow-2xs shrink-0">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-amber-400 text-neutral-950 font-bold text-[11px] flex items-center justify-center shadow-2xs shrink-0">
                   {currentCustomer.name ? currentCustomer.name.charAt(0).toUpperCase() : 'U'}
                 </div>
               ) : (
-                <User className="w-4 h-4 text-neutral-700 stroke-[1.8] shrink-0" />
+                <User className="w-5 h-5 text-neutral-700 stroke-[1.8] shrink-0" />
               )}
               <span className="hidden lg:inline text-xs font-semibold text-neutral-800 truncate max-w-[85px]">
                 {currentCustomer ? currentCustomer.name.split(' ')[0] : 'Account'}
               </span>
               {currentCustomer && (
-                <span className="lg:hidden absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+                <span className="lg:hidden absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
               )}
             </button>
 
@@ -158,15 +161,15 @@ export const Header: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
-              className="relative hidden sm:flex items-center justify-center gap-2 w-11 h-11 min-w-[44px] min-h-[44px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all font-semibold text-xs border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
+              className="relative hidden sm:flex items-center justify-center gap-2 w-12 h-12 min-w-[48px] min-h-[48px] lg:w-auto lg:h-12 lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all font-semibold text-xs border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
               id="header-cart-btn"
               aria-label="View Cart"
               title="Shopping Cart"
             >
-              <ShoppingBag className="w-4 h-4 text-neutral-700 stroke-[1.8] shrink-0" />
+              <ShoppingBag className="w-5 h-5 text-neutral-700 stroke-[1.8] shrink-0" />
               <span className="hidden lg:inline">Cart</span>
               {cartCount > 0 && (
-                <span className="inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full bg-amber-500 text-neutral-950 font-extrabold text-[10px] leading-none shrink-0">
+                <span className="inline-flex items-center justify-center min-w-[20px] h-4.5 px-1 rounded-full bg-amber-500 text-neutral-950 font-extrabold text-[10px] leading-none shrink-0">
                   {cartCount}
                 </span>
               )}
@@ -176,12 +179,12 @@ export const Header: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsSideNavOpen(true)}
-              className="flex items-center justify-center gap-2 w-11 h-11 min-w-[44px] min-h-[44px] lg:w-auto lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
+              className="flex items-center justify-center gap-2 w-12 h-12 min-w-[48px] min-h-[48px] lg:w-auto lg:h-12 lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
               aria-label="Open Services and Navigation Menu"
               id="header-menu-btn"
               title="View all services, categories, and customer support"
             >
-              <Menu className="w-4 h-4 stroke-[1.8] shrink-0" />
+              <Menu className="w-5 h-5 stroke-[1.8] shrink-0" />
               <span className="hidden lg:inline text-xs font-semibold text-neutral-800">Services</span>
             </button>
           </div>
@@ -200,7 +203,7 @@ export const Header: React.FC = () => {
                   setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
                   if (currentView !== 'store') setCurrentView('store');
                 }}
-                className="w-full bg-neutral-100/90 hover:bg-neutral-100 focus:bg-white text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-10 py-2.5 h-10 rounded-xl border border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 outline-hidden shadow-2xs"
+                className="w-full bg-neutral-100/90 hover:bg-neutral-100 focus:bg-white text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-10 py-2.5 h-12 rounded-xl border border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 outline-hidden shadow-2xs"
                 id="mobile-search-input-field"
                 aria-label="Search earrings, t-shirts, lowers"
                 autoFocus
@@ -209,7 +212,7 @@ export const Header: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 p-1.5 cursor-pointer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-9 h-9 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-neutral-200/60 cursor-pointer transition-colors"
                   title="Clear search"
                   aria-label="Clear search"
                 >

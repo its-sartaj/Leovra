@@ -83,11 +83,11 @@ export const ProductModal: React.FC = () => {
         {/* Close Button */}
         <button
           onClick={() => setSelectedProduct(null)}
-          className="absolute right-3 top-3 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 text-neutral-700 hover:text-neutral-950 flex items-center justify-center shadow-md hover:bg-white transition-all cursor-pointer"
+          className="absolute right-3 top-3 z-20 w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-white/95 text-neutral-700 hover:text-neutral-950 flex items-center justify-center shadow-md hover:bg-white transition-all cursor-pointer"
           aria-label="Close modal"
           id="close-product-modal-btn"
         >
-          <X className="w-4 h-4 sm:w-5 sm:h-5" />
+          <X className="w-5 h-5" />
         </button>
 
         {/* Left: Product Image */}
@@ -196,7 +196,7 @@ export const ProductModal: React.FC = () => {
                     <button
                       key={sz}
                       onClick={() => setSelectedSize(sz)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      className={`min-h-[44px] sm:min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         selectedSize === sz
                           ? 'bg-neutral-950 text-white border-neutral-950 shadow-xs'
                           : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
@@ -220,7 +220,7 @@ export const ProductModal: React.FC = () => {
                     <button
                       key={c}
                       onClick={() => setSelectedColor(c)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
+                      className={`min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
                         selectedColor === c
                           ? 'bg-amber-100 text-amber-900 border-amber-400 font-bold'
                           : 'bg-neutral-50 text-neutral-600 border-neutral-200'
@@ -240,16 +240,18 @@ export const ProductModal: React.FC = () => {
                 <div className="flex items-center border border-neutral-200 rounded-xl overflow-hidden bg-neutral-50">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-1.5 text-neutral-700 hover:bg-neutral-200 font-bold text-sm"
+                    aria-label="Decrease quantity"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-700 hover:bg-neutral-200 font-bold text-base cursor-pointer"
                   >
                     -
                   </button>
-                  <span className="px-3 py-1.5 font-bold text-xs text-neutral-900 min-w-[32px] text-center">
+                  <span className="px-3 py-2 font-bold text-xs text-neutral-900 min-w-[36px] text-center">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}
-                    className="px-3 py-1.5 text-neutral-700 hover:bg-neutral-200 font-bold text-sm"
+                    aria-label="Increase quantity"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-700 hover:bg-neutral-200 font-bold text-base cursor-pointer"
                   >
                     +
                   </button>
@@ -345,7 +347,7 @@ export const ProductModal: React.FC = () => {
               <button
                 onClick={handleAddToCart}
                 disabled={isOutOfStock}
-                className={`py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
+                className={`min-h-[48px] py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   isOutOfStock
                     ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200'
                     : isAdded
@@ -375,7 +377,7 @@ export const ProductModal: React.FC = () => {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-3 px-4 rounded-xl font-bold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer text-center"
+                className="min-h-[48px] py-3 px-4 rounded-xl font-bold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer text-center"
                 id="modal-whatsapp-order-btn"
               >
                 <MessageCircle className="w-4 h-4" />

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown, HelpCircle, ShieldCheck, Truck, RotateCcw, MessageCircle } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
@@ -67,13 +67,13 @@ export const FAQSection: React.FC = () => {
             const isOpen = openIndex === index;
             return (
               <div 
-                key={index}
+                key={faq.question}
                 className="border border-neutral-200 rounded-2xl overflow-hidden transition-colors bg-neutral-50/50 hover:border-amber-400"
               >
                 <button
                   type="button"
                   onClick={() => toggleFAQ(index)}
-                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left cursor-pointer transition-colors"
+                  className="w-full min-h-[48px] p-4 sm:p-5 flex items-center justify-between gap-3 text-left cursor-pointer transition-colors"
                   aria-expanded={isOpen}
                   aria-controls={`faq-answer-${index}`}
                   id={`faq-btn-${index}`}

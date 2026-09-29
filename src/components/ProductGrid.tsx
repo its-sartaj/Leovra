@@ -77,7 +77,7 @@ export const ProductGrid: React.FC = () => {
                 key={cat.id}
                 type="button"
                 onClick={() => setFilters(prev => ({ ...prev, category: cat.id }))}
-                className={`px-3 py-2 min-h-[44px] rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
+                className={`px-3.5 py-2.5 min-h-[48px] rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
                   filters.category === cat.id
                     ? 'bg-neutral-900 text-white shadow-xs'
                     : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
@@ -90,13 +90,13 @@ export const ProductGrid: React.FC = () => {
           </div>
 
           {/* In-Stock Only Toggle Switch */}
-          <label htmlFor="in-stock-filter-toggle" className="inline-flex items-center gap-2 cursor-pointer select-none bg-neutral-50 px-2.5 py-1.5 rounded-xl border border-neutral-200 hover:bg-neutral-100 transition-colors text-xs font-semibold text-neutral-800 self-start sm:self-auto shrink-0 min-h-[38px]">
+          <label htmlFor="in-stock-filter-toggle" className="inline-flex items-center gap-2 cursor-pointer select-none bg-neutral-50 px-3 py-2.5 rounded-xl border border-neutral-200 hover:bg-neutral-100 transition-colors text-xs font-semibold text-neutral-800 self-start sm:self-auto shrink-0 min-h-[48px]">
             <input
               id="in-stock-filter-toggle"
               type="checkbox"
               checked={filters.inStockOnly}
               onChange={(e) => setFilters(prev => ({ ...prev, inStockOnly: e.target.checked }))}
-              className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 border-neutral-300 cursor-pointer"
+              className="w-4.5 h-4.5 rounded text-amber-600 focus:ring-amber-500 border-neutral-300 cursor-pointer"
             />
             <span>In-Stock Only</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
@@ -127,14 +127,14 @@ export const ProductGrid: React.FC = () => {
 
           {/* Sort By Dropdown */}
           <div className="flex items-center gap-1.5">
-            <ArrowUpDown className="w-3 h-3 text-neutral-400" />
+            <ArrowUpDown className="w-3.5 h-3.5 text-neutral-400" />
             <label htmlFor="sort-by-select" className="text-neutral-500 text-[11px] cursor-pointer">
               Sort:
             </label>
             <select
               value={filters.sortBy}
               onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as FilterOptions['sortBy'] }))}
-              className="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-hidden focus:border-amber-500 cursor-pointer"
+              className="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-2.5 py-1.5 min-h-[44px] sm:min-h-[38px] text-xs font-semibold focus:outline-hidden focus:border-amber-500 cursor-pointer"
               id="sort-by-select"
               aria-label="Sort products by"
             >

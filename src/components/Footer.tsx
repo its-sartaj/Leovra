@@ -110,22 +110,22 @@ export const Footer: React.FC = () => {
             </h2>
             <ul className="space-y-1 text-xs text-neutral-300 font-medium">
               <li>
-                <button onClick={() => handleCategory('earrings')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
+                <button onClick={() => handleCategory('earrings')} className="py-2 hover:text-amber-400 transition-colors text-left cursor-pointer inline-flex items-center min-h-[40px]">
                   Designer Earrings (झुमके व बालियां)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleCategory('tshirts')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
+                <button onClick={() => handleCategory('tshirts')} className="py-2 hover:text-amber-400 transition-colors text-left cursor-pointer inline-flex items-center min-h-[40px]">
                   Streetwear T-Shirts (टी-शर्ट्स)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleCategory('lowers')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
+                <button onClick={() => handleCategory('lowers')} className="py-2 hover:text-amber-400 transition-colors text-left cursor-pointer inline-flex items-center min-h-[40px]">
                   Comfort Lowers & Joggers (लोअर व ट्रैक पैंट)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleCategory('all')} className="py-1.5 hover:text-amber-400 transition-colors text-left cursor-pointer inline-block">
+                <button onClick={() => handleCategory('all')} className="py-2 hover:text-amber-400 transition-colors text-left cursor-pointer inline-flex items-center min-h-[40px]">
                   Full Catalog (सभी उत्पाद)
                 </button>
               </li>
@@ -203,7 +203,7 @@ export const Footer: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsReturnPolicyOpen(true)}
-            className="py-1.5 px-2 text-[11px] text-neutral-300 hover:text-amber-400 transition-colors cursor-pointer font-medium"
+            className="py-2.5 px-3 min-h-[44px] inline-flex items-center text-[11px] text-neutral-300 hover:text-amber-400 transition-colors cursor-pointer font-medium"
           >
             Return & Refund Policy (3 Days)
           </button>

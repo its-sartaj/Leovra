@@ -98,7 +98,7 @@ export const SideNavDrawer: React.FC = () => {
 
               <button
                 onClick={() => setIsSideNavOpen(false)}
-                className="p-1.5 rounded-xl bg-neutral-900 text-neutral-300 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl bg-neutral-900 text-neutral-300 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
                 id="close-side-nav-btn"
                 aria-label="Close menu"
               >
@@ -181,7 +181,7 @@ export const SideNavDrawer: React.FC = () => {
                 {/* All Products */}
                 <button
                   onClick={() => handleCategorySelect('all')}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
+                  className="w-full min-h-[48px] flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center group-hover:bg-neutral-900 group-hover:text-white transition-colors">
@@ -198,7 +198,7 @@ export const SideNavDrawer: React.FC = () => {
                 {/* Artisanal Earrings */}
                 <button
                   onClick={() => handleCategorySelect('earrings')}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
+                  className="w-full min-h-[48px] flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-neutral-950 transition-colors">
@@ -220,7 +220,7 @@ export const SideNavDrawer: React.FC = () => {
                 {/* T-Shirts */}
                 <button
                   onClick={() => handleCategorySelect('tshirts')}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
+                  className="w-full min-h-[48px] flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
@@ -242,7 +242,7 @@ export const SideNavDrawer: React.FC = () => {
                 {/* Lowers & Joggers */}
                 <button
                   onClick={() => handleCategorySelect('lowers')}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
+                  className="w-full min-h-[48px] flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-100 transition-colors text-left group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">

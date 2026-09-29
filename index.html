@@ -26,7 +26,7 @@
       html{-webkit-text-size-adjust:100%;font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
       body{margin:0;background-color:#fafafa;color:#171717;-webkit-font-smoothing:antialiased;overflow-x:clip;width:100%}
       #root{min-height:100vh;width:100%}
-      .ssr-header{position:sticky;top:0;z-index:40;width:100%;background:#ffffff;border-bottom:1px solid rgba(229,229,229,0.9);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-height:56px}
+      .ssr-header{position:sticky;top:0;z-index:50;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(229,229,229,0.9);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-height:56px}
       @media(min-width:640px){.ssr-header{padding:10px 16px;min-height:62px}}
       .ssr-hero{position:relative;border-radius:1rem;background:#0a0a0a;color:#ffffff;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);border:1px solid #262626;padding:20px 16px;min-height:480px;display:flex;flex-direction:column;justify-content:center}
       @media(min-width:640px){.ssr-hero{border-radius:1.5rem;padding:32px;min-height:360px}}
@@ -38,7 +38,12 @@
       @media(min-width:768px){.ssr-cat-card{height:180px}}
       .ssr-catalog-placeholder{background:#ffffff;border-radius:1rem;padding:14px;border:1px solid #e5e5e5;margin-top:16px;min-height:480px;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05)}
     </style>
+    <!-- Favicons & Web App Manifest -->
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%brand-logo.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="%BASE_URL%favicon-48x48.png" />
+    <link rel="icon" href="%BASE_URL%favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
+    <link rel="manifest" href="%BASE_URL%site.webmanifest" />
     <link rel="canonical" href="https://its-sartaj.github.io/Leovra/" />
     <meta name="google-site-verification" content="google34d921ecbba278cf" />
     <meta name="google-site-verification" content="34d921ecbba278cf" />
@@ -82,7 +87,7 @@
     <div id="root">
       <!-- Instant First-Paint SSR Shell for Lighthouse 100/100 FCP & LCP -->
       <div class="min-h-screen w-full flex flex-col bg-neutral-50 text-neutral-900 selection:bg-amber-500 selection:text-white relative">
-        <header class="sticky top-0 z-40 w-full bg-white border-b border-neutral-200/90 shadow-2xs ssr-header">
+        <header class="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-neutral-200/90 shadow-2xs ssr-header">
           <div class="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3.5 flex items-center justify-between w-full">
             <div class="inline-flex items-center gap-2">
               <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-neutral-950 flex items-center justify-center border border-amber-400/40 shrink-0">

@@ -1,0 +1,26 @@
+{
+  "name": "Leovra Enterprises",
+  "short_name": "Leovra",
+  "description": "Shop handcrafted artisanal earrings, heavyweight oversized graphic streetwear t-shirts, and premium gym trackpants with Cash on Delivery in India.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "brand-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

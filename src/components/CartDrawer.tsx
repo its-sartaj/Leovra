@@ -235,7 +235,7 @@ export const CartDrawer: React.FC = () => {
               )}
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="p-1.5 rounded-xl text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
                 id="close-cart-drawer-btn"
                 aria-label="Close cart"
               >
@@ -298,7 +298,7 @@ export const CartDrawer: React.FC = () => {
                     </div>
                     <div className="space-y-1">
                       {lastConfirmedOrder.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-[11px] text-neutral-700">
+                        <div key={`${item.product.id}-${item.selectedSize}-${idx}`} className="flex justify-between text-[11px] text-neutral-700">
                           <span className="truncate max-w-[180px]">
                             {item.quantity}x {item.product.name} ({item.selectedSize})
                           </span>
@@ -844,11 +844,11 @@ export const CartDrawer: React.FC = () => {
                               </h3>
                               <button
                                 onClick={() => removeFromCart(item.product.id, item.selectedSize, item.selectedColor)}
-                                className="text-neutral-400 hover:text-rose-600 p-2 cursor-pointer transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center -mr-1"
+                                className="text-neutral-400 hover:text-rose-600 p-2 cursor-pointer transition-colors w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center -mr-2"
                                 title="Remove item"
                                 aria-label={`Remove ${item.product.name} from bag`}
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-4.5 h-4.5" />
                               </button>
                             </div>
                             
@@ -872,21 +872,21 @@ export const CartDrawer: React.FC = () => {
 
                           <div className="flex items-center justify-between mt-2">
                             {/* Quantity Selector */}
-                            <div className="flex items-center border border-neutral-200 rounded-lg bg-neutral-50 overflow-hidden">
+                            <div className="flex items-center border border-neutral-200 rounded-xl bg-neutral-50 overflow-hidden">
                               <button
                                 onClick={() => updateCartQuantity(item.product.id, item.selectedSize, item.quantity - 1, item.selectedColor)}
-                                className="px-3 py-1.5 min-w-[36px] min-h-[36px] text-neutral-700 hover:bg-neutral-200 text-xs font-bold cursor-pointer transition-colors flex items-center justify-center"
+                                className="w-11 h-11 min-w-[44px] min-h-[44px] text-neutral-700 hover:bg-neutral-200 text-sm font-bold cursor-pointer transition-colors flex items-center justify-center"
                                 aria-label={`Decrease quantity of ${item.product.name}`}
                               >
                                 -
                               </button>
-                              <span className="px-2 py-1 text-xs font-bold text-neutral-900 min-w-[24px] text-center">
+                              <span className="px-2.5 py-1 text-xs font-bold text-neutral-900 min-w-[28px] text-center">
                                 {item.quantity}
                               </span>
                               <button
                                 onClick={() => updateCartQuantity(item.product.id, item.selectedSize, item.quantity + 1, item.selectedColor)}
                                 disabled={item.quantity >= liveProduct.stock}
-                                className={`px-3 py-1.5 min-w-[36px] min-h-[36px] text-xs font-bold cursor-pointer transition-colors flex items-center justify-center ${
+                                className={`w-11 h-11 min-w-[44px] min-h-[44px] text-sm font-bold cursor-pointer transition-colors flex items-center justify-center ${
                                   item.quantity >= liveProduct.stock
                                     ? 'text-neutral-300 cursor-not-allowed bg-neutral-100'
                                     : 'text-neutral-700 hover:bg-neutral-200'

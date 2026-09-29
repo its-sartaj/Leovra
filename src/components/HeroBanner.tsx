@@ -172,7 +172,7 @@ export const HeroBanner: React.FC = () => {
             <div className="pt-1 flex flex-wrap items-center gap-2 sm:gap-3 w-full">
               <a
                 href={`tel:+91${businessPhone}`}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs sm:text-sm transition-all shadow-lg active:scale-95 text-center whitespace-nowrap cursor-pointer"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-3 min-h-[48px] rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs sm:text-sm transition-all shadow-lg active:scale-95 text-center whitespace-nowrap cursor-pointer"
                 id="hero-call-now-btn"
               >
                 <span>Call: +91 {businessPhone}</span>
@@ -181,7 +181,7 @@ export const HeroBanner: React.FC = () => {
                 href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I would like to place an order from your catalog.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl bg-neutral-800/90 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs sm:text-sm border border-neutral-700 transition-all active:scale-95 text-center whitespace-nowrap cursor-pointer"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-3 min-h-[48px] rounded-xl bg-neutral-800/90 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs sm:text-sm border border-neutral-700 transition-all active:scale-95 text-center whitespace-nowrap cursor-pointer"
                 id="hero-whatsapp-order-btn"
               >
                 <span>Order via WhatsApp</span>
@@ -218,7 +218,7 @@ export const HeroBanner: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveSlide((prev) => (prev - 1 + BACKGROUND_SLIDES.length) % BACKGROUND_SLIDES.length)}
-          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
+          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 min-w-[48px] min-h-[48px] items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
           aria-label="Previous Slide"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -227,7 +227,7 @@ export const HeroBanner: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length)}
-          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
+          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 min-w-[48px] min-h-[48px] items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
           aria-label="Next Slide"
         >
           <ChevronRight className="w-5 h-5" />
@@ -244,7 +244,7 @@ export const HeroBanner: React.FC = () => {
               type="button"
               onClick={() => setActiveSlide(idx)}
               aria-label={`Show slide ${idx + 1}: ${slide.label}`}
-              className="p-2 min-w-[32px] min-h-[32px] flex items-center justify-center cursor-pointer transition-transform active:scale-95"
+              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer transition-transform active:scale-95"
             >
               <span 
                 className={`transition-all rounded-full block ${

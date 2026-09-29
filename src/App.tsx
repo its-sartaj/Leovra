@@ -34,7 +34,7 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-neutral-50 text-neutral-900 selection:bg-amber-500 selection:text-white relative">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-neutral-50 text-neutral-900 selection:bg-amber-500 selection:text-white relative">
       {/* Dynamic SEO Meta & Canonical Manager */}
       <SEOHead />
       
@@ -54,7 +54,7 @@ const MainLayout: React.FC = () => {
         /* CUSTOMER STOREFRONT */
         <>
           <Header />
-          <main className="flex-1 w-full">
+          <main className="flex-1 w-full max-w-full overflow-x-hidden">
             <HeroBanner />
             <ProductGrid />
             <FAQSection />
@@ -64,7 +64,7 @@ const MainLayout: React.FC = () => {
           <div className="fixed bottom-20 md:bottom-6 right-3.5 md:right-6 z-30 flex flex-col items-end gap-2 transform-gpu">
             <button
               onClick={scrollToTop}
-              className="hidden md:flex w-10 h-10 rounded-full bg-white text-neutral-700 shadow-md border border-neutral-200 items-center justify-center hover:bg-neutral-100 transition-colors cursor-pointer"
+              className="hidden md:flex w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-white text-neutral-700 shadow-md border border-neutral-200 items-center justify-center hover:bg-neutral-100 transition-colors cursor-pointer"
               title="Back to top"
               aria-label="Back to top"
               id="scroll-to-top-btn"
@@ -76,7 +76,7 @@ const MainLayout: React.FC = () => {
               href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I have an inquiry about your products.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+              className="group flex items-center gap-2 px-3.5 py-2.5 min-h-[48px] min-w-[48px] rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               id="floating-whatsapp-btn"
               title="Direct WhatsApp Support"
               aria-label="Direct WhatsApp Support"
