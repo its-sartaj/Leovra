@@ -168,26 +168,7 @@ export const HeroBanner: React.FC = () => {
               Curated artisanal earrings, heavyweight streetwear t-shirts, and ultra-flexible comfort lowers with instant dispatch to your doorstep.
             </p>
 
-            {/* Quick CTAs */}
-            <div className="pt-1 flex flex-wrap items-center gap-2 sm:gap-3 w-full">
-              <a
-                href={`tel:+91${businessPhone}`}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-3 min-h-[48px] rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs sm:text-sm transition-all shadow-lg active:scale-95 text-center whitespace-nowrap cursor-pointer"
-                id="hero-call-now-btn"
-              >
-                <span>Call: +91 {businessPhone}</span>
-              </a>
-              <a
-                href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I would like to place an order from your catalog.')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:px-5 sm:py-3 min-h-[48px] rounded-xl bg-neutral-800/90 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs sm:text-sm border border-neutral-700 transition-all active:scale-95 text-center whitespace-nowrap cursor-pointer"
-                id="hero-whatsapp-order-btn"
-              >
-                <span>Order via WhatsApp</span>
-                <ArrowRight className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              </a>
-            </div>
+
           </div>
 
           {/* Right Column: Quick Value Points (Restored from user's screenshot) */}
