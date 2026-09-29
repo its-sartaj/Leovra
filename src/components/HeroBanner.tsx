@@ -16,7 +16,7 @@ const heroTshirtImg = `${BASE_URL}hero-tshirt.webp`;
 const heroTshirtMobile = `${BASE_URL}hero-tshirt-mobile.webp`;
 const heroLowersImg = `${BASE_URL}hero-lowers.webp`;
 const heroLowersMobile = `${BASE_URL}hero-lowers-mobile.webp`;
-const heroEarringFallback = `${BASE_URL}hero-earring.jpg`;
+const heroEarringFallback = `${BASE_URL}hero-earring.webp`;
 
 const BACKGROUND_SLIDES = [
   {
@@ -130,7 +130,6 @@ export const HeroBanner: React.FC = () => {
                   decoding="async"
                   width={800}
                   height={400}
-                  style={{ aspectRatio: '2/1' }}
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = heroEarringFallback;
                   }}

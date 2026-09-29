@@ -24,7 +24,7 @@ export const ProductModal: React.FC = () => {
   } = useStore();
 
   // IMPORTANT: All hooks must be called before any early return (Rules of Hooks)
-  const [selectedSize, setSelectedSize] = useState<string>(selectedProduct?.sizes[0] || 'Standard');
+  const [selectedSize, setSelectedSize] = useState<string>(selectedProduct?.sizes?.[0] || 'Standard');
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     selectedProduct?.colors && selectedProduct.colors.length > 0 ? selectedProduct.colors[0] : undefined
   );
@@ -98,9 +98,10 @@ export const ProductModal: React.FC = () => {
             width={600}
             height={600}
             referrerPolicy="no-referrer"
+            decoding="async"
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.jpg`;
+              e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.webp`;
             }}
             className={`w-full h-full object-cover object-center ${
               isOutOfStock ? 'grayscale-40' : ''

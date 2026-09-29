@@ -80,9 +80,9 @@ export const FAQSection: React.FC = () => {
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     {faq.icon}
-                    <span className="font-bold text-xs sm:text-sm text-neutral-900 leading-snug">
+                    <h3 className="font-bold text-xs sm:text-sm text-neutral-900 leading-snug m-0">
                       {faq.question}
-                    </span>
+                    </h3>
                   </div>
                   <ChevronDown 
                     className={`w-4 h-4 text-neutral-500 shrink-0 transition-transform duration-200 ${
@@ -91,16 +91,14 @@ export const FAQSection: React.FC = () => {
                   />
                 </button>
 
-                {isOpen && (
-                  <div 
-                    id={`faq-answer-${index}`}
-                    role="region"
-                    aria-labelledby={`faq-btn-${index}`}
-                    className="px-4 sm:px-5 pb-4 sm:pb-5 pt-1 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white"
-                  >
-                    <p>{faq.answer}</p>
-                  </div>
-                )}
+                <div 
+                  id={`faq-answer-${index}`}
+                  role="region"
+                  aria-labelledby={`faq-btn-${index}`}
+                  className={`px-4 sm:px-5 pb-4 sm:pb-5 pt-1 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white ${isOpen ? 'block' : 'hidden'}`}
+                >
+                  <p>{faq.answer}</p>
+                </div>
               </div>
             );
           })}

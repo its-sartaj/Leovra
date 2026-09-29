@@ -297,14 +297,19 @@ export const CartDrawer: React.FC = () => {
                       Reserved Items ({lastConfirmedOrder.items.length}):
                     </div>
                     <div className="space-y-1">
-                      {lastConfirmedOrder.items.map((item, idx) => (
-                        <div key={`${item.product.id}-${item.selectedSize}-${idx}`} className="flex justify-between text-[11px] text-neutral-700">
-                          <span className="truncate max-w-[180px]">
-                            {item.quantity}x {item.product.name} ({item.selectedSize})
-                          </span>
-                          <span className="font-semibold shrink-0">₹{item.product.price * item.quantity}</span>
-                        </div>
-                      ))}
+                      {lastConfirmedOrder.items.map((item, idx) => {
+                        const prodName = item.product?.name || 'Item';
+                        const prodPrice = item.product?.price || 0;
+                        const prodId = item.product?.id || `item-${idx}`;
+                        return (
+                          <div key={`${prodId}-${item.selectedSize}-${idx}`} className="flex justify-between text-[11px] text-neutral-700">
+                            <span className="truncate max-w-[180px]">
+                              {item.quantity}x {prodName} ({item.selectedSize})
+                            </span>
+                            <span className="font-semibold shrink-0">₹{prodPrice * item.quantity}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -819,20 +824,24 @@ export const CartDrawer: React.FC = () => {
 
                 {/* Items */}
                 <div className="space-y-3 divide-y divide-neutral-100">
-                  {cart.map((item) => {
+                  {cart.map((item, cartIdx) => {
+                    if (!item || !item.product) return null;
                     // Check against live product state
                     const liveProduct = products.find(p => p.id === item.product.id) || item.product;
                     const isOutOfStock = liveProduct.isOutOfStock || liveProduct.stock <= 0;
+                    const prodKey = `${item.product.id || cartIdx}-${item.selectedSize}-${item.selectedColor || ''}`;
 
                     return (
-                      <div key={`${item.product.id}-${item.selectedSize}-${item.selectedColor || ''}`} className="pt-3 flex gap-3">
+                      <div key={prodKey} className="pt-3 flex gap-3">
                         <img
                           src={item.product.image}
                           alt={item.product.name}
                           width={80}
                           height={80}
+                          loading="lazy"
+                          decoding="async"
                           onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src = `${import.meta.env.BASE_URL}hero-earring.jpg`;
+                            (e.currentTarget as HTMLImageElement).src = `${import.meta.env.BASE_URL}hero-earring.webp`;
                           }}
                           className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl bg-neutral-100 border border-neutral-200 shrink-0"
                         />

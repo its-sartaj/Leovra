@@ -647,8 +647,10 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Admin Tabs */}
-      <div className="flex items-center gap-2 border-b border-neutral-200 pb-2">
+      <div className="flex items-center gap-2 border-b border-neutral-200 pb-2" role="tablist" aria-label="Admin Navigation Tabs">
         <button
+          role="tab"
+          aria-selected={activeTab === 'inventory'}
           onClick={() => setActiveTab('inventory')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'inventory'
@@ -661,6 +663,8 @@ export const AdminDashboard: React.FC = () => {
         </button>
 
         <button
+          role="tab"
+          aria-selected={activeTab === 'orders'}
           onClick={() => setActiveTab('orders')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeTab === 'orders'
@@ -674,6 +678,8 @@ export const AdminDashboard: React.FC = () => {
         </button>
 
         <button
+          role="tab"
+          aria-selected={activeTab === 'shiprocket'}
           onClick={() => setActiveTab('shiprocket')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeTab === 'shiprocket'
@@ -786,6 +792,10 @@ export const AdminDashboard: React.FC = () => {
                       <img
                         src={product.image}
                         alt={product.name}
+                        width={56}
+                        height={64}
+                        loading="lazy"
+                        decoding="async"
                         referrerPolicy="no-referrer"
                         className="w-14 h-16 rounded-xl object-cover bg-neutral-100 shrink-0 border border-neutral-200 shadow-2xs"
                       />
@@ -1848,6 +1858,10 @@ export const AdminDashboard: React.FC = () => {
                           <img
                             src={sample.url}
                             alt={sample.label}
+                            width={80}
+                            height={80}
+                            loading="lazy"
+                            decoding="async"
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
@@ -1887,6 +1901,10 @@ export const AdminDashboard: React.FC = () => {
                     <img
                       src={formImage}
                       alt="Preview"
+                      width={48}
+                      height={48}
+                      loading="lazy"
+                      decoding="async"
                       referrerPolicy="no-referrer"
                       className="w-12 h-12 rounded-lg object-cover bg-white shrink-0 border border-neutral-200"
                     />

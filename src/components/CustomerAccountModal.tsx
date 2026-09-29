@@ -151,7 +151,7 @@ export const CustomerAccountModal: React.FC = () => {
 
       {/* Modal Dialog */}
       <div 
-        className="relative w-full sm:max-w-lg max-h-[90vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden z-10 border border-neutral-200"
+        className="relative w-full sm:max-w-lg max-h-[92dvh] sm:max-h-[90vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden z-10 border border-neutral-200"
         role="dialog"
         aria-modal="true"
         aria-labelledby="customer-account-title"

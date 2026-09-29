@@ -78,9 +78,12 @@ export const SEOHead: React.FC = () => {
 
     // Update canonical link
     let canonicalEl = document.querySelector('link[rel="canonical"]');
-    if (canonicalEl) {
-      canonicalEl.setAttribute('href', canonicalUrl);
+    if (!canonicalEl) {
+      canonicalEl = document.createElement('link');
+      canonicalEl.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalEl);
     }
+    canonicalEl.setAttribute('href', canonicalUrl);
 
     // Synchronize browser URL query parameters without reloading
     if (typeof window !== 'undefined' && currentView === 'store') {

@@ -12,17 +12,18 @@ import { useStore } from '../context/StoreContext';
 
 interface ProductCardProps {
   product: Product;
+  priority?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = false }) => {
   const { 
     addToCart, 
     setSelectedProduct, 
     businessPhone 
   } = useStore();
 
-  const selectedSize = product.sizes[0] || 'Free Size';
-  const selectedColor = product.colors && product.colors.length > 0 ? product.colors[0] : undefined;
+  const selectedSize = product.sizes?.[0] || 'Free Size';
+  const selectedColor = product.colors?.[0] || undefined;
   const [isAddedRecently, setIsAddedRecently] = useState(false);
 
   const isOutOfStock = product.isOutOfStock || product.stock <= 0;
@@ -76,7 +77,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           style={{ aspectRatio: '4/5' }}
           referrerPolicy="no-referrer"
           decoding="async"
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.webp`;
