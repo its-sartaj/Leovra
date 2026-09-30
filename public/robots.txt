@@ -22,6 +22,6 @@ User-agent: YandexBot
 Allow: /
 
 # Host & XML Sitemap
-Host: https://loevraenterprises.publicvm.com
-Sitemap: https://loevraenterprises.publicvm.com/sitemap.xml
+Host: https://its-sartaj.github.io
+Sitemap: https://its-sartaj.github.io/Leovra/sitemap.xml
 

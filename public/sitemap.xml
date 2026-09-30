@@ -4,22 +4,22 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- 1. Homepage -->
   <url>
-    <loc>https://loevraenterprises.publicvm.com/</loc>
+    <loc>https://its-sartaj.github.io/Leovra/</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://loevraenterprises.publicvm.com/hero-earring.webp</image:loc>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-earring.webp</image:loc>
       <image:title>Leovra Enterprises - Royal Kundan &amp; Oxidized Earrings Collection</image:title>
       <image:caption>Artisanal designer earrings, trendy streetwear t-shirts, and comfort gym lowers with Cash on Delivery in India.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://loevraenterprises.publicvm.com/hero-tshirt.webp</image:loc>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-tshirt.webp</image:loc>
       <image:title>Leovra Enterprises - Heavyweight Oversized Streetwear T-Shirts</image:title>
       <image:caption>100% pure combed Supima cotton oversized tees with high-density graphics.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://loevraenterprises.publicvm.com/hero-lowers.webp</image:loc>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-lowers.webp</image:loc>
       <image:title>Leovra Enterprises - Flexible Gym Trackpants &amp; Tactical Cargo Joggers</image:title>
       <image:caption>4-way stretch gym trackpants and multi-pocket casual joggers for men.</image:caption>
     </image:image>
@@ -27,34 +27,34 @@
 
   <!-- 2. Category Collections -->
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?category=earrings</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?category=earrings</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://loevraenterprises.publicvm.com/hero-earring.webp</image:loc>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-earring.webp</image:loc>
       <image:title>Handcrafted Designer Earrings &amp; Kundan Jhumkas - Leovra</image:title>
       <image:caption>Antique oxidized silver, meenakari chandbalis, and 18K gold plated chandelier earrings with Cash on Delivery across India.</image:caption>
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?category=tshirts</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?category=tshirts</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://loevraenterprises.publicvm.com/hero-tshirt.webp</image:loc>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-tshirt.webp</image:loc>
       <image:title>Oversized Graphic Streetwear T-Shirts - Leovra</image:title>
       <image:caption>Heavyweight 240+ GSM streetwear t-shirts, acid wash vintage tees, and athletic training t-shirts in India.</image:caption>
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?category=lowers</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?category=lowers</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://loevraenterprises.publicvm.com/hero-lowers.webp</image:loc>
+      <image:loc>https://its-sartaj.github.io/Leovra/hero-lowers.webp</image:loc>
       <image:title>Performance Trackpants &amp; Cargo Joggers - Leovra</image:title>
       <image:caption>Multi-pocket cargo joggers, French terry lowers, and flexible running track pants with fast doorstep dispatch.</image:caption>
     </image:image>
@@ -62,7 +62,7 @@
 
   <!-- 3. Individual Products -->
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-earring-1</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-1</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -73,7 +73,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-earring-2</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-2</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -84,7 +84,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-earring-3</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-3</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -95,7 +95,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-earring-4</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-4</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -106,7 +106,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-earring-5</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-earring-5</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -117,7 +117,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-tshirt-1</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-1</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -128,7 +128,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-tshirt-2</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-2</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -139,7 +139,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-tshirt-3</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-3</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -150,7 +150,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-tshirt-4</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-4</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -161,7 +161,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-tshirt-5</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-tshirt-5</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -172,7 +172,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-lower-1</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-1</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -183,7 +183,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-lower-2</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-2</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -194,7 +194,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-lower-3</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-3</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -205,7 +205,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-lower-4</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-4</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -216,7 +216,7 @@
     </image:image>
   </url>
   <url>
-    <loc>https://loevraenterprises.publicvm.com/?product=prod-lower-5</loc>
+    <loc>https://its-sartaj.github.io/Leovra/?product=prod-lower-5</loc>
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
