@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 
 const SITE_NAME = 'Leovra Enterprises';
-const BASE_CANONICAL = 'https://its-sartaj.github.io/Leovra/';
+const getBaseCanonical = () => {
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}${window.location.pathname.startsWith('/Leovra') ? '/Leovra/' : '/'}`;
+  }
+  return 'https://loevraenterprises.publicvm.com/';
+};
 
 export const SEOHead: React.FC = () => {
   const { filters, setFilters, selectedProduct, setSelectedProduct, currentView } = useStore();
@@ -11,40 +16,41 @@ export const SEOHead: React.FC = () => {
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
+    const baseCanonical = getBaseCanonical();
     let pageTitle = 'Leovra Enterprises | Buy Designer Earrings, Trendy T-Shirts & Mens Lowers Online India';
     let metaDescription = 'Shop handcrafted Kundan & oxidized earrings, oversized graphic streetwear t-shirts, and premium gym trackpants at Leovra Enterprises. Cash on Delivery (COD), 3-day easy returns & express doorstep delivery across India.';
-    let canonicalUrl = BASE_CANONICAL;
-    let ogImage = `${BASE_CANONICAL}brand-logo.svg`;
+    let canonicalUrl = baseCanonical;
+    let ogImage = `${baseCanonical}brand-logo.svg`;
 
     if (currentView === 'admin') {
       pageTitle = 'Admin Inventory & Order Management Portal | Leovra Enterprises';
       metaDescription = 'Restricted administrative portal for real-time stock control, order dispatching, Shiprocket AWB tracking, and catalog management.';
-      canonicalUrl = `${BASE_CANONICAL}#admin`;
+      canonicalUrl = `${baseCanonical}#admin`;
     } else if (selectedProduct) {
       pageTitle = `${selectedProduct.name} - ₹${selectedProduct.price} | Leovra Enterprises`;
       metaDescription = `Buy ${selectedProduct.name} for ₹${selectedProduct.price}. ${selectedProduct.description} Enjoy Cash on Delivery (COD) and 3-day doorstep return policy across India.`;
-      canonicalUrl = `${BASE_CANONICAL}?product=${selectedProduct.id}`;
+      canonicalUrl = `${baseCanonical}?product=${selectedProduct.id}`;
       ogImage = selectedProduct.image;
     } else if (filters.searchQuery && filters.searchQuery.trim().length > 0) {
       const q = filters.searchQuery.trim();
       pageTitle = `Search results for "${q}" | Leovra Enterprises`;
       metaDescription = `Explore search results for "${q}" at Leovra Enterprises. Handcrafted jewelry, graphic tees, and gym trackpants with Cash on Delivery.`;
-      canonicalUrl = `${BASE_CANONICAL}?search=${encodeURIComponent(q)}`;
+      canonicalUrl = `${baseCanonical}?search=${encodeURIComponent(q)}`;
     } else if (filters.category === 'earrings') {
       pageTitle = 'Designer Artisanal Earrings & Royal Kundan Jhumkas Online | Leovra Enterprises';
       metaDescription = 'Shop handcrafted oxidized silver jhumkas, meenakari chandbalis, 18K gold plated teardrop chandelier earrings, and pearl danglers. Cash on Delivery (COD) across India.';
-      canonicalUrl = `${BASE_CANONICAL}?category=earrings`;
-      ogImage = `${BASE_CANONICAL}hero-earring.webp`;
+      canonicalUrl = `${baseCanonical}?category=earrings`;
+      ogImage = `${baseCanonical}hero-earring.webp`;
     } else if (filters.category === 'tshirts') {
       pageTitle = 'Heavyweight Streetwear Oversized T-Shirts (240+ GSM) | Leovra Enterprises';
       metaDescription = 'Buy 100% pure combed Supima cotton oversized graphic tees, vintage acid wash boxy fit t-shirts, and athletic training gym tees with Cash on Delivery in India.';
-      canonicalUrl = `${BASE_CANONICAL}?category=tshirts`;
-      ogImage = `${BASE_CANONICAL}hero-tshirt.webp`;
+      canonicalUrl = `${baseCanonical}?category=tshirts`;
+      ogImage = `${baseCanonical}hero-tshirt.webp`;
     } else if (filters.category === 'lowers') {
       pageTitle = 'Men\'s Gym Trackpants, Tactical Cargo Joggers & Comfort Lowers | Leovra Enterprises';
       metaDescription = 'Discover 4-way stretch gym track pants, multi-pocket tactical cargo joggers, and heavy terry cotton casual lowers at Leovra Enterprises with express dispatch.';
-      canonicalUrl = `${BASE_CANONICAL}?category=lowers`;
-      ogImage = `${BASE_CANONICAL}hero-lowers.webp`;
+      canonicalUrl = `${baseCanonical}?category=lowers`;
+      ogImage = `${baseCanonical}hero-lowers.webp`;
     }
 
     // Set page title
