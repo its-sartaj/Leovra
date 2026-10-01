@@ -6,7 +6,7 @@ const getBaseCanonical = () => {
   if (typeof window !== 'undefined') {
     return `${window.location.origin}${window.location.pathname.startsWith('/Leovra') ? '/Leovra/' : '/'}`;
   }
-  return 'https://loevraenterprises.publicvm.com/';
+  return 'https://its-sartaj.github.io/Leovra/';
 };
 
 export const SEOHead: React.FC = () => {
