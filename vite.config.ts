@@ -62,26 +62,12 @@ function aistudioMediaPlugin(): Plugin {
     },
   };
 }
-// Lighthouse 100 Performance: Non-blocking stylesheet with preload fallback
-function nonBlockingCssPlugin(): Plugin {
-  return {
-    name: 'vite-plugin-non-blocking-css',
-    enforce: 'post',
-    transformIndexHtml(html) {
-      return html.replace(
-        /<link rel="stylesheet" crossorigin href="(\.\/assets\/index-[^"]+\.css)">/g,
-        '<link rel="preload" as="style" href="$1" /><link rel="stylesheet" href="$1" media="print" onload="this.media=\'all\'" /><noscript><link rel="stylesheet" href="$1"></noscript>'
-      );
-    }
-  };
-}
-
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
   return {
     // Base path: relative './' works on custom domains and github.io subpaths seamlessly
     base: './',
-    plugins: [react(), tailwindcss(), ...(isDev ? [aistudioMediaPlugin()] : [nonBlockingCssPlugin()])],
+    plugins: [react(), tailwindcss(), ...(isDev ? [aistudioMediaPlugin()] : [])],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

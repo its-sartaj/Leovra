@@ -20,7 +20,16 @@
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" />
     </noscript>
-    <style>*,::after,::before{box-sizing:border-box}html{-webkit-text-size-adjust:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Plus Jakarta Sans',sans-serif}body{margin:0;background-color:#fafafa;color:#171717;-webkit-font-smoothing:antialiased;overflow-x:clip;width:100%}#root{min-height:100vh;width:100%}.flex{display:flex}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-between{justify-content:space-between}.relative{position:relative}.absolute{position:absolute}.inset-0{top:0;right:0;bottom:0;left:0}.w-full{width:100%}.h-full{height:100%}.max-w-7xl{max-width:80rem}.mx-auto{margin-left:auto;margin-right:auto}.text-white{color:#ffffff}.text-amber-400{color:#fbbf24}.bg-neutral-950{background-color:#0a0a0a}.font-serif{font-family:Georgia,serif}.font-sans{font-family:system-ui,sans-serif}.ssr-header{position:sticky;top:0;z-index:50;width:100%;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(229,229,229,0.9);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-height:56px}@media(min-width:640px){.ssr-header{padding:10px 16px;min-height:62px}}.ssr-hero{position:relative;border-radius:1rem;background:#0a0a0a;color:#ffffff;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);border:1px solid #262626;padding:20px 16px;min-height:480px;display:flex;flex-direction:column;justify-content:center}@media(min-width:640px){.ssr-hero{border-radius:1.5rem;padding:32px;min-height:360px}}@media(min-width:768px){.ssr-hero{padding:40px;min-height:340px}}.ssr-cat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px;width:100%}@media(min-width:640px){.ssr-cat-grid{gap:16px;margin-top:20px}}.ssr-cat-card{position:relative;overflow:hidden;border-radius:12px;height:135px;background:#171717;border:1px solid #262626;padding:10px;display:flex;flex-direction:column;justify-content:space-between}@media(min-width:640px){.ssr-cat-card{border-radius:16px;height:165px;padding:16px}}@media(min-width:768px){.ssr-cat-card{height:180px}}.ssr-catalog-placeholder{background:#ffffff;border-radius:1rem;padding:14px;border:1px solid #e5e5e5;margin-top:16px;min-height:480px;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05)}</style>
+    <style>
+      *,::after,::before{box-sizing:border-box}
+      html{-webkit-text-size-adjust:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Plus Jakarta Sans',sans-serif}
+      body{margin:0;background-color:#fafafa;color:#171717;-webkit-font-smoothing:antialiased;overflow-x:clip;width:100%}
+      #root{min-height:100vh;width:100%}
+      #app-root-shell{min-height:100vh;width:100%;display:flex;flex-direction:column}
+      #main-header{height:65px;min-height:65px}
+      @media(min-width:640px){#main-header{height:65px;min-height:65px}}
+      #mobile-bottom-nav{height:58px;min-height:58px}
+    </style>
     <!-- Favicons & Web App Manifest -->
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%brand-logo.svg" />
     <link rel="icon" type="image/png" sizes="48x48" href="%BASE_URL%favicon-48x48.png" />
@@ -68,28 +77,52 @@
   </head>
   <body class="bg-neutral-50 text-neutral-900 antialiased font-sans selection:bg-amber-500 selection:text-white">
     <div id="root">
-      <!-- Instant First-Paint SSR Shell for Lighthouse 100/100 FCP & LCP -->
-      <div class="min-h-screen w-full flex flex-col bg-neutral-50 text-neutral-900 selection:bg-amber-500 selection:text-white relative">
-        <header class="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-neutral-200/90 shadow-2xs ssr-header">
-          <div class="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3.5 flex items-center justify-between w-full">
-            <div class="inline-flex items-center gap-2">
-              <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-neutral-950 flex items-center justify-center border border-amber-400/40 shrink-0">
-                <span class="text-amber-400 font-serif font-black text-sm">L</span>
-              </div>
-              <div class="flex flex-col leading-tight">
-                <div class="flex items-center gap-1">
-                  <span class="text-sm sm:text-base md:text-lg font-serif uppercase tracking-wider font-extrabold text-neutral-900">Leovra</span>
-                  <span class="hidden sm:inline text-sm sm:text-base md:text-lg text-amber-600 font-sans uppercase font-bold">Enterprises</span>
+      <!-- Instant First-Paint SSR Shell for Lighthouse 100/100 FCP & LCP (Zero Layout Shift) -->
+      <div class="min-h-screen w-full flex flex-col bg-neutral-50 text-neutral-900 selection:bg-amber-500 selection:text-white relative" id="app-root-shell">
+        <header class="sticky top-0 z-50 w-full max-w-full bg-white/95 backdrop-blur-md border-b border-neutral-200/90 shadow-xs transform-gpu will-change-transform" id="main-header">
+          <div class="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3 w-full">
+            <div class="flex items-center justify-between gap-1.5 sm:gap-4 md:gap-6">
+              
+              <!-- Brand Logo -->
+              <div class="inline-flex items-center gap-2 sm:gap-2.5 select-none shrink-0" id="brand-logo-container">
+                <div class="shrink-0 flex items-center justify-center">
+                  <div class="h-8 sm:h-9 md:h-10 w-8 sm:w-9 md:w-10 rounded-lg sm:rounded-xl bg-neutral-950 flex items-center justify-center border border-amber-400/40 shadow-md">
+                    <span class="text-amber-400 font-serif font-black text-sm sm:text-base">L</span>
+                  </div>
                 </div>
-                <span class="text-[8px] sm:text-[9.5px] uppercase tracking-wider text-neutral-500 font-semibold hidden sm:inline">Earrings • T-Shirts • Lowers</span>
+                <div class="flex flex-col leading-tight min-w-0 justify-center">
+                  <div class="flex items-center gap-1 sm:gap-1.5 flex-nowrap">
+                    <span class="text-sm sm:text-base md:text-lg font-serif uppercase tracking-wider font-extrabold whitespace-nowrap text-neutral-900">Leovra</span>
+                    <span class="hidden sm:inline text-sm sm:text-base md:text-lg bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent font-sans uppercase font-bold tracking-normal whitespace-nowrap">Enterprises</span>
+                  </div>
+                  <span class="text-[8px] sm:text-[9.5px] uppercase tracking-wider text-neutral-500 font-semibold hidden sm:inline">Earrings • T-Shirts • Lowers</span>
+                </div>
               </div>
+
+              <!-- Header Right Action Buttons: Search, Account, Menu -->
+              <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <div class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-white border border-neutral-200/90 flex items-center justify-center text-neutral-700 shadow-2xs">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                </div>
+                <div class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-white border border-neutral-200/90 flex items-center justify-center text-neutral-700 shadow-2xs">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-white border border-neutral-200/90 flex items-center justify-center text-neutral-700 shadow-2xs">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </div>
+              </div>
+
             </div>
-            <div class="text-xs text-neutral-500 font-medium hidden sm:block">Earrings • T-Shirts • Lowers</div>
           </div>
         </header>
-        <main class="flex-1 w-full">
-          <div class="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6">
-            <div class="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 p-5 sm:p-8 md:p-10 min-h-[480px] sm:min-h-[360px] md:min-h-[340px] flex flex-col justify-center ssr-hero">
+
+        <main class="flex-1 w-full max-w-full overflow-x-hidden">
+          <!-- HeroBanner Component Section -->
+          <div class="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6 overflow-hidden" id="hero-banner-section">
+            <div class="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[480px] sm:min-h-[360px] md:min-h-[340px] flex items-center">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-neutral-900/80 z-30 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 w-full opacity-80"></div>
+              </div>
               <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-65">
                 <picture class="w-full h-full">
                   <source media="(max-width: 640px)" srcset="data:image/webp;base64,UklGRlIyAABXRUJQVlA4WAoAAAAgAAAAwQEASQIASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggZDAAAJBQAZ0BKsIBSgI+bTaWSSQjJ6yis5kpkA2JZzrpNt7DzGT9s56P9bP5Xr13cdtzih/j+o8mOkQ9K+cj0nbgXzb7ob+2nXX+ir5sXrCfuFk23y3/+ehf6b/o+Df67+j8p3EX8T4KdpT/18Xf4f/d9BTJv/+eGf3fG0zrP8johvDV+6CKm/sB+Hz64NYbEwLnad92yJL5msbM8EhTGQxXWZJxATzWDe0xnL1d+JHknKGP//cPhx+5xPw+XwZ6nuW+pZcVdL7apkNYPjF+xJ8/4Od7g0YAjkDExTHnTTMPZNnhcqAH76LZovTPTfJmzb5oPOpEwQ9gGkNdnUz2zHn8Fh2xKlkWwVHNaunG8KWHb25V7AZFYN0LgzIJnV3Zff3eYg07EHLxYul+l8CdYrklUAj8kRyUmknPJvNNCDVDiH0v1v12/rZKtaqo8gEcAiH7E8K591xNDMULEfpS6tHVzFBUGS7V60CHzxsMzJ3dqpP8XJA+Va411iM8pYt5Sn8mo8TAnpAztNqxHgbyvGWpQnf58WExXmKU6MKbtsF+lWd5gW8QMYmv6X9cpcy0YshHfJSPzFtN+4/qKY3SXDRqwR7zKQ3HGW4Y9IRaw7BJmRHFGtdjwXMCTrnntjRJq8mSVSB9c/UQxmEdMmNRY6ymN3OfdMUgz0YOx8haeY2pEUlLfoQXcVpmRdlNIalj038qAbihB8hfJE19rmljBesBcs9nhRJni4bjiysQg9XGOzGoIxdqHQlmuKpo673Rc+zQtj5QgBrO0jnFN9ZGrnz47HUPcaPt98flfX8WcqSGrBr92GTK44J7NelVHFnfLnjR066QZmiBcTYvdidC5FIdjn8+sCUItNoJ5TYTdo7v695pz94CQ8Kj+ndRtPpgTv4TSV6r57nTVLKSzPL7xacRhAIWg41fN2qCzG64T4ax/ugQMFwFLqIhj76SGLVmTd7CMfduy+DPAiAHsyn3P60tzGDPtIYZdRqVrX2oTSuJAInEp16KKdoCDs37XmUytLB6OOLinlqjnp6pcNBSQOe/bbmLKSiDSfGcOSv4VxpZQZ/sygoNL7vTI2dRxoIVWAHQh6HMrNtROUQX9iM25kQR05YECgh8oFPz2zot3mbiXhS6glyYIlBJdxDR4tCmyMWCHJw50tT5ff5RS4J2MSqeFtgpwKccq4wl9eNztVdFRFnf0LsQ37Jn/LQ+Ag3MK6lrKZM7paL45J0vwj5eqtp5uargw/fwNS7xCTDi0ilH3K0b+xVXsVrCAn40r71hApzXxUppbHMVvebRzGcWwuLhDnPOzRGAAdzB2xQrNk4uPWv7ggovrNyQtVWjNFRtmaTOg06gn01Kk4ZNjAuDHrQRBHtAGP7MAvOxQEqX/MsIPsL5OEykiOuI7N9Hv6pQcytR+q0uhlmaHzcUufTyP14/IBqRCDI2ksBAwAMRlYTwag4qV/BmgT2RXU9u+6l0deUT47DftjCx6/GH6CWxH7ZgYvn1LejrZK90ZPOu2dVGfx3WYTek1nc5plCEfX/UzPLYn7ZS2xnb4/aPufnBT0kfBhw/jp8A8IW+g0EojJV3tzE5+RvJzXlpisapYF7JcbzLz+p964d87UIe0jDdNGRjtllFEiyxRU/VjLNVW+glQzhRPmICxp2r4B8NR07/h/ay75YQ5x2Rd6SFPS+e+9ANvbX1MI+PNUvj8frs2FLG33AWimrGwBYw4adsErk4yx47y+Mk479H8dNw69dXdtomzUvEDsfs/xWTBs7gqNRV4LbEgM3sMkRKj/KHbkv9Xp+s5Scibr4QOZXd/OabSfc+m1d+M00fq+vDLZhDU6/9gKaF1gJ8o0LWAx6nre2iEZdAKCls6iL+bQPcSo+bCaqntUj7zhfP0Ngcy9xKBb4BWjjo7z2zeH0FtPjQwbIh9sLmFiQmG0yDD6RY99NjXb4VGrWDGKGaHDQZNAjPosYt8652tKJII2E1DDzY1Cl953lMAoVhE8V+VHEhzOqYKdjoUjWqqHY3qxpTsXlnu19D3jx1HifNSJjxnLamENomZR51mB6BXTyP9H52F3g2r+em+EehQL8DXsA/jVC6OWtwqJ18F+Upoq89M3QzafWNfkuUHKNOqVQTmwCBSuL0CvIRn/Z9Fue764BjDGgpjwlFdP6F8QfnxhtQq+nX4bhyc/9aa0evo4q2krNLiXfFWE5SLpaD5PHxw16+oXHHnqLwLDoSTPzJOpRdHWkM5U0CiCgRdSrWIYpdGW2O5tesnytttmwQVRhpFygKkvFiWf5LlWNufyUb/xZhTLoDpehokObgEulrZV6V6uAYPa38QgFRoCMT96BaKFW/mI1eezlpoPCgwkw7NaCB07MFiRkmtDXCox/afnG0/5YAtmgnLqNuJQSTPJbKySziasHqlWZibilj63gUOj45wGYAaIvunHv/s0JHxr5Sl1fuVwvi/UcUFXGFnFZGf1zxaF78IOtP3kEhjztvinltBwtVCABbHXpADyfQZLkrjij3otXCzWp77UbeiX1B3P34nAf+6QfWKUUxZtPk4Eqk0xl4kooXf4UipMfdGS2mBo2YmagZd+BQ1/2vYkMOnWZCbwQsAybeP+boeVT2PTWO0mhkr820TWLUSu2uCs3Ao//8VXM4Ft1QdgW7NlhbfyvTdkEQVEC8aJn9OeGAEuTZLDv30dWAUgRLujzAU+ygKN9UzyYbytPKXWUmeB5K1yClkuFbyZRcOajbbjDd03qTRbOsOSE1LinxsCyjefNh0nYO/EODXX/rv5D+eHmaFdcOIZSzeEUhSQoMue5taoRSIMB5xA/T3iA41wxrYK1e8eF7OzXvY79YavysWpJ9BoLsOpORtbUOxKraGdwdL9mg19s68kFuZfGfY+rAbq5sDZCQbTRPef0yj0Xhk+pIP4R82Ud+vlsWotfbYzmKL+qa9rPlZBr1U+OtDXTsWKCmVbFf14ilSm772oQmCJ2USQOOtcD481V3JZFtnJZV1b/nkymqaaHoGOcWYGblrBPj5wQNUkJ90VfTh/iYIwVl8zveSk2U0BDVit1Isn6AHU1+DF/dOBrspVJxjMYHPHS2pxy6pb7vq6WJS/a+MJuuBPUtdfH7wym6/L+fQ3wyJrzZ9OLrCzvSzNIE5fEECsQSB36dp+31nah8evJXgq1LJ+f9irFseU/vlMJ2ZOZtzS085++4NwlRHxnb3iWXCZF4PwN/VZ1tU+rA4Kh18dcaStWchlBiD/9k+Qje9Ds8hRIJ+ySHPI7DIOSE9+HVXXE+s5BZeWClV7+tvfl7RjsLVeaZODXKWmwZ02iGVy0d2eDW+J3fS/6c/iv33BZQEXbKlOgJqfsJzSrPKQ72qidEkjpvkLoWJfYMibS0KcRF8pToMOILd4oSxImbU0rpHYWxOHvKibC5b5IgEpc4d8NrmW23G09ScD+0PNB6rgjBgIPF9DSgIXlBsl9kJ3Tqys+Vfk5Uo1q4NYIDeaHlbaowcWOUdcJqSo6mG7v9LIqnwTjrDsKEDgsxyuTIUjGlwOIUROPk4+qAWT07DLxI5X7CNl6eThY8TjOeFx8dtnwzldot741a3VjurIiC/5wwoCQ7nzthTp864NAA/tRnXTzJS/W687kLDBSoQEi3Jh9XYZHNoHk8RlGc6pFHyK9RAeCyQ0qFLJJxvzACh2aBBjFaK1tLm0DGtQ0n0eO4kB0txzsmUIAC1we0DwAGQkNCih1iS8YY62YzD0SdL7YUM4WXu4KyAOiuYl89TcOmfQJS66UeSSGxHXcX9Pm9c1juwzVEc6GbRAFgbcMNCWMS2plZmc8ZWVJjvqDL/b7RZ/7KgwzrLZBnJR9PdSd9EajiK0UV6M8o1qXeaUMmkzHtQFZ+GoWG6YdmDWajhP9BEowZJ8PqVQnWvy2p7aVuNvxrF5hdDTui/3AsCG9IYXKeokfY2OXcGVDr3XTZTNOnLkWLYbiWmJu2kv4ftFJbzfKVWGjBIHWoH8QjOoQU5oRL3cqnRnvzVKxc/AzLvv29QtTw1dV2jhnOFWCNECpoBXTjDR2vyIpkikVLA9KX5QRnhgX0S9dCrZOYUVvsm6w14Kp5HpO/mEsGd+KCIhfAxQvFi9X53nFp/y5fruD8vXUgwyA89R9Fl1f9cLVa8/5beJQfeD9ALaozi30kd9YUU5d5CGJQjDSJVAhNvo3QeRwFSZ165ChMwZdf98+uHgzqAexOtx+0WuulSj99GVzVynCfxwyQI18nAFXsRqBXh1ZwbC7JfDxYBfYu49wxTQ8Nxid8fLbzMVSlZWIW78BfOlV/VjJUdC46cMZR9ar5XlggY1bZrgyytY+zs8EU9OjglDOh86DMCs7N/fTK+PUs2W/0w3CEewZjcI54UjmimbCbvQnuiVvAr83zm/et7OuYSLvYd16crQrdxRH0W1smAn0LlXSBpUksipL/jiMRCVdZ3++F6LM6xori3tBQqKcwuSQd0HDEK07c0z+xBodNVY/2iYc2RAE1bPt4EPZEtdgJHTeJDXn7CQW1z9j+zpdjykWNoqqtkerWH5iLYhcLgL+00AAAUVq7leYa7WXGoMzovtVrs4vg/d+9pG9C9pDnfmB6cpne3Oc4XsIyRWTngWFWuNHkGbdnlq69WpgvChYKB90Cdqz8YK3pWcPlLd2PSUMkLLEDt+T70U3FKBjteCtvlf9Tiep7UCBkJ+O3SjXZdey2/sAvZIe3zprylDkWwa+JbS7pAxO8aKsHDy7gvi4EmaBr4n+gde6P0JTSmtRqmKIdfkxiJVV6Cl/Cf5PqO6hmQZeYPBrlekMYftXym0Fuf+I8o0R4JZSOQEl3MdVzGRzhhFmf3p4DZUMORiaDHyDtRVGX9JBu4ae52M6fSNk8MwQ9ryDGKSqTRfYefAeiuu/RZ35vxZODPChRMKpWOznyNDVen8zD20ATjQ6Dg8mD3SfbpQtKXO3K35accdk6sP2pMqF+LKIrYDiU1Jbvecm9qspjyLlg92nEFInKAUX9qD6PccM/E+ya7g3iPNQ5P8El6bkfJJ3MsM1pqxOgJprMwhp8JRPAcZkZoTCxW2LdRhXoHzKeo2+U/zyJdTK0i/bm8XLD1ghIdTlmR5goCcvTnwr1AfY9BBbTceTaGY4NliBV/rjQDeedpAM8q2qJ4psEjt+6mR7wbXFV9Hib9AlFJ//o40YmJaNEND6CuVwuY5yhp1lLJzAyl+NK0JKOCNTeBIkON1y98AS1z6PI1kOw+/LlShoe2dAHfVqtujchE/SnANCKgN+OiQg/dmv5poJZRnouaZo3fapyxOKzIDdZBWdvo4+r7qRayImK6UQQFI4WKBVVpzPorWWy9vUhZ2uUzltZdgQiKmjtfH0muVCms4GaDbA5+AZdVqCspaRSvvX4oQcHyDs0Wb8sRVAKLOhEApOCoEwrhdX5trIx9T8cEK0DTgHNqgtYW6ndxSwblE+OKWSWuNQQhV1V/rL68RyN6x2TYm/TkffwDpyCdhw1LyyQleRTxkoV8KH8XakHYJhdCDEFkP5MYOxGpru/g/mT8JD+dkOHyISTe906jiTjtwZ9v8A/LpJvb1c0nZVBsVc4jpmJ1guxjjAcgV4XednWm2+PAPJv8+6WDKthCBvpm7nt2in+iidZsAeXPtAHz2IEFMaCzKy6XbPWeSZDaP350nAVRuy8vdVZZnf9iVa47w8sV1CwnjYIOv+yLXJ1f8amjHRk+BsOxwdUE633OgRLd6H/9vKokHWyl1uDLXYJR/Seu+8u+ZQbXbtxfvcVj0b/sHz3Fgaga9Rqgaxaz3nkujoeO9/RXd08YHdhM98yngdN0HxsqECyGbCRdETRHjwPZjglzl2p2rv0GB6p05gU0nNpK160os9tC1yJzDTqMStuW4c22/YESDKrY0t1M+24LIG7VMdhYtFZrYSSTd+o4zO/DMqYSEsGcpP30rqtvru1EFafwMdxtBApZKHaQ9pm1Azh2V/CWHaM7ha3GOi6R+RGylEyR09DWWUmEet+mQtY9g4czyNbx0hNoUjaK0EBYRkcrYNF6bt15oTs/G+vh8v3ZtJoKka+/Tpc5pCC8gcRjlfIcYNTH6AHR5HycsHTYuedartoxfeReK3ryDnXXEw6uhFVlhz1Hvw4T42OtrDboQQXTNyYXwZaVbcf+rq2J8gHOdNL3Or9ftwKsZxEEnla5qZgEcmblgrlqRPgjSxDZjF/SLj1JoYU0iWmJiYENtVl3yoUDjhYUrLQ8h0mQBhna03YEXzWQwUto1DOAoVm7qCb87rHm41f9DEY18xJxLNiM6GJ93HhfXV3achfLlQq1C/84MFu5mfXA0zFfkDoMrzt+5uAhuZzz7D8b0r2Bimqer0gV4oUCwO1qKf3Xd9cqRbf1tLLAjN+kRPwgjIPSLtfIzwbb2O4iGlx7nIXBF/+GIOMhGpKxnekc+ag31b0+srqN8npEZkm5xTa+OFA1F0i5+MTjFOTZLaU9aapksbpnQytxgsoICGQ5N3dTcoGVUaPSs0UGgGtI//QPW1uxmQBgclZLfyP1/hAZQuSuUVJ1UwPP4N2Bo9OL0flMrn/xboQEC8j5zoTEXG97DslJluaf8VN5D1MElZ2Z1X2rjTQ+RtpMAW0bRLhbOR/NS676yLfql5i06T2QWAAabRZFvLeQcrhZGFCAEKmBbwBML3fBk0sAuj4d3gvv6H8vJeimGsjjL/3HPsXrez+0TcSjRPyD6eDoQpayfyzxZXM1pzcxfXwyErQB6pXk9gCt4+k2a2jteDZ0ik3c57BID77LewOMP/DIzNkDjeQTS5i8P/Yrg1Am0oCtp3VZSkssiWov0+zAqkA+XACWMt0z0JWS6y8wMVHY7qYi63egk3M/rNLkOyyDxkDdwm9uxVBRs8IpzmlEEt8ArGAnlcSJOYLGgpNnYcJ8fUxMGGlZx/bzM4VhZgkbc4WnHqppXUmZcSFEWfxXUi5bc6L/9wFBFmdXnHEWxzOq809ieI1v8Z3/6s4ujlgHCBJei3+Vj+ea1vzEJwxcficlAdgGvyWKj2aPJOg49E9pdG+O2TkRBlWyJOAnfUvX1qBzCIzj5TEdY/oF095mpGO1XmfTmqlEkMpMT8Mjy+KwrJ69fpf3hjKlhy46fbJJCUZKLXQYAjl0TRPzlHptQLhNLVDuGe7f5HtxHxpjvc1Jeyj6P0SAOlFJ0aCDeRiDWjKFw0sjVHgZ/9r6Kd/1KI4VTQdrCJDmRAk5L9Xfia069Ja3yDIgAKseIS15HD+135OpqsmeWkedtIL6c7m80mGGGf8x7+Wmo1PQ8hNDQE8cCKVC/Ypam6NQm7n0hVACuGCazGSLB5CJWZ0XZ7kLgKQoEZwtTTYdwJM1RO5HXfpjRZ1ycEExMiWYOAEIBOgg9f8dtEWzLPcHLM4pymsBbhJEJmofWLObRW+3myeIYNGOeRzpLRfRpHnRy2jHnGaBHk3XN+8cg07G0h73wWxVzXPW8jbLKfaSof2DZJ6AlvB5tQpbVd9jx+AqvqCYtxq6zGrKiJz4SlAfwHsZvzkA/yTpor30DHJzB4JSco+fZDmLmUY0JTQPJ5Q/RJPTBRN74zJ3o0IQ8f1/2luGGJcGpayEdOOVDXfyj14p9KNTRhvrxHthBG27KPYqC8lxuFdmVW3/USSp0XMTZNpXqajwAHKIFumw6DmDhGsEXnPo6tTY/sxysgvoPOsStRMZJf4r7AoBThlIJqzAR5vN3ye/rnUiIhUxYzbLSHW0YuWMRSn9eSBKbJFBUTDIvlN8TaiActAQ0PKkXKZ46pybz8pfvfJvIyaRNTcGLHy60PXgxOXHQthtIKSUd3BPmy1I5Q2/WR65yqVvEYXdQHQuhdGyuDd1j9LE3KqQWLPO1I0FAA72phY+SgO4Z+snPjS6iUIAEBDLxB9rFhsBe8VuZX6gf7XNpRiYFhYkjKkSG9IRSM5Ue2jRtDHMcp4zQm56SQ2mGb9aiXkwg7pAqMImzyD80/X1UOx3lBYoS9d4ZtEjObnZ7DTBzFOQt5CM/62dL4/r1bz8q+8Gks8GSNqwkl3UqruPpLp28ta4iGXLasUN71VTzYjTr18m80oWXU+uQHUj3t3X3Dj+iljfNnL+e5uC3bAIUVMddHXr8U/CWBDXkz5AG0qx1r2GkSjhaKhLzY7oA8MK/SEa6w6ivIsr7WAdi/Fj+29dLgDH1JyksdZZtNcS7smQuj54AoTIvlFM8x4BMECCuvgpwP9npKd0YZdc4q241iqRAeAeE79OGxc0ln9KP9IDBKLyHxPgEPMaQD5Rt1DwQk3hBbinu7574FJQkOC2dvqf+MGY0bab6uw/zMBRyJYGgFjAU1QlobN2dwFYsX+wif+82WxZ1T/ijiMZGI/8sKpcqx52CHpAueUZuUvLnIBlyNeyBzS9qvFmNFbcGlPykiPN/BBgDgZL3Hse7xoz55XPm0jLlWQNbwklbPVzZA7+1OQBBDvtv9Y9RY/SolgaCX1nYiwSDKNX1KToqjsdkglptpVL+xOJH7liXVk5uN2xYlHkn+x46ibc9EMGB14bhbzemyliQOfJE/XF4fD51KHs7fPxzmWC+s57LOGDwn+HgnBDiS+432sgxhnmrz2PBcPozO0ROAw+57Yl4dKBlAHRxgbYbCK9j1MEYFEyBxCjmAP9vF7FQ80ZpE1fU+zN8ajBTPaXvSCOcCFOw/wgvkO4S9TgoUA4ovMRBwZFn2cNm7KTC4c68MSoaPS2QvdeTfS6FG7jJPw/6Eo8IzxZzmdOIyQSQ7QVdU3q9FOjbeB4qL2wBd0sf760+IYey9xHqtNhHRLlzBTbz2bKLWzo5iXvtJNXRSZ3Q3sKuZx3pUbF/0mTg6VMorpiFgdG4FqBRmGorg6qzr/mf/fi4L2zyPFU4Dm8pt5PLsXP+p4zXXMrfpSbRKnD3cDXOSsKzszJeFssV4LgP0BCF1QpqzieR5iyfdC+ilXLavVlfIEt/CNBm2t12QiqaCOCARSDgundfx9v6to4mvdhZrZpSDZre2KUHf+3ha9y73R796fDSl4SJgtWkcTqHlM7No/aTJj/e1Q8RuW8lzCQYAF5HPo9gO9Ezv8WEmX0ol3KOXWi5wEOVyJDGs7QixOtR5oU866t2/K2/eUFs/xPHF59Z7to65Ccoil4ZpuactmewvKQX6I+FYRoDHeGSEF4ksQb0u/zpbVKrC2uMUJfxi+HtT00enBT78m0xnWsoQ338gbopTPG6VcNflcKUixznOa8NWUVbaRZcgDp39Ri2W9z/FZoMHuSy/POXNYfH6SArpUsizSnpDL0svnPel1QOBMJ/L7bvkJjlxYM55EZaawAw0W4NQ5zW13hrVEmzwCQ9A8chxzFI6drXDq0pU/IgpvSaE8lzZF5IDltz9g3SibEsgCoNVgC1BcSU6KF5RAIqJZ+fLU4St3FnH9tuuUP4TnzKDaXBCyW8acfhZL44tlKoUzhlgKtyq0WvJUeKrnnNtEu+f7OsXA7+g7lXxfHkqAlfgXIU8c0X9y1sn+r4TWnmuXynrgRnLOY8sYeKKgDAhNgzp/XGR/MXSaghSTrOIqpzTQ8pHmSavNibASRzGDhY0gRb1GKO53NRtx9BqCGlJJ52mujvlt9oJ7O905rVWwo4eyawJiDU5XBNXlRBfRITV9LPdeuhEMySzHwFKjsXWcq30BG3VbyRJBUfexNevAYlix+rHU3xy3tHnuC2m9GstDGeFzHHwiT0g7oYEPc2HpErZ/gaR3nry6TF1torD/McL5eoVZW7+Rmw0+lguVjlT61LrEHaqMfxa2J4TVt1+8wlYeybC0QxUjkBNQZRxwK6KlniI4zQx6fshAKl/7CdDUUygCsx2lyBU4a+H6196YH+z9y562nh13xMUpHZuNxYciXvYoJSEOLRKKP/KTO7/k0Dmnd8q7CdKtC891P3e7+tPDWAyN/OAQkho8x3NT6qLbl++HSuz/X7WZRmesCu41LbSjHD+lDROZ0J5h2Vsa3zUkId5HtkDlDe7gSDaZwdT5mTdoiu5Eme/X6ctaVNnrIfqA3q/6mKPfWBH7/5MA1TKbmUy+W7VEf4TT35lgyfQNSFsEEXm3+CnAZFxhRhySVhCQqq6DZPdB/Yj5FkagYajeDWJ7rak839lw0LALiSgW6fQryjgl023GXiiFvJGvhOzDX53txrLL0wxAlr58EVJE2EMRlT9MOWEY3jxfYt9miqAghg7WrN0g9ulLFxrCJ7Mm01n71f1fUiagZcfhSAYsiXWM3Wi4ZSvpzR/mTL4Yod41Hh6Zl0S0hwFRQQ0yfrQ0Cv6JEiaKZYQu2/RVMB7y7ygovP++NJiYdhU11tN6Tg5PWuhB9Z31B4nwWjrPdbajSRyAq/M1rKQa9TbBSDRMpGtaODu5sq4Pkp5UzUBTOSPuoyXIULceLsCVLcZ9lyNmoMHGHIsFOciOryi/TXZ0jlBHMQai6R4yzJmaTrNrFbFLfus2rW4xoSjMy2nswkwMeIJiLVLlqyr0vWSH8R8uwLqp+brg24pzx9SB2G2/oQDxNosK9K2U8yeEWqrAEHb5JaA4ChttH0EA13tfiN+9XPGcMy/zPqu2BYp/mB5farPIOW/yHM3rXxr5ORuDXtecXN+r7jaoPnfLIhmWml3W2WmfcN4D9d9+RC1oPNe7w/jny92vzCerO/IBh9Y4rKimVcWcrPF9m/ZUS33O5mtQ/hZpqVX7EDdkQjApfBznJ4uE1yZ9AJuux3zgPu2GBYSdDHgg5FKhrL69uckSBBS0NMj+RYLO440NF1eF9G0IrP173oU2x/cyMQt5Oy5KoG+TUx9x84nw/XMUL/pJ2AdEXvcLuPBiD2BWyp4IsPqyIFEwrI9FCufMcGv+LU8W9E03d5NiehptzVt2waI1TOmlzalnWuilHConw2bGNCPIkjxFqrAx2V6QVcBnONI+4czI8J9wHpp7XWmUvMvH8EZaY7maqhmeZD48fccTQxQgeznDDWevzYLWzPGwYhhYqcGprTZAFxTcs+dsmtPX/uT5aqZ7KQdl4qxTf9QGxaqaN7VnCaVxAlGukbbvWf1E+Wm1OMHcClQ/DUmk0aYVoQwSCMEpW3TgpH8LZ7haAElUoAOZPGtA6nirdoYOTU4vZtXcnCwEqzDbKOv0qBgerFDgX2u8MDZwEPKfoDxsaMY4MZ5HG9U+KMJ+mlR76OEseaB82IqKlttCTZZB25pd7DBci1cvErVZfj6nBVXCaHQ7va6HnxszWThuCfsYw+9SmQwFuZX6xvNcGTRVELRjQnPkGg4sG47OBgG3aD2NXzhZTK24eh8yA33P7PuRRotJpbtWodI24XgLVMe0h+oUyPtHiayZEMfycbAtVTNGF+3D5hrJmdghTUcqs/P1iUVeHXW9tZlSTtK6aqAmvWlB2to0FelpwxeBJeL2KaVLEhCed1WVAhn03lE9Y4WVDCWz0FD96vhOgTfZbz1fOnFbuzO0YIfx/Q2Z/2ZO71GOQ1eoFCiXKjBPExoeGExIM/AY7gxoGZ1fT+k+uFmqEpBWCLsMz/Cdbj6XehpnvarW0y4eA2lNHtTaUjBahQrbnhgw0XrTybFR1JSUZ4Cb1zn1rWokR+B0BEVH/xNdSkbRf70i9l4bBe+MWHiE2xmWHmrRHPtWHEQMiI3xo+nyqk7sbqvEd9AFfIXPB91T5vWlvE84JpG71MMhiQqZvlPHxTN9nliR9CAcMPlsSWDqvWlrzimYKmhrja+TecQOWa1C1IEPCf80TTbh+2dFIwYk6MDJ5cboDSl22hL4Kr8Uupyz+FQnfywUqS02lM/68dnns4b61TWOQPt06A45Pa4IIYq8lRuoPfnbJzLSClO4b/vEIrHcTEIgmfnEBACw/DbH6UJvxa3JLoFowjBEAVO0nX8E43vQUE083vwT9WCTgWQjcSfq3eXJRL4v7ORwNwf4QAwriparsf8vRyKjcfWBgyTTAiVvwStVYbuml3Jnlun+y8HMm4CvRe4jNXjIL2C9+WRPrwBBu3jyCsRHiusfPn6hwoIjBvH67XJqQ7STlIH0FmgD9A8mpWqUSrqDM8JikbCIQwYUGdwdqzFum+z9XVO4kj0UchtQ31l9+tQl6UN682m3T0HSynCwP4DFXOn6OlwXv6M8VY8Aq+MeliMMD0/oJsUJvgz5T2j1l7T7jw1NYiwTqJdJKAek186dgujjydPhkZ1I/iuQqVRRAKSCZCc52Q7Wrz6aiNiRHxUTKlSLj64cdMUJaQCk8aGS/6Wlq8Rf+Rp1B2nAI3L5+G5K5SowYkzFwh0wii3gr+rdyU79nDHifm17ZCdVOkPq2tsoHeAAjlR7v0FKSUTxVu19+37uofhxgQRkPvgBQxTIquFuObUZ8vkKOnur+NjHjgX1e42dYD+vSRa8BGc2kXx9nnERpcLmfkUMPsB2LtPO7eKnhsPD94AMT/35cisSvJsoecjaUVl9rYnc5Sw9JyVDlQBTdvjQoctQyhXcqWonU4QVw9O+vGeVzoQBLnUrNLt7tfKDx+x9UqX5Zf6jdn8wFifP21hZlaoeHFfdMG4xNGdJDfUafbRqmdipilBhxYcKSeJhKD4tkorNMfFuAw17x3ib+LeWkwTFkhWKsUHkTA5q3CZORwihG+et+B92CyIfqGvex1iFihcSvh03GNxx/8yrWSGS1pqN91IrJSHvjgzCoUbD7H4R34XZouJxkVkfeDAmSdvmLah4nget1zny7RuWXp87t3qdMvgNrc3IXUXLCr7Yuuu+4BRRgJG0wOAaY4Zw3EJi/cXqo8kd8WWCOvAPP39n+A+DuPmYqPtOSN2bfiUqPex+In4DqJUuQRowQXQ5VPbqwptPpBQidw04GjbOtZgCaXNxn0X0fKT8OMc0KgBf9nKXbZFh8XZLxOyiqaxEdjlGHg2m8I8UulWdwxy8aVOFoblcENIDN4hmfPxJ7H4IT47S6XkA2YIbgrRzBtB1BQh90/xg5a4z+Aqbp91j7VbzzENiqxljENaash5qxrs3EUsdKh9SCLKhu6q48+wK8SHNDLWOZdtzKGCeVCMrf189IsgU4XUbPriFvAGKkx4JlREzDBRhv8fsmB7eCxa9Maygiv9OTEpRut493SPUIqsBWr2GP/JTnIXqo4oSCRTaOdqzkc18+a4UIoDcP3tataNTu4eRTY2uavTdhxEfUpOhj9OsUb0eD6K+e3sotKc7KqDTOSr38YXseCPSJ6imMiEr1QCoQrnb2jbZZ/Xslh9hjxfYIuBUKGy9tNO+cD8f1pgrgSvHlh1xdioM5sqMVW5TVOPj6B8L8fZjAYBqnzcVDOhgKbRRVf2Wd9EKB9cmRVjCY+YDXGO8dXcKXyeu3MpgdJ3jGo/i7ypYzw5rGBZwXjkMwSQhMg0BjVioOJHecyTsHn7x4DtoG6zm5t0DMAhblwMcma+3URLXX1EH97Fi2VOOi6RgbYG0J7D/DrIB7hEvqI3Yp17JU1LV++FNj4RGYA/rbQI8af/H/adnWYvYBNZxIeLegisUEdN1uqwyZkkhTLOZyjDMjExal5P5+4sAQ20okMuckldKS0A0yO0A5sQK06J9hrBHVBA5ZAATdt07l6Vvjv70No8jDw1ssVwnURRdKvpNIa0cg3dh6eFjOdcjdoiiQTIQszD29mHageaUN6wkHbncuRhfk+4lekTzPfzLfT9QFUF/LnyWpOQ9bFBUj9duSddRoCcPgIRLozizpXT/UzNWC3t5V9Hb7Mm+vBQnmj/q5AU7mH85t85/byhcTEBAG1JExOS4KhnNCpixRuWzj17qoQZP7JesycvgbG8unsJBk1IAukQHlXtBO9JbuiF8qdedTB8kk6DJejt3tjJO3qE3azioU13YNke/9cMFZH1BMbJ+0jLmFVnlUXotGKlSXatezrAX4QdipAgiTwmlra29c7I1jRBsyWt3BKkfW8NgQKTg78UsUI1wDbcs8JLb5CLSsSMXwr2IGYs6wB00J0SoKE2wfV2Ulz+ta1Xi7/yZqe0qle/4UIbhAiTnCV44ZAp58SYOss7kE77B7jyLldDhAzSAHxhdTVtktXXk8L7Kd9i6moamb3N8JvRUUxf9UItHpdmAlPtWxaeOJ+wryVnU2D95rm2NFPw6Tc//1s4wUHBdoNE8R27xPj2KfcFvYHhT9WsZvPCiRM+1a3IoN1eSv3lCiE/BYXNx6T50KX83BEf5YweNxqn6rneNRs8QdsPHfH+jNEQl/h+mn/+JJfFxB3YWLvGsqVTEbiUCbqk67AcGQDFov50ziyueZ3FhnB1rfzTfiScoPikUQIxXn0baCjHJ/5Ik2iQgZNqgL4TxIksT9sEuyz17cgdBwd+qHhDzMn46ftOlx9OylAmkOXeHTBDMEfxM09iqrs/xHCHHM1BNe629QiLKpAGiZRZCij3BkSsJV8mE4TaLopXocCEU48+iF7IhkrqWiNCmw4OO/1kveYrcH7hsbp6dOjupMH0NbydTJIWO7SuxVJpQkHQJWyXn9BqOt5xdPbye1eum30+3DRi1nOkKNQxKcdMADpzISaMaN3q6vg4ycLRjRr8dKSOEMNTsKegxxp8Tf64nGOxzNCfOwpg6FixvXsR6dgUdbAJWV1s+yNpyHNiqmQWybKQYq3Dz+zmuiFUBHya4xPuAjsldQlRx0ZUqVbgwB9mfScqF1pwgfLZwN3oBjBYMnvFpITKp+NzUODmYegMJTMzBr8YL2U9+m/soz37n4AN634R7FzVJTSLkbzYbpL+OkhSs7lxleju0agp//5XJS+nXRD9OqiWsc9bAhxAdQCm4kSDdzsRG/AA88NhSLrmaklpSuwHGOPwPF+x5xPwR/PxwRAPKjdrZZsQ6Jdr8boeh1NSsFAFMYikj5jpu8jPJf0jGiEHzsGh+i3tMXWLJtnwCH1SY7lkKiTyhoEWi3XfR+IWd6Oi8ZRkclqm6rQZ4REkorlTyfdwH5edAkguFprsmbCdz6GzKj3LC2PCWyOVmeGRLG0YwBT1H2ZJXx2knJGNsRn6W+jlCC1HptKg8lU3bdJOjYtjYnh8HYND5i+AGUIkrWhH6o4k7yvKg4WTaXPAMYUHPEKfIgsIrQOPohd+aBpp4bgQgq39FKBKzqKo4BfNgeyVFdAmL8ItRKSD1ytsJJzK/Cs3MALrGkMHIBZiCvviFR0JU400t4aFcx+HIQvxYZowE2gn7pRty51VBDKIeWCFDOXgdamkFo+lt5DgVrAoMoPML63Tp39sgZof3b6MxGQmKCWtKOeGvbxsDuo7adHPX21cF/m/qLAeOYh56/qhsW+f41sXOTqaOTtuX66aQwKfgrHVGg1iONiNYLRDfP6mTqNypmlXFhpUeUXZBecjxLJjVtyevMCE9zSB2QS+q1dMeIZMqwzdbhnwphIAToQu9uCUZXoORLORzfs1owo11fqMRbwTnD8KzhpuUMjdvgSaBTkxap6pTy/Xt9SREcgeaT0TtyIDfUv3vX5VPh8ED/kKlfDBTnwqu0YIVITlB3mP7n814zako6nPKmNj5VCkP07ds6dDpX8Sx37t00vP0jUhJVLJLhr3epgOoWnQ9aSMjwgyfQviD+1FGB9hcGFlRbm0izOAAZc2jJB00kmeYO46ZTRGpWxZhUHofAhv6UJ3sFntCmLOsRXeEMMEqTRxhAGZn2dAP4+5y/p5x+XTj3kJjoNMALYue9lv6J0txDvK+2a3+xhq/RXS+S7JWH+XwyNOEg7u6mhQ9f2kZ1I4JDGGfByS1Fb71qikkBIgbVf+tTwp6v0rjCMdyGrUKh6pVLiSWT2LKIAjiGQmov6SRW76mjEUqnQQBH80YgJeNRUafMWzj2dpjs5imOGSqR6aO784djO9SPwIbMxzNjo4JMPr85wMqakZFqzqelxVXGSwfer/ztbro0w8MrmLGUwZAHd8yBiuqkKwgeC5rykJm7HVd5FMMHzHoKQCoxoAPT8Q2ZHA/N06aglmW6bYFu6Cpf0aoJN+8APPjBNQTKtn5WC4oKrl1WkqgDBxbLiENi1hNsw7JusKqThgMogKBkReclxse5Is+cSf54+DMoaQuk8TgqUlUPiPzckn+6kcXIYLPn4RiECieigaQ0/j7Jjv43ZlEx0+4CdwGCiCVhY/PsQHUAXjjMNtHzU0ch3mi4Y4edDHCA63QSKXg5uDfDvgMjjZ0O3s2jZu91fPFaVGou5xLuSOOePfbHWXFlrTMkTrJG8BZ3QGAA8Tjyz2T/pi3q6LSnqQJLDgwF1q2nofBES0X+8yJeu/it891GHgn4MsDl1Kbxy79loJRxJDYIuuZj2s9QIGPovQMR4Xcw1Ua3s9px+/s3lgnPpb8UWJF85VoIqwcXMOHwAwROFWWeyk0MZ3vuqb54sTlOJho83o+M/QCSzAaH+GqR0t/bDn26kLVDDfdyumh/J7Wun7/ZbPng+2FxAgdt+BPJqyMIAFAELV0n5TD5770xFTb8IV+yIVv3XaFoJLrKvM6DGLnN56Hkl5iqguQJpYlVhTmNbxKG87rgaPeccYdvzoEAyyBmGwovhW4AAA=" type="image/webp" />
@@ -97,12 +130,12 @@
                 </picture>
                 <div class="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40"></div>
               </div>
-              <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
+              <div class="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
                 <div class="max-w-xl space-y-3 sm:space-y-4 w-full min-w-0">
-                  <span class="inline-block px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] font-semibold max-w-full overflow-hidden truncate">
-                    Express Dispatch • शाही झुमके संग्रह (Artisanal Jewelry)
-                  </span>
-                  <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-serif">
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] sm:text-xs font-semibold max-w-full overflow-hidden">
+                    <span class="truncate">Express Dispatch • <span class="text-white font-bold">शाही झुमके संग्रह</span> (Artisanal Jewelry)</span>
+                  </div>
+                  <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-serif break-words">
                     Elevate Your Style with <span class="text-amber-400">Leovra Enterprises</span>
                   </h1>
                   <p class="text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed max-w-lg">
@@ -111,77 +144,129 @@
                 </div>
                 <div class="w-full md:w-auto grid grid-cols-2 md:grid-cols-1 gap-2.5 shrink-0 pt-2 sm:pt-0 border-t border-neutral-800/80 md:border-t-0">
                   <div class="flex items-center gap-2.5 bg-neutral-900/90 border border-neutral-800/90 p-2.5 sm:px-4 sm:py-2.5 rounded-xl text-left min-w-0 shadow-lg">
-                    <div class="text-xs sm:text-sm font-bold text-white truncate">Fast Delivery</div>
+                    <div class="p-2 rounded-lg bg-amber-500/15 text-amber-400 shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="text-xs sm:text-sm font-bold text-white truncate">Fast Delivery</div>
+                      <div class="text-[10px] sm:text-xs text-neutral-400 truncate">Doorstep shipping</div>
+                    </div>
                   </div>
                   <div class="flex items-center gap-2.5 bg-neutral-900/90 border border-neutral-800/90 p-2.5 sm:px-4 sm:py-2.5 rounded-xl text-left min-w-0 shadow-lg">
-                    <div class="text-xs sm:text-sm font-bold text-white truncate">Quality Checked</div>
+                    <div class="p-2 rounded-lg bg-emerald-500/15 text-emerald-400 shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="text-xs sm:text-sm font-bold text-white truncate">Quality Checked</div>
+                      <div class="text-[10px] sm:text-xs text-neutral-400 truncate">Inspected items</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- 3 Category Showcase Cards Placeholder for Zero Layout Shift -->
-            <div class="ssr-cat-grid">
-              <a href="%BASE_URL%?category=earrings" class="ssr-cat-card" style="text-decoration:none">
+            <!-- 3 Category Showcase Cards -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 mt-3.5 sm:mt-5 w-full">
+              <a href="%BASE_URL%?category=earrings" class="group relative overflow-hidden rounded-xl sm:rounded-2xl text-left h-[135px] sm:h-[165px] md:h-[180px] p-2.5 sm:p-4 flex flex-col justify-between border border-neutral-800 bg-neutral-950" style="text-decoration:none">
                 <span class="text-amber-400 text-xs font-bold">💎 शाही झुमके</span>
                 <span class="text-white text-xs sm:text-base font-bold">Earrings</span>
               </a>
-              <a href="%BASE_URL%?category=tshirts" class="ssr-cat-card" style="text-decoration:none">
+              <a href="%BASE_URL%?category=tshirts" class="group relative overflow-hidden rounded-xl sm:rounded-2xl text-left h-[135px] sm:h-[165px] md:h-[180px] p-2.5 sm:p-4 flex flex-col justify-between border border-neutral-800 bg-neutral-950" style="text-decoration:none">
                 <span class="text-amber-400 text-xs font-bold">👕 टी-शर्ट्स</span>
                 <span class="text-white text-xs sm:text-base font-bold">T-Shirts</span>
               </a>
-              <a href="%BASE_URL%?category=lowers" class="ssr-cat-card" style="text-decoration:none">
+              <a href="%BASE_URL%?category=lowers" class="group relative overflow-hidden rounded-xl sm:rounded-2xl text-left h-[135px] sm:h-[165px] md:h-[180px] p-2.5 sm:p-4 flex flex-col justify-between border border-neutral-800 bg-neutral-950" style="text-decoration:none">
                 <span class="text-amber-400 text-xs font-bold">👖 फ्लेक्सिबल लोअर</span>
                 <span class="text-white text-xs sm:text-base font-bold">Lowers &amp; Joggers</span>
               </a>
             </div>
+          </div>
 
-            <!-- Catalog Placeholder Reserving 480px Container Space to Anchor FAQ -->
-            <div class="ssr-catalog-placeholder">
-              <div class="flex items-center justify-between pb-3 border-b border-neutral-200">
-                <div class="font-bold text-xs text-neutral-800">Featured Collection • Cash on Delivery (COD) Available</div>
-                <div class="text-[11px] text-emerald-700 font-semibold">15 Products In Stock</div>
+          <!-- ProductGrid Section matching ProductGrid.tsx -->
+          <section class="w-full max-w-7xl mx-auto px-2.5 sm:px-4 py-3 sm:py-6 overflow-hidden" id="products-catalog-section">
+            <h2 class="sr-only">Our Collection & Available Products</h2>
+            <div class="bg-white rounded-2xl p-3 sm:p-4 border border-neutral-200 shadow-xs mb-4 sm:mb-6 space-y-2.5 sm:space-y-3 w-full">
+              <div class="flex items-center justify-between gap-2.5">
+                <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full min-w-0">
+                  <span class="px-3.5 py-2.5 min-h-[48px] rounded-xl text-xs sm:text-sm font-semibold bg-neutral-900 text-white shadow-xs inline-flex items-center">All Collection</span>
+                  <span class="px-3.5 py-2.5 min-h-[48px] rounded-xl text-xs sm:text-sm font-semibold bg-neutral-100 text-neutral-700 inline-flex items-center">Earrings (झुमके)</span>
+                  <span class="px-3.5 py-2.5 min-h-[48px] rounded-xl text-xs sm:text-sm font-semibold bg-neutral-100 text-neutral-700 inline-flex items-center">T-Shirts (टी-शर्ट्स)</span>
+                </div>
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-4 text-xs">
-                <div class="p-3 bg-neutral-50 rounded-xl border border-neutral-200 flex flex-col justify-between">
-                  <h3 class="font-bold text-neutral-900 text-xs leading-snug">Antique Oxidized Royal Silver Jhumkas</h3>
-                  <div class="text-[11px] text-amber-700 font-medium mt-1">Earrings • ₹399</div>
-                </div>
-                <div class="p-3 bg-neutral-50 rounded-xl border border-neutral-200 flex flex-col justify-between">
-                  <h3 class="font-bold text-neutral-900 text-xs leading-snug">18K Gold Plated Emerald Teardrop Earrings</h3>
-                  <div class="text-[11px] text-amber-700 font-medium mt-1">Earrings • ₹549</div>
-                </div>
-                <div class="hidden sm:flex p-3 bg-neutral-50 rounded-xl border border-neutral-200 flex-col justify-between">
-                  <h3 class="font-bold text-neutral-900 text-xs leading-snug">Heavyweight Streetwear Oversized Graphic Tee</h3>
-                  <div class="text-[11px] text-amber-700 font-medium mt-1">T-Shirts • ₹649</div>
-                </div>
-                <div class="hidden lg:flex p-3 bg-neutral-50 rounded-xl border border-neutral-200 flex-col justify-between">
-                  <h3 class="font-bold text-neutral-900 text-xs leading-snug">Multi-Pocket Tactical Cargo Joggers</h3>
-                  <div class="text-[11px] text-amber-700 font-medium mt-1">Lowers • ₹799</div>
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-2.5 sm:pt-3 border-t border-neutral-100 text-[11px] sm:text-xs text-neutral-600">
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                  <span class="font-semibold text-neutral-900">15 items</span>
+                  <span>•</span>
+                  <span class="text-emerald-700 font-medium">12 in stock</span>
                 </div>
               </div>
             </div>
-
-            <!-- Pre-rendered FAQ Block for Web Crawlers and Instant SEO Matching -->
-            <section class="mt-6 p-6 rounded-2xl bg-white border border-neutral-200" aria-label="Store Information & FAQ">
-              <h2 class="text-base font-bold text-neutral-900 mb-3 font-serif">Frequently Asked Questions — Leovra Enterprises</h2>
-              <div class="space-y-3 text-xs text-neutral-700">
-                <div>
-                  <h3 class="font-bold text-neutral-900">Is Cash on Delivery (COD) available on Leovra Enterprises?</h3>
-                  <p class="text-neutral-600 mt-0.5">Yes, Cash on Delivery (COD) is available on all products across India. You can also pay via UPI (GPay, PhonePe, Paytm) for instant confirmation.</p>
-                </div>
-                <div>
-                  <h3 class="font-bold text-neutral-900">What is the return policy for Leovra Enterprises?</h3>
-                  <p class="text-neutral-600 mt-0.5">Leovra offers a 3-day return window from the date of delivery for defective, damaged, or wrong products received. Correctly delivered items in good condition are not eligible for return.</p>
-                </div>
-                <div>
-                  <h3 class="font-bold text-neutral-900">How long does delivery take?</h3>
-                  <p class="text-neutral-600 mt-0.5">Orders are dispatched via Shiprocket Express courier partners (Delhivery, Blue Dart, Shadowfax) within 24-48 hours. Delivery usually takes 2-5 business days depending on your pincode.</p>
-                </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-5 w-full">
+              <div class="p-3 bg-white rounded-2xl border border-neutral-200 flex flex-col justify-between shadow-xs">
+                <h3 class="font-bold text-neutral-900 text-xs leading-snug">Antique Oxidized Royal Silver Jhumkas</h3>
+                <div class="text-[11px] text-amber-700 font-medium mt-1">Earrings • ₹399</div>
               </div>
-            </section>
-          </div>
+              <div class="p-3 bg-white rounded-2xl border border-neutral-200 flex flex-col justify-between shadow-xs">
+                <h3 class="font-bold text-neutral-900 text-xs leading-snug">18K Gold Plated Emerald Teardrop Earrings</h3>
+                <div class="text-[11px] text-amber-700 font-medium mt-1">Earrings • ₹549</div>
+              </div>
+              <div class="hidden sm:flex p-3 bg-white rounded-2xl border border-neutral-200 flex-col justify-between shadow-xs">
+                <h3 class="font-bold text-neutral-900 text-xs leading-snug">Heavyweight Streetwear Oversized Graphic Tee</h3>
+                <div class="text-[11px] text-amber-700 font-medium mt-1">T-Shirts • ₹649</div>
+              </div>
+              <div class="hidden lg:flex p-3 bg-white rounded-2xl border border-neutral-200 flex-col justify-between shadow-xs">
+                <h3 class="font-bold text-neutral-900 text-xs leading-snug">Multi-Pocket Tactical Cargo Joggers</h3>
+                <div class="text-[11px] text-amber-700 font-medium mt-1">Lowers • ₹899</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Pre-rendered FAQ Block for Web Crawlers and Instant SEO Matching -->
+          <section class="w-full max-w-7xl mx-auto px-2.5 sm:px-4 py-8 sm:py-12" id="faq-section" aria-label="Store Information & FAQ">
+            <h2 class="text-base font-bold text-neutral-900 mb-3 font-serif">Frequently Asked Questions — Leovra Enterprises</h2>
+            <div class="space-y-3 text-xs text-neutral-700">
+              <div>
+                <h3 class="font-bold text-neutral-900">Is Cash on Delivery (COD) available on Leovra Enterprises?</h3>
+                <p class="text-neutral-600 mt-0.5">Yes, Cash on Delivery (COD) is available on all products across India. You can also pay via UPI (GPay, PhonePe, Paytm) for instant confirmation.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-neutral-900">What is the return policy for Leovra Enterprises?</h3>
+                <p class="text-neutral-600 mt-0.5">Leovra offers a 3-day return window from the date of delivery for defective, damaged, or wrong products received. Correctly delivered items in good condition are not eligible for return.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-neutral-900">How long does delivery take?</h3>
+                <p class="text-neutral-600 mt-0.5">Orders are dispatched via Shiprocket Express courier partners (Delhivery, Blue Dart, Shadowfax) within 24-48 hours. Delivery usually takes 2-5 business days depending on your pincode.</p>
+              </div>
+            </div>
+          </section>
         </main>
+
+        <!-- Mobile Bottom Nav Placeholder -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-neutral-200/90 shadow-[0_-2px_15px_rgba(0,0,0,0.05)] px-1 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] transform-gpu will-change-transform" id="mobile-bottom-nav">
+          <div class="grid grid-cols-5 items-center max-w-md mx-auto text-neutral-500 text-[10px] text-center">
+            <div class="flex flex-col items-center justify-center min-h-[48px] text-neutral-950 font-bold">
+              <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span>Home</span>
+            </div>
+            <div class="flex flex-col items-center justify-center min-h-[48px]">
+              <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+              <span>Categories</span>
+            </div>
+            <div class="flex flex-col items-center justify-center min-h-[48px]">
+              <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+              <span>Trending</span>
+            </div>
+            <div class="flex flex-col items-center justify-center min-h-[48px]">
+              <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span>Cart</span>
+            </div>
+            <div class="flex flex-col items-center justify-center min-h-[48px]">
+              <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Account</span>
+            </div>
+          </div>
+        </nav>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
