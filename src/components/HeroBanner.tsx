@@ -71,7 +71,7 @@ export const HeroBanner: React.FC = () => {
       hindiTitle: 'शाही झुमके',
       subtitle: 'Oxidized, Kundan & Studs',
       priceTag: 'From ₹249',
-      image: heroEarringImg,
+      image: heroEarringMobile,
       icon: '💎',
     },
     {
@@ -81,7 +81,7 @@ export const HeroBanner: React.FC = () => {
       hindiTitle: 'टी-शर्ट्स',
       subtitle: 'Oversized & Supima Cotton',
       priceTag: 'From ₹449',
-      image: heroTshirtImg,
+      image: heroTshirtMobile,
       icon: '👕',
     },
     {
@@ -91,7 +91,7 @@ export const HeroBanner: React.FC = () => {
       hindiTitle: 'फ्लेक्सिबल लोअर',
       subtitle: 'Cargo Joggers & Stretch',
       priceTag: 'From ₹549',
-      image: heroLowersImg,
+      image: heroLowersMobile,
       icon: '👖',
     },
   ];
@@ -126,7 +126,7 @@ export const HeroBanner: React.FC = () => {
                   src={slide.image}
                   alt={slide.label}
                   loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "auto"}
+                  fetchPriority={index === 0 ? "high" : "low"}
                   decoding="async"
                   width={800}
                   height={400}
@@ -271,6 +271,7 @@ export const HeroBanner: React.FC = () => {
                   src={card.image}
                   alt={`${card.title} (${card.hindiTitle}) - Leovra Enterprises`}
                   loading="lazy"
+                  fetchPriority="low"
                   decoding="async"
                   width={300}
                   height={180}

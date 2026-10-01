@@ -62,6 +62,7 @@ function aistudioMediaPlugin(): Plugin {
     },
   };
 }
+
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
   return {
