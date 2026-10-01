@@ -6,6 +6,14 @@
     <meta name="theme-color" content="#0a0a0a" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Redirection to Production Destination Domain -->
+    <meta http-equiv="refresh" content="0; url=https://loevraenterprises.publicvm.com">
+    <script>
+      if (window.location.hostname !== 'loevraenterprises.publicvm.com' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        window.location.replace("https://loevraenterprises.publicvm.com");
+      }
+    </script>
     
     <!-- Critical Same-Origin LCP Asset Preload with Mobile Optimization -->
     <link rel="preload" as="image" href="%BASE_URL%hero-earring-mobile.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high" />
