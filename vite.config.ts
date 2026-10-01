@@ -62,14 +62,26 @@ function aistudioMediaPlugin(): Plugin {
     },
   };
 }
-// LINT.ThenChange(//depot/google3/java/com/google/alkali/boq/makersuite/applet_dev_service/templates/initializers/react_theme/vite.config.ts:aistudio_media_plugin)
+// Lighthouse 100 Performance: Non-blocking stylesheet with preload fallback
+function nonBlockingCssPlugin(): Plugin {
+  return {
+    name: 'vite-plugin-non-blocking-css',
+    enforce: 'post',
+    transformIndexHtml(html) {
+      return html.replace(
+        /<link rel="stylesheet" crossorigin href="(\.\/assets\/index-[^"]+\.css)">/g,
+        '<link rel="preload" as="style" href="$1" /><link rel="stylesheet" href="$1" media="print" onload="this.media=\'all\'" /><noscript><link rel="stylesheet" href="$1"></noscript>'
+      );
+    }
+  };
+}
 
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
   return {
     // Base path: relative './' works on custom domains and github.io subpaths seamlessly
     base: './',
-    plugins: [react(), tailwindcss(), ...(isDev ? [aistudioMediaPlugin()] : [])],
+    plugins: [react(), tailwindcss(), ...(isDev ? [aistudioMediaPlugin()] : [nonBlockingCssPlugin()])],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
