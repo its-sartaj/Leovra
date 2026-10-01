@@ -133,10 +133,10 @@ export const ReturnPolicyModal: React.FC = () => {
 
           {/* How to Claim Return Step-by-Step */}
           <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-3">
-            <h4 className="text-xs font-bold text-neutral-900 uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wider flex items-center gap-2">
               <PackageCheck className="w-4 h-4 text-amber-600" />
               <span>How to Request a Return or Replacement</span>
-            </h4>
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
               <div className="p-3 bg-white rounded-xl border border-neutral-200/80 space-y-1">
                 <div className="font-extrabold text-neutral-900 text-[11px] text-amber-700">STEP 1: Report</div>
@@ -182,7 +182,7 @@ export const ReturnPolicyModal: React.FC = () => {
               href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I want to submit a return request for my delivered order under the 3-day policy for a defective/wrong item. My Order ID is: ')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
+              className="flex-1 sm:flex-initial py-2.5 px-4 min-h-[48px] rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Request Return on WhatsApp</span>
@@ -191,7 +191,7 @@ export const ReturnPolicyModal: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsReturnPolicyOpen(false)}
-              className="py-2.5 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs transition-colors cursor-pointer"
+              className="py-2.5 px-4 min-h-[48px] rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs transition-colors cursor-pointer inline-flex items-center justify-center"
             >
               Close
             </button>

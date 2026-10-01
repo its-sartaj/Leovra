@@ -134,7 +134,7 @@ export const ProductGrid: React.FC = () => {
             <select
               value={filters.sortBy}
               onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as FilterOptions['sortBy'] }))}
-              className="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-2.5 py-1.5 min-h-[44px] sm:min-h-[38px] text-xs font-semibold focus:outline-hidden focus:border-amber-500 cursor-pointer"
+              className="bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-xl px-2.5 py-1.5 min-h-[48px] text-xs font-semibold focus:outline-hidden focus:border-amber-500 cursor-pointer"
               id="sort-by-select"
               aria-label="Sort products by"
             >
@@ -170,7 +170,7 @@ export const ProductGrid: React.FC = () => {
           <div className="pt-2 flex justify-center">
             <button
               onClick={() => setFilters({ category: 'all', searchQuery: '', sortBy: 'featured', inStockOnly: false })}
-              className="px-4 py-2 rounded-xl bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors"
+              className="px-4 py-2.5 min-h-[48px] rounded-xl bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors inline-flex items-center justify-center cursor-pointer"
             >
               Reset All Filters
             </button>

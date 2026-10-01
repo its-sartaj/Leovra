@@ -184,13 +184,15 @@ export const CustomerAccountModal: React.FC = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center border-b border-neutral-200 bg-neutral-100/50 px-4 pt-2">
+        <div className="flex items-center border-b border-neutral-200 bg-neutral-100/50 px-4 pt-2" role="tablist" aria-label="Customer Account Tabs">
           {currentCustomer ? (
             <>
               <button
                 type="button"
+                role="tab"
+                aria-selected={accountModalTab === 'orders'}
                 onClick={() => setAccountModalTab('orders')}
-                className={`flex-1 py-2.5 px-3 text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                className={`flex-1 py-2.5 px-3 min-h-[44px] text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                   accountModalTab === 'orders'
                     ? 'border-neutral-900 text-neutral-950 bg-white rounded-t-lg shadow-2xs'
                     : 'border-transparent text-neutral-500 hover:text-neutral-900'
@@ -205,8 +207,10 @@ export const CustomerAccountModal: React.FC = () => {
 
               <button
                 type="button"
+                role="tab"
+                aria-selected={accountModalTab === 'profile'}
                 onClick={() => setAccountModalTab('profile')}
-                className={`flex-1 py-2.5 px-3 text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                className={`flex-1 py-2.5 px-3 min-h-[44px] text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                   accountModalTab === 'profile'
                     ? 'border-neutral-900 text-neutral-950 bg-white rounded-t-lg shadow-2xs'
                     : 'border-transparent text-neutral-500 hover:text-neutral-900'
@@ -220,8 +224,10 @@ export const CustomerAccountModal: React.FC = () => {
             <>
               <button
                 type="button"
+                role="tab"
+                aria-selected={accountModalTab === 'register'}
                 onClick={() => setAccountModalTab('register')}
-                className={`flex-1 py-2.5 px-3 text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                className={`flex-1 py-2.5 px-3 min-h-[44px] text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                   accountModalTab === 'register'
                     ? 'border-neutral-900 text-neutral-950 bg-white rounded-t-lg shadow-2xs'
                     : 'border-transparent text-neutral-500 hover:text-neutral-900'
@@ -233,8 +239,10 @@ export const CustomerAccountModal: React.FC = () => {
 
               <button
                 type="button"
+                role="tab"
+                aria-selected={accountModalTab === 'login'}
                 onClick={() => setAccountModalTab('login')}
-                className={`flex-1 py-2.5 px-3 text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                className={`flex-1 py-2.5 px-3 min-h-[44px] text-xs font-bold border-b-2 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                   accountModalTab === 'login'
                     ? 'border-neutral-900 text-neutral-950 bg-white rounded-t-lg shadow-2xs'
                     : 'border-transparent text-neutral-500 hover:text-neutral-900'

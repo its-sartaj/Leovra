@@ -1993,7 +1993,8 @@ export const AdminDashboard: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold shadow-md transition-all cursor-pointer flex items-center gap-2 text-xs"
+                  aria-label={editingProduct ? 'Save Changes' : 'Publish Product to Shop'}
+                  className="px-5 py-2.5 min-h-[44px] rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold shadow-md transition-all cursor-pointer flex items-center gap-2 text-xs"
                   id="admin-submit-save-btn"
                 >
                   <Save className="w-4 h-4 text-amber-400" />

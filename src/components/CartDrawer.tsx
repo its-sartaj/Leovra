@@ -884,7 +884,7 @@ export const CartDrawer: React.FC = () => {
                             <div className="flex items-center border border-neutral-200 rounded-xl bg-neutral-50 overflow-hidden">
                               <button
                                 onClick={() => updateCartQuantity(item.product.id, item.selectedSize, item.quantity - 1, item.selectedColor)}
-                                className="w-11 h-11 min-w-[44px] min-h-[44px] text-neutral-700 hover:bg-neutral-200 text-sm font-bold cursor-pointer transition-colors flex items-center justify-center"
+                                className="w-12 h-12 min-w-[48px] min-h-[48px] text-neutral-700 hover:bg-neutral-200 text-sm font-bold cursor-pointer transition-colors flex items-center justify-center"
                                 aria-label={`Decrease quantity of ${item.product.name}`}
                               >
                                 -
@@ -895,7 +895,7 @@ export const CartDrawer: React.FC = () => {
                               <button
                                 onClick={() => updateCartQuantity(item.product.id, item.selectedSize, item.quantity + 1, item.selectedColor)}
                                 disabled={item.quantity >= liveProduct.stock}
-                                className={`w-11 h-11 min-w-[44px] min-h-[44px] text-sm font-bold cursor-pointer transition-colors flex items-center justify-center ${
+                                className={`w-12 h-12 min-w-[48px] min-h-[48px] text-sm font-bold cursor-pointer transition-colors flex items-center justify-center ${
                                   item.quantity >= liveProduct.stock
                                     ? 'text-neutral-300 cursor-not-allowed bg-neutral-100'
                                     : 'text-neutral-700 hover:bg-neutral-200'

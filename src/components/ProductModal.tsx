@@ -25,9 +25,7 @@ export const ProductModal: React.FC = () => {
 
   // IMPORTANT: All hooks must be called before any early return (Rules of Hooks)
   const [selectedSize, setSelectedSize] = useState<string>(selectedProduct?.sizes?.[0] || 'Standard');
-  const [selectedColor, setSelectedColor] = useState<string | undefined>(
-    selectedProduct?.colors && selectedProduct.colors.length > 0 ? selectedProduct.colors[0] : undefined
-  );
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(selectedProduct?.colors?.[0] || undefined);
   const [quantity, setQuantity] = useState<number>(1);
   const [isAdded, setIsAdded] = useState(false);
   const [pincodeInput, setPincodeInput] = useState('');
@@ -36,8 +34,8 @@ export const ProductModal: React.FC = () => {
   // Synchronize state whenever a new product is selected
   useEffect(() => {
     if (selectedProduct) {
-      setSelectedSize(selectedProduct.sizes && selectedProduct.sizes.length > 0 ? selectedProduct.sizes[0] : 'Standard');
-      setSelectedColor(selectedProduct.colors && selectedProduct.colors.length > 0 ? selectedProduct.colors[0] : undefined);
+      setSelectedSize(selectedProduct.sizes?.[0] || 'Standard');
+      setSelectedColor(selectedProduct.colors?.[0] || undefined);
       setQuantity(1);
       setIsAdded(false);
       setPincodeInput('');
@@ -177,9 +175,9 @@ export const ProductModal: React.FC = () => {
 
             {/* Description */}
             <div>
-              <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">
+              <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">
                 Description & Material
-              </h4>
+              </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
                 {selectedProduct.description}
               </p>
@@ -197,7 +195,7 @@ export const ProductModal: React.FC = () => {
                     <button
                       key={sz}
                       onClick={() => setSelectedSize(sz)}
-                      className={`min-h-[44px] sm:min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      className={`min-h-[48px] px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         selectedSize === sz
                           ? 'bg-neutral-950 text-white border-neutral-950 shadow-xs'
                           : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
@@ -221,7 +219,7 @@ export const ProductModal: React.FC = () => {
                     <button
                       key={c}
                       onClick={() => setSelectedColor(c)}
-                      className={`min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
+                      className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
                         selectedColor === c
                           ? 'bg-amber-100 text-amber-900 border-amber-400 font-bold'
                           : 'bg-neutral-50 text-neutral-600 border-neutral-200'
@@ -242,7 +240,7 @@ export const ProductModal: React.FC = () => {
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     aria-label="Decrease quantity"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-700 hover:bg-neutral-200 font-bold text-base cursor-pointer"
+                    className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-neutral-700 hover:bg-neutral-200 font-bold text-base cursor-pointer"
                   >
                     -
                   </button>
@@ -252,7 +250,7 @@ export const ProductModal: React.FC = () => {
                   <button
                     onClick={() => setQuantity(Math.min(selectedProduct.stock, quantity + 1))}
                     aria-label="Increase quantity"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-700 hover:bg-neutral-200 font-bold text-base cursor-pointer"
+                    className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-neutral-700 hover:bg-neutral-200 font-bold text-base cursor-pointer"
                   >
                     +
                   </button>
@@ -295,7 +293,7 @@ export const ProductModal: React.FC = () => {
                 <button
                   type="submit"
                   aria-label="Check delivery pincode"
-                  className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-purple-700 hover:bg-purple-800 text-white cursor-pointer transition-colors shadow-2xs"
+                  className="px-3.5 py-1.5 min-h-[44px] text-xs font-bold rounded-xl bg-purple-700 hover:bg-purple-800 text-white cursor-pointer transition-colors shadow-2xs inline-flex items-center justify-center"
                 >
                   Check
                 </button>

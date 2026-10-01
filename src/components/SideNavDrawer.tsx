@@ -367,7 +367,7 @@ export const SideNavDrawer: React.FC = () => {
                     setIsSideNavOpen(false);
                     setIsReturnPolicyOpen(true);
                   }}
-                  className="w-full text-left p-3 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3 hover:bg-amber-100/60 transition-colors cursor-pointer group"
+                  className="w-full min-h-[48px] text-left p-3 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3 hover:bg-amber-100/60 transition-colors cursor-pointer group"
                 >
                   <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 shrink-0 group-hover:scale-105 transition-transform">
                     <RotateCcw className="w-4 h-4" />
@@ -395,7 +395,7 @@ export const SideNavDrawer: React.FC = () => {
                 {/* Direct Phone Call */}
                 <a
                   href={`tel:+91${businessPhone}`}
-                  className="flex items-center justify-between p-3 rounded-xl bg-neutral-900 text-white font-bold hover:bg-neutral-800 transition-colors shadow-xs"
+                  className="flex items-center justify-between p-3 min-h-[48px] rounded-xl bg-neutral-900 text-white font-bold hover:bg-neutral-800 transition-colors shadow-xs"
                 >
                   <div className="flex items-center gap-2.5">
                     <Phone className="w-4 h-4 text-amber-400" />
@@ -409,7 +409,7 @@ export const SideNavDrawer: React.FC = () => {
                   href={`https://wa.me/91${businessPhone}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-colors shadow-xs"
+                  className="flex items-center justify-between p-3 min-h-[48px] rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-colors shadow-xs"
                 >
                   <div className="flex items-center gap-2.5">
                     <MessageCircle className="w-4 h-4" />

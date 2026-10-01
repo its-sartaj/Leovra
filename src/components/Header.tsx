@@ -83,11 +83,11 @@ export const Header: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-8 h-8 flex items-center justify-center rounded-md hover:bg-neutral-200/60 cursor-pointer transition-colors"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-neutral-200/60 cursor-pointer transition-colors"
                   title="Clear search"
                   aria-label="Clear search"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -212,7 +212,7 @@ export const Header: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-9 h-9 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-neutral-200/60 cursor-pointer transition-colors"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-neutral-200/60 cursor-pointer transition-colors"
                   title="Clear search"
                   aria-label="Clear search"
                 >
