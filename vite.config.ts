@@ -67,8 +67,8 @@ function aistudioMediaPlugin(): Plugin {
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
   return {
-    // Base path for GitHub Pages: https://its-sartaj.github.io/Leovra/
-    base: isDev ? '/' : '/Leovra/',
+    // Base path: relative './' works on custom domains and github.io subpaths seamlessly
+    base: './',
     plugins: [react(), tailwindcss(), ...(isDev ? [aistudioMediaPlugin()] : [])],
     resolve: {
       alias: {
