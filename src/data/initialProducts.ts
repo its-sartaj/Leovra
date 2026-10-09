@@ -1,7 +1,7 @@
 import { Product } from '../types';
 
 export const INITIAL_PRODUCTS: Product[] = [
-  // JEWELLERYS CATEGORY
+  // EARRINGS CATEGORY
   {
     id: 'prod-earring-1',
     name: 'Antique Oxidized Royal Silver Jhumkas',

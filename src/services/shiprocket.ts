@@ -6,7 +6,7 @@ export const SHIPROCKET_CONFIG = {
   pickupPincode: '110025',
   pickupCity: 'South Delhi',
   companyId: '11336654',
-  companyName: 'Baraka Bizz',
+  companyName: 'Leovra Enterprises',
   dashboardUrl: 'https://app.shiprocket.in/',
   trackingBaseUrl: 'https://shiprocket.co/tracking/',
 };
@@ -115,7 +115,7 @@ export const exportShiprocketCSV = (orders: Order[]) => {
       const row = [
         sanitizeCsv(order.id),
         sanitizeCsv(new Date(order.createdAt).toISOString().split('T')[0]),
-        `"Custom API - Baraka Bizz"`,
+        `"Custom API - Leovra"`,
         `"${isCod ? 'COD' : 'Prepaid'}"`,
         sanitizeCsv(order.customerName || 'Customer'),
         `"${cleanPhone}"`,

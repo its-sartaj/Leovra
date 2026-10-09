@@ -101,9 +101,9 @@ const STORAGE_KEY_ALL_CUSTOMERS = 'leovra_all_customers_v1';
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const businessName = 'Baraka Bizz';
+  const businessName = 'Leovra Enterprises';
   const businessPhone = '7979968347';
-  const businessEmail = 'support@barakabizz.com';
+  const businessEmail = 'support@leovraenterprises.com';
   const businessUpi = '7979968347@slc';
 
   // Check URL initially for dedicated admin route (e.g. #admin or /admin or ?admin=true)
@@ -1066,7 +1066,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     customerInfo?: { name: string; phone: string; address: string }
   ) => {
     const phoneNum = `91${businessPhone}`;
-    let text = `*New Order Inquiry - Baraka Bizz*\n\n`;
+    let text = `*New Order Inquiry - Leovra Enterprises*\n\n`;
 
     if (orderItems.length > 0) {
       text += `*Items:*\n`;

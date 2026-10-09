@@ -42,7 +42,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
 
   const handleDirectWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const msg = `Hello Baraka Bizz! I want to order "${product.name}" (Size: ${selectedSize}, Price: ₹${product.price}). Is it ready for shipping?`;
+    const msg = `Hello Leovra Enterprises! I want to order "${product.name}" (Size: ${selectedSize}, Price: ₹${product.price}). Is it ready for shipping?`;
     window.open(`https://wa.me/91${businessPhone}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
   };
 
@@ -71,7 +71,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
       <div className="relative aspect-[4/5] w-full bg-neutral-100 overflow-hidden" style={{ aspectRatio: '4/5' }}>
         <img
           src={product.image}
-          alt={`${product.name} - Buy online at Baraka Bizz`}
+          alt={`${product.name} - Buy online at Leovra Enterprises`}
           width={400}
           height={500}
           style={{ aspectRatio: '4/5' }}
@@ -136,7 +136,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
           {/* Category & Rating */}
           <div className="flex items-center justify-between text-[10px] sm:text-xs text-neutral-500 mb-0.5">
             <span className="font-bold uppercase tracking-wider text-[9px] sm:text-[10px] text-amber-700 truncate max-w-[65%]">
-              {product.category === 'earrings' && 'Jewellerys'}
+              {product.category === 'earrings' && 'Jewellery'}
               {product.category === 'tshirts' && 'T-Shirt'}
               {product.category === 'lowers' && 'Lower'}
             </span>

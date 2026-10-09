@@ -14,13 +14,13 @@ export const FAQSection: React.FC = () => {
 
   const faqs: FAQItem[] = [
     {
-      question: 'Is Cash on Delivery (COD) available on Baraka Bizz?',
+      question: 'Is Cash on Delivery (COD) available on Leovra Enterprises?',
       answer: 'Yes, Cash on Delivery (COD) is available on all products across India. You can also pay via UPI (GPay, PhonePe, Paytm) for instant confirmation.',
       icon: <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
     },
     {
-      question: 'What is the return policy for Baraka Bizz?',
-      answer: 'Baraka Bizz offers a 3-day return window from the date of delivery for defective, damaged, or wrong products received. Correctly delivered items in good condition are not eligible for return.',
+      question: 'What is the return policy for Leovra Enterprises?',
+      answer: 'Leovra offers a 3-day return window from the date of delivery for defective, damaged, or wrong products received. Correctly delivered items in good condition are not eligible for return.',
       icon: <RotateCcw className="w-4 h-4 text-amber-600 shrink-0" />
     },
     {
@@ -29,7 +29,7 @@ export const FAQSection: React.FC = () => {
       icon: <Truck className="w-4 h-4 text-purple-600 shrink-0" />
     },
     {
-      question: 'How can I track my Baraka Bizz order?',
+      question: 'How can I track my Leovra order?',
       answer: 'You can track your order directly in the "My Orders" tab of your account or reach out to our customer support on WhatsApp with your Order ID for real-time Shiprocket AWB updates.',
       icon: <HelpCircle className="w-4 h-4 text-neutral-600 shrink-0" />
     }
@@ -57,7 +57,7 @@ export const FAQSection: React.FC = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-xs sm:text-sm text-neutral-500">
-            Everything you need to know about shopping, shipping, and returns at <strong>Baraka Bizz</strong>.
+            Everything you need to know about shopping, shipping, and returns at <strong>Leovra Enterprises</strong>.
           </p>
         </div>
 
@@ -108,7 +108,7 @@ export const FAQSection: React.FC = () => {
         <div className="mt-8 text-center pt-6 border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs text-neutral-500">
           <span>Still have questions about an order?</span>
           <a
-            href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Baraka Bizz! I have a question about shopping on your store.')}`}
+            href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I have a question about shopping on your store.')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-2xs"

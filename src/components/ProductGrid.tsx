@@ -57,7 +57,7 @@ export const ProductGrid: React.FC = () => {
 
   const categories: { id: 'all' | ProductCategory; label: string }[] = [
     { id: 'all', label: 'All Collection' },
-    { id: 'earrings', label: 'Jewellerys (ज्वेलरी)' },
+    { id: 'earrings', label: 'Jewellery (ज्वेलरी)' },
     { id: 'tshirts', label: 'T-Shirts (टी-शर्ट्स)' },
     { id: 'lowers', label: 'Lowers & Joggers (लोअर)' },
   ];
@@ -164,7 +164,7 @@ export const ProductGrid: React.FC = () => {
           <h3 className="text-lg font-bold text-neutral-900">No Products Found</h3>
           <p className="text-xs text-neutral-500">
             {filters.searchQuery 
-              ? `No items match "${filters.searchQuery}". Try searching for jewellerys, lowers, or t-shirts.`
+              ? `No items match "${filters.searchQuery}". Try searching for jewellery, lowers, or t-shirts.`
               : 'Try turning off "In-Stock Only" or choosing another category.'}
           </p>
           <div className="pt-2 flex justify-center">

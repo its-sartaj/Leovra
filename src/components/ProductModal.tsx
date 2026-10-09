@@ -92,7 +92,7 @@ export const ProductModal: React.FC = () => {
         <div className="md:w-1/2 relative bg-neutral-100 min-h-[200px] max-h-[280px] md:max-h-none md:min-h-[420px] flex items-center justify-center overflow-hidden shrink-0">
           <img
             src={selectedProduct.image}
-            alt={`${selectedProduct.name} - Handcrafted Premium Quality by Baraka Bizz`}
+            alt={`${selectedProduct.name} - Handcrafted Premium Quality by Leovra Enterprises`}
             width={600}
             height={600}
             referrerPolicy="no-referrer"
@@ -142,7 +142,7 @@ export const ProductModal: React.FC = () => {
             {/* Category and Rating */}
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
-                {selectedProduct.category === 'earrings' && 'Artisanal Jewellerys / शाही ज्वेलरी'}
+                {selectedProduct.category === 'earrings' && 'Artisanal Jewellery / शाही ज्वेलरी'}
                 {selectedProduct.category === 'tshirts' && 'Streetwear T-Shirt / टी-शर्ट'}
                 {selectedProduct.category === 'lowers' && 'Trackpants & Lowers / लोअर'}
               </span>
@@ -372,7 +372,7 @@ export const ProductModal: React.FC = () => {
 
               <a
                 href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(
-                  `Hello Baraka Bizz!\nI want to place an order for:\n*${selectedProduct.name}*\n- Size: ${selectedSize}\n${selectedColor ? `- Color: ${selectedColor}\n` : ''}- Quantity: ${quantity}\n- Price: ₹${selectedProduct.price * quantity}\n\nPlease share delivery details to my address.`
+                  `Hello Leovra Enterprises!\nI want to place an order for:\n*${selectedProduct.name}*\n- Size: ${selectedSize}\n${selectedColor ? `- Color: ${selectedColor}\n` : ''}- Quantity: ${quantity}\n- Price: ₹${selectedProduct.price * quantity}\n\nPlease share delivery details to my address.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 
-const SITE_NAME = 'Baraka Bizz';
+const SITE_NAME = 'Leovra Enterprises';
 const getBaseCanonical = () => {
   if (typeof window !== 'undefined') {
     return `${window.location.origin}${window.location.pathname.startsWith('/Leovra') ? '/Leovra/' : '/'}`;
@@ -17,38 +17,38 @@ export const SEOHead: React.FC = () => {
     if (typeof document === 'undefined') return;
 
     const baseCanonical = getBaseCanonical();
-    let pageTitle = 'Baraka Bizz | Buy Designer Jewellerys, Trendy T-Shirts & Mens Lowers Online India';
-    let metaDescription = 'Shop handcrafted Kundan & oxidized jewellerys, oversized graphic streetwear t-shirts, and premium gym trackpants at Baraka Bizz. Cash on Delivery (COD), 3-day easy returns & express doorstep delivery across India.';
+    let pageTitle = 'Leovra Enterprises | Buy Designer Jewellery, Trendy T-Shirts & Mens Lowers Online India';
+    let metaDescription = 'Shop handcrafted Kundan & oxidized jewellery, oversized graphic streetwear t-shirts, and premium gym trackpants at Leovra Enterprises. Cash on Delivery (COD), 3-day easy returns & express doorstep delivery across India.';
     let canonicalUrl = baseCanonical;
     let ogImage = `${baseCanonical}brand-logo.svg`;
 
     if (currentView === 'admin') {
-      pageTitle = 'Admin Inventory & Order Management Portal | Baraka Bizz';
+      pageTitle = 'Admin Inventory & Order Management Portal | Leovra Enterprises';
       metaDescription = 'Restricted administrative portal for real-time stock control, order dispatching, Shiprocket AWB tracking, and catalog management.';
       canonicalUrl = `${baseCanonical}#admin`;
     } else if (selectedProduct) {
-      pageTitle = `${selectedProduct.name} - ₹${selectedProduct.price} | Baraka Bizz`;
+      pageTitle = `${selectedProduct.name} - ₹${selectedProduct.price} | Leovra Enterprises`;
       metaDescription = `Buy ${selectedProduct.name} for ₹${selectedProduct.price}. ${selectedProduct.description} Enjoy Cash on Delivery (COD) and 3-day doorstep return policy across India.`;
       canonicalUrl = `${baseCanonical}?product=${selectedProduct.id}`;
       ogImage = selectedProduct.image;
     } else if (filters.searchQuery && filters.searchQuery.trim().length > 0) {
       const q = filters.searchQuery.trim();
-      pageTitle = `Search results for "${q}" | Baraka Bizz`;
-      metaDescription = `Explore search results for "${q}" at Baraka Bizz. Handcrafted jewellery, graphic tees, and gym trackpants with Cash on Delivery.`;
+      pageTitle = `Search results for "${q}" | Leovra Enterprises`;
+      metaDescription = `Explore search results for "${q}" at Leovra Enterprises. Handcrafted jewelry, graphic tees, and gym trackpants with Cash on Delivery.`;
       canonicalUrl = `${baseCanonical}?search=${encodeURIComponent(q)}`;
     } else if (filters.category === 'earrings') {
-      pageTitle = 'Designer Artisanal Jewellerys & Royal Kundan Jewellery Online | Baraka Bizz';
-      metaDescription = 'Shop handcrafted oxidized silver jewellery, meenakari chandbalis, 18K gold plated teardrop chandelier jewellerys, and pearl danglers. Cash on Delivery (COD) across India.';
+      pageTitle = 'Designer Artisanal Jewellery & Royal Kundan Jewellery Online | Leovra Enterprises';
+      metaDescription = 'Shop handcrafted oxidized silver jewellery, meenakari chandbalis, 18K gold plated teardrop chandelier jewellery, and pearl danglers. Cash on Delivery (COD) across India.';
       canonicalUrl = `${baseCanonical}?category=earrings`;
       ogImage = `${baseCanonical}hero-earring.webp`;
     } else if (filters.category === 'tshirts') {
-      pageTitle = 'Heavyweight Streetwear Oversized T-Shirts (240+ GSM) | Baraka Bizz';
+      pageTitle = 'Heavyweight Streetwear Oversized T-Shirts (240+ GSM) | Leovra Enterprises';
       metaDescription = 'Buy 100% pure combed Supima cotton oversized graphic tees, vintage acid wash boxy fit t-shirts, and athletic training gym tees with Cash on Delivery in India.';
       canonicalUrl = `${baseCanonical}?category=tshirts`;
       ogImage = `${baseCanonical}hero-tshirt.webp`;
     } else if (filters.category === 'lowers') {
-      pageTitle = 'Men\'s Gym Trackpants, Tactical Cargo Joggers & Comfort Lowers | Baraka Bizz';
-      metaDescription = 'Discover 4-way stretch gym track pants, multi-pocket tactical cargo joggers, and heavy terry cotton casual lowers at Baraka Bizz with express dispatch.';
+      pageTitle = 'Men\'s Gym Trackpants, Tactical Cargo Joggers & Comfort Lowers | Leovra Enterprises';
+      metaDescription = 'Discover 4-way stretch gym track pants, multi-pocket tactical cargo joggers, and heavy terry cotton casual lowers at Leovra Enterprises with express dispatch.';
       canonicalUrl = `${baseCanonical}?category=lowers`;
       ogImage = `${baseCanonical}hero-lowers.webp`;
     }

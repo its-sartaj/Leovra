@@ -352,7 +352,7 @@ export const AdminDashboard: React.FC = () => {
         originalPrice: parsedOriginal,
         stock: stockNum,
         isOutOfStock: stockNum <= 0,
-        description: formDescription.trim() || 'Handcrafted premium quality product from Baraka Bizz.',
+        description: formDescription.trim() || 'Handcrafted premium quality product from Leovra Enterprises.',
         image: finalImage,
         tag: (formTag as any) || undefined,
         sizes: formSizes.length > 0 ? formSizes : ['Free Size'],
@@ -367,7 +367,7 @@ export const AdminDashboard: React.FC = () => {
         originalPrice: parsedOriginal,
         stock: stockNum,
         isOutOfStock: stockNum <= 0,
-        description: formDescription.trim() || 'Handcrafted premium quality product from Baraka Bizz.',
+        description: formDescription.trim() || 'Handcrafted premium quality product from Leovra Enterprises.',
         image: finalImage,
         tag: (formTag as any) || undefined,
         sizes: formSizes.length > 0 ? formSizes : ['Free Size'],
@@ -540,7 +540,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
           
           <h1 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight">
-            Baraka Bizz Inventory Admin
+            Leovra Enterprises Inventory Admin
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">
             Real-time stock controls, instant out-of-stock toggling, and product management.
@@ -736,7 +736,7 @@ export const AdminDashboard: React.FC = () => {
                   id={`admin-filter-cat-${cat}`}
                 >
                   {cat === 'all' && 'All'}
-                  {cat === 'earrings' && 'Jewellerys'}
+                  {cat === 'earrings' && 'Jewellery'}
                   {cat === 'tshirts' && 'T-Shirts'}
                   {cat === 'lowers' && 'Lowers'}
                 </button>
@@ -1084,14 +1084,14 @@ export const AdminDashboard: React.FC = () => {
                         href={
                           order.status === 'Cancelled'
                             ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                `Hello ${order.customerName}!\nYour order #${order.id} at Baraka Bizz has been cancelled.\nReason: ${order.cancellationReason || 'Cancelled by store admin'}.\nIf you have any questions or would like to re-order, please reply here.`
+                                `Hello ${order.customerName}!\nYour order #${order.id} at Leovra Enterprises has been cancelled.\nReason: ${order.cancellationReason || 'Cancelled by store admin'}.\nIf you have any questions or would like to re-order, please reply here.`
                               )}`
                             : order.awbCode
                             ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                `Hello ${order.customerName}!\nYour Baraka Bizz Order #${order.id} has been dispatched via Shiprocket (${order.courierName || 'Express Courier'}).\nAWB Tracking No: ${order.awbCode}\nLive Tracking: ${getShiprocketTrackingUrl(order.awbCode)}\nThank you for shopping with Baraka Bizz!`
+                                `Hello ${order.customerName}!\nYour Leovra Order #${order.id} has been dispatched via Shiprocket (${order.courierName || 'Express Courier'}).\nAWB Tracking No: ${order.awbCode}\nLive Tracking: ${getShiprocketTrackingUrl(order.awbCode)}\nThank you for shopping with Leovra Enterprises!`
                               )}`
                             : `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                `Hello ${order.customerName}! We received your order #${order.id} at Baraka Bizz.`
+                                `Hello ${order.customerName}! We received your order #${order.id} at Leovra Enterprises.`
                               )}`
                         }
                         target="_blank"
@@ -1127,7 +1127,7 @@ export const AdminDashboard: React.FC = () => {
                   <span>Shiprocket Logistics Integration</span>
                 </h3>
                 <p className="text-xs text-neutral-300 max-w-xl">
-                  Automated logistics dispatch, multi-courier network (Blue Dart, Delhivery, Shadowfax, DTDC), and live tracking for Baraka Bizz.
+                  Automated logistics dispatch, multi-courier network (Blue Dart, Delhivery, Shadowfax, DTDC), and live tracking for Leovra Enterprises.
                 </p>
               </div>
 
@@ -1226,7 +1226,7 @@ export const AdminDashboard: React.FC = () => {
 
               <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2">
                 <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center">3</div>
-                <div className="font-bold text-xs text-neutral-900">Paste AWB in Baraka Bizz</div>
+                <div className="font-bold text-xs text-neutral-900">Paste AWB in Leovra</div>
                 <p className="text-[11px] text-neutral-500 leading-relaxed">
                   In Customer Orders, click "Dispatch & AWB" and enter the generated AWB number. Customers will see live Shiprocket tracking in their account!
                 </p>
@@ -1616,7 +1616,7 @@ export const AdminDashboard: React.FC = () => {
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: 'earrings', label: 'Jewellerys (ज्वेलरी)', sub: 'Jewellery' },
+                    { id: 'earrings', label: 'Jewellery (ज्वेलरी)', sub: 'Jewellery' },
                     { id: 'tshirts', label: 'T-Shirts (टी-शर्ट)', sub: 'Apparel' },
                     { id: 'lowers', label: 'Lowers (लोअर)', sub: 'Pants/Joggers' },
                   ].map((cat) => (

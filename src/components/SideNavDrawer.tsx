@@ -34,7 +34,6 @@ export const SideNavDrawer: React.FC = () => {
     setIsCartOpen, 
     cartCount,
     businessPhone,
-    businessEmail,
     products,
     currentCustomer,
     setIsAccountModalOpen,
@@ -89,10 +88,10 @@ export const SideNavDrawer: React.FC = () => {
                     <span>Trusted Fashion Brand</span>
                   </div>
                   <h2 className="text-lg font-black tracking-tight text-white font-serif leading-tight">
-                    Baraka Bizz
+                    Leovra Enterprises
                   </h2>
                   <p className="text-[11px] text-neutral-300">
-                    Artisanal Jewellerys • Streetwear • Lowers
+                    Artisanal Jewellery • Streetwear • Lowers
                   </p>
                 </div>
               </div>
@@ -206,7 +205,7 @@ export const SideNavDrawer: React.FC = () => {
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-neutral-900">Jewellerys & Jhumkas (शाही ज्वेलरी)</div>
+                      <div className="text-xs font-bold text-neutral-900">Jewellery & Jhumkas (शाही ज्वेलरी)</div>
                       <div className="text-[10px] text-neutral-500">Oxidized, Kundan & Chandbali</div>
                     </div>
                   </div>
@@ -292,7 +291,7 @@ export const SideNavDrawer: React.FC = () => {
                   <div>
                     <div className="text-xs font-bold text-neutral-900">100% Quality Checked & Inspected</div>
                     <div className="text-[11px] text-neutral-600 mt-0.5 leading-relaxed">
-                      Every piece of jewellery, t-shirt, and lower is hand-checked for stitch, stone settings, and finish before dispatch.
+                      Every piece of jewelry, t-shirt, and lower is hand-checked for stitch, stone settings, and finish before dispatch.
                     </div>
                   </div>
                 </div>
@@ -324,7 +323,7 @@ export const SideNavDrawer: React.FC = () => {
                       Prefer ordering without online forms? Send a photo or product name directly to our WhatsApp support.
                     </div>
                     <a
-                      href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Baraka Bizz! I would like to place an order directly.')}`}
+                      href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I would like to place an order directly.')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline mt-1.5"
@@ -431,7 +430,7 @@ export const SideNavDrawer: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-3.5 h-3.5 text-neutral-500" />
-                    <span>Email: {businessEmail}</span>
+                    <span>Email: support@leovraenterprises.com</span>
                   </div>
                 </div>
               </div>
@@ -452,7 +451,7 @@ export const SideNavDrawer: React.FC = () => {
 
           {/* Footer of Drawer */}
           <div className="p-4 border-t border-neutral-200 bg-neutral-50 text-center text-xs text-neutral-500">
-            <p className="font-semibold text-neutral-700">Baraka Bizz © {new Date().getFullYear()}</p>
+            <p className="font-semibold text-neutral-700">Leovra Enterprises © {new Date().getFullYear()}</p>
             <p className="text-[10px] text-neutral-400 mt-0.5">Premium Fashion & Lifestyle Destination</p>
           </div>
 

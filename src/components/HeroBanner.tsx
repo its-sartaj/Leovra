@@ -21,7 +21,7 @@ const heroEarringFallback = `${BASE_URL}hero-earring.webp`;
 const BACKGROUND_SLIDES = [
   {
     id: 'earrings' as ProductCategory,
-    label: 'Artisanal Jewellerys',
+    label: 'Artisanal Jewellery',
     hindiTag: 'शाही ज्वेलरी संग्रह',
     image: heroEarringImg,
     mobileImage: heroEarringMobile,
@@ -66,8 +66,8 @@ export const HeroBanner: React.FC = () => {
   const CATEGORY_SHOWCASE = [
     {
       id: 'earrings' as ProductCategory,
-      title: 'Artisanal Jewellerys',
-      shortTitle: 'Jewellerys',
+      title: 'Artisanal Jewellery',
+      shortTitle: 'Jewellery',
       hindiTitle: 'शाही ज्वेलरी',
       subtitle: 'Oxidized, Kundan & Studs',
       priceTag: 'From ₹249',
@@ -160,11 +160,11 @@ export const HeroBanner: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-serif break-words">
-              Elevate Your Style with <span className="text-amber-400">Baraka Bizz</span>
+              Elevate Your Style with <span className="text-amber-400">Leovra Enterprises</span>
             </h1>
 
             <p className="text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed max-w-lg">
-              Curated artisanal jewellerys, heavyweight streetwear t-shirts, and ultra-flexible comfort lowers with instant dispatch to your doorstep.
+              Curated artisanal jewellery, heavyweight streetwear t-shirts, and ultra-flexible comfort lowers with instant dispatch to your doorstep.
             </p>
 
 
@@ -269,7 +269,7 @@ export const HeroBanner: React.FC = () => {
               <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
                   src={card.image}
-                  alt={`${card.title} (${card.hindiTitle}) - Baraka Bizz`}
+                  alt={`${card.title} (${card.hindiTitle}) - Leovra Enterprises`}
                   loading="lazy"
                   fetchPriority="low"
                   decoding="async"

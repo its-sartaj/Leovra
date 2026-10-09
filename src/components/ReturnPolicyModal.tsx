@@ -42,7 +42,7 @@ export const ReturnPolicyModal: React.FC = () => {
                 Return & Replacement Policy
               </h2>
               <p className="text-[11px] text-neutral-400">
-                Baraka Bizz • Official Customer Policy
+                Leovra Enterprises • Official Customer Policy
               </p>
             </div>
           </div>
@@ -179,7 +179,7 @@ export const ReturnPolicyModal: React.FC = () => {
           
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <a
-              href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Baraka Bizz! I want to submit a return request for my delivered order under the 3-day policy for a defective/wrong item. My Order ID is: ')}`}
+              href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I want to submit a return request for my delivered order under the 3-day policy for a defective/wrong item. My Order ID is: ')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 sm:flex-initial py-2.5 px-4 min-h-[48px] rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"

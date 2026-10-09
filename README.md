@@ -1,10 +1,10 @@
-# 🛍️ Baraka Bizz — Official Online Store
+# 🛍️ Leovra Enterprises — Official Online Store
 
 <div align="center">
 
 **Premium Fashion & Lifestyle Destination**
 
-*Artisanal Jewellerys • Streetwear T-Shirts • Comfort Lowers*
+*Artisanal Jewellery • Streetwear T-Shirts • Comfort Lowers*
 
 🌐 **[Visit Live Website](https://its-sartaj.github.io/Leovra/)**
 
@@ -14,10 +14,10 @@
 
 ## 📌 About
 
-**Baraka Bizz** is a modern e-commerce storefront built for selling handcrafted fashion products across India. The platform features a full-featured customer experience and a built-in admin inventory panel.
+**Leovra Enterprises** is a modern e-commerce storefront built for selling handcrafted fashion products across India. The platform features a full-featured customer experience and a built-in admin inventory panel.
 
 ### 🛒 Products We Sell
-- 💍 **Designer Jewellerys & Jhumkas** — Oxidized silver, Kundan, Chandbali styles
+- 💍 **Designer Jewellery & Jhumkas** — Oxidized silver, Kundan, Chandbali styles
 - 👕 **Graphic Streetwear T-Shirts** — Oversized, heavy-cotton, printed tees
 - 👖 **Comfort Lowers & Joggers** — Cargo pocket, 4-way stretch, trackpants
 
@@ -81,7 +81,7 @@ Open **http://localhost:3000** in your browser.
 
 <div align="center">
 
-© 2026 **Baraka Bizz**. All rights reserved.
+© 2026 **Leovra Enterprises**. All rights reserved.
 
 *100% Genuine Products • Hand-Inspected Quality • COD Available*
 

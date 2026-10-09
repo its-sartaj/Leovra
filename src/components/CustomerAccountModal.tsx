@@ -489,7 +489,7 @@ export const CustomerAccountModal: React.FC = () => {
                       Shop Now
                     </button>
                     <a
-                      href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(`Hello Baraka Bizz! My name is ${currentCustomer.name} (${currentCustomer.phone}). I want to place an order.`)}`}
+                      href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(`Hello Leovra Enterprises! My name is ${currentCustomer.name} (${currentCustomer.phone}). I want to place an order.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
@@ -630,10 +630,10 @@ export const CustomerAccountModal: React.FC = () => {
                           <a
                             href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(
                               order.status === 'Cancelled'
-                                ? `Hello Baraka Bizz! My order #${order.id} was cancelled (${order.cancellationReason || ''}). Please guide regarding refund or re-ordering.`
+                                ? `Hello Leovra Enterprises! My order #${order.id} was cancelled (${order.cancellationReason || ''}). Please guide regarding refund or re-ordering.`
                                 : order.awbCode 
-                                ? `Hello Baraka Bizz! Regarding my Order #${order.id} (AWB: ${order.awbCode}): Please provide an update on delivery.`
-                                : `Hello Baraka Bizz! Please provide tracking status for my Order ID: ${order.id} (Total: ₹${order.totalAmount.toLocaleString('en-IN')}). Customer Phone: ${currentCustomer?.phone || order.customerPhone || ''}`
+                                ? `Hello Leovra Enterprises! Regarding my Order #${order.id} (AWB: ${order.awbCode}): Please provide an update on delivery.`
+                                : `Hello Leovra Enterprises! Please provide tracking status for my Order ID: ${order.id} (Total: ₹${order.totalAmount.toLocaleString('en-IN')}). Customer Phone: ${currentCustomer?.phone || order.customerPhone || ''}`
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
