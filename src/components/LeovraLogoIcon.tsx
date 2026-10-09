@@ -25,7 +25,7 @@ export const LeovraLogoIcon: React.FC<LeovraLogoIconProps> = ({
       xmlns="http://www.w3.org/2000/svg"
       style={inlineStyle}
       className={`shrink-0 drop-shadow-sm select-none ${className}`}
-      aria-label="Leovra Brand Logo"
+      aria-label="Baraka Bizz Brand Logo"
     >
       <defs>
         {/* Rich Metallic Gold Linear Gradient (Left-to-right luxury shine) */}
@@ -124,14 +124,17 @@ export const LeovraLogoIcon: React.FC<LeovraLogoIconProps> = ({
           <path d="M 150 162 C 162 160 172 154 174 146 C 166 152 156 156 146 156 Z" />
         </g>
 
-        {/* REGAL SERIF MONOGRAM "L" */}
+        {/* REGAL SERIF MONOGRAM "B" */}
         <g fill="url(#leovraGold)">
-          {/* Top Bracketed Serif & Vertical Pillar */}
-          <path d="M 104 68 L 126 68 C 124 72 121 76 118 80 L 118 120 C 118 128 122 131 131 131 C 139 131 146 127 151 120 C 152 118 153 120 153 122 C 150 130 140 137 127 137 C 108 137 102 127 102 114 L 102 80 C 99 76 96 72 94 68 Z" />
+          {/* Royal Serif Monogram B (Outer contour + 2 inner counters) */}
+          <path 
+            fillRule="evenodd"
+            d="M 96,68 L 128,68 C 143,68 153,75 153,86 C 153,94 146,100 137,102 C 149,104 157,112 157,122 C 157,134 145,138 127,138 L 96,138 L 96,130 L 106,130 L 106,76 L 96,76 Z M 118,76 L 127,76 C 137,76 142,80 142,86 C 142,92 136,96 127,96 L 118,96 Z M 118,104 L 128,104 C 138,104 145,110 145,120 C 145,129 138,131 128,131 L 118,131 Z" 
+          />
           
           {/* Subtle Emboss Light Highlight along the Letter */}
           <path 
-            d="M 106 69 L 116 69 L 116 118 C 116 126 120 129 129 129 C 137 129 143 125 148 119 L 149 121 C 144 128 135 134 125 134 C 110 134 104 125 104 114 Z" 
+            d="M 108 77 L 114 77 L 114 129 L 108 129 Z" 
             fill="#FFFFFF" 
             fillOpacity="0.32" 
           />

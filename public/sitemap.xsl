@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" 
   xmlns:html="http://www.w3.org/TR/REC-html40"
   xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -7,7 +7,7 @@
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>XML Sitemap | Leovra Enterprises</title>
+        <title>XML Sitemap | Baraka Bizz</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style type="text/css">
           body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #e5e5e5; margin: 0; padding: 30px; }
@@ -25,7 +25,7 @@
       </head>
       <body>
         <div class="container">
-          <h1>Leovra Enterprises — Official XML Sitemap</h1>
+          <h1>Baraka Bizz — Official XML Sitemap</h1>
           <p>This sitemap is active, validated, and optimized for Google Search Console indexing. All URLs below are live.</p>
           <table>
             <thead>

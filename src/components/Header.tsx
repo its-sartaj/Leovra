@@ -37,7 +37,7 @@ export const Header: React.FC = () => {
 
   const navCategories: { id: 'all' | ProductCategory; label: string; sub: string }[] = [
     { id: 'all', label: 'All Items', sub: 'सभी प्रोडक्ट्स' },
-    { id: 'earrings', label: 'Earrings', sub: 'झुमके व बालियां' },
+    { id: 'earrings', label: 'Jewellerys', sub: 'शाही ज्वेलरी' },
     { id: 'tshirts', label: 'T-Shirts', sub: 'टी-शर्ट्स' },
     { id: 'lowers', label: 'Lowers & Joggers', sub: 'लोअर व ट्रैक पैंट' },
   ];
@@ -57,7 +57,7 @@ export const Header: React.FC = () => {
             }} 
             className="text-left focus:outline-hidden cursor-pointer shrink-0 z-10"
             id="header-logo-btn"
-            aria-label="Leovra Enterprises Home"
+            aria-label="Baraka Bizz Home"
           >
             <Logo size="md" />
           </button>
@@ -68,7 +68,7 @@ export const Header: React.FC = () => {
               <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search earrings, oversized tees, gym track pants..."
+                placeholder="Search jewellerys, oversized tees, gym track pants..."
                 value={filters.searchQuery}
                 onChange={(e) => {
                   setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
@@ -114,12 +114,12 @@ export const Header: React.FC = () => {
 
             {/* Direct WhatsApp Call / Inquire Button (Desktop & Tablet) */}
             <a
-              href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I have an inquiry regarding your products.')}`}
+              href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Baraka Bizz! I have an inquiry regarding your products.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden lg:flex items-center gap-2 px-3.5 h-12 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 font-semibold text-xs border border-neutral-200/90 transition-all shadow-2xs hover:border-neutral-300 active:scale-95"
               id="header-whatsapp-chat-btn"
-              title="Chat with Leovra Enterprises on WhatsApp"
+              title="Chat with Baraka Bizz on WhatsApp"
             >
               <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>WhatsApp</span>
@@ -197,7 +197,7 @@ export const Header: React.FC = () => {
               <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search earrings, t-shirts, lowers..."
+                placeholder="Search jewellerys, t-shirts, lowers..."
                 value={filters.searchQuery}
                 onChange={(e) => {
                   setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
@@ -205,7 +205,7 @@ export const Header: React.FC = () => {
                 }}
                 className="w-full bg-neutral-100/90 hover:bg-neutral-100 focus:bg-white text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-10 py-2.5 h-12 rounded-xl border border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 outline-hidden shadow-2xs"
                 id="mobile-search-input-field"
-                aria-label="Search earrings, t-shirts, lowers"
+                aria-label="Search jewellerys, t-shirts, lowers"
                 autoFocus
               />
               {filters.searchQuery && (

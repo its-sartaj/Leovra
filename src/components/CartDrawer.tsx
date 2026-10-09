@@ -85,7 +85,7 @@ export const CartDrawer: React.FC = () => {
   const amountNeeded = Math.max(0, freeDeliveryThreshold - cartTotal);
 
   const businessUpiId = businessUpi || '7979968347@slc';
-  const upiUrl = `upi://pay?pa=${businessUpiId}&pn=${encodeURIComponent('Leovra Enterprises')}&am=${grandTotal}&cu=INR&tn=${encodeURIComponent('Order Payment Leovra')}`;
+  const upiUrl = `upi://pay?pa=${businessUpiId}&pn=${encodeURIComponent('Baraka Bizz')}&am=${grandTotal}&cu=INR&tn=${encodeURIComponent('Order Payment Baraka Bizz')}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(upiUrl)}`;
 
   const handleCopyUpi = (upi: string) => {
@@ -219,7 +219,7 @@ export const CartDrawer: React.FC = () => {
                   {lastConfirmedOrder ? 'Order Confirmation' : isCheckingOut ? (checkoutStep === 'payment' ? 'Payment Options (Step 2/2)' : 'Delivery Details (Step 1/2)') : `Your Shopping Bag (${cartCount})`}
                 </h2>
                 <p className="text-[10px] text-neutral-500">
-                  Leovra Enterprises • 100% Genuine Products
+                  Baraka Bizz • 100% Genuine Products
                 </p>
               </div>
             </div>
@@ -326,7 +326,7 @@ export const CartDrawer: React.FC = () => {
                     </p>
                     <a
                       href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent(
-                        `Hello Leovra Enterprises! I have placed order #${lastConfirmedOrder.id} for ₹${lastConfirmedOrder.totalAmount} via UPI.${lastConfirmedOrder.transactionId ? ` (UTR: ${lastConfirmedOrder.transactionId})` : ''} Attached is my payment confirmation.`
+                        `Hello Baraka Bizz! I have placed order #${lastConfirmedOrder.id} for ₹${lastConfirmedOrder.totalAmount} via UPI.${lastConfirmedOrder.transactionId ? ` (UTR: ${lastConfirmedOrder.transactionId})` : ''} Attached is my payment confirmation.`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -670,7 +670,7 @@ export const CartDrawer: React.FC = () => {
                             <span>100% Safe UPI Direct Payment</span>
                           </span>
                           <h4 className="font-black text-neutral-900 text-xs sm:text-sm">Scan QR or Tap to Pay via UPI</h4>
-                          <p className="text-[11px] text-neutral-500">Pay directly to Leovra Enterprises: ₹{grandTotal}</p>
+                          <p className="text-[11px] text-neutral-500">Pay directly to Baraka Bizz: ₹{grandTotal}</p>
                         </div>
 
                         {/* Live QR Code Box */}
@@ -793,7 +793,7 @@ export const CartDrawer: React.FC = () => {
                 </div>
                 <h3 className="text-base font-bold text-neutral-900">Your bag is empty</h3>
                 <p className="text-xs text-neutral-500 max-w-xs mx-auto">
-                  Explore our exclusive collection of designer earrings, trendy t-shirts, and stylish lowers!
+                  Explore our exclusive collection of designer jewellerys, trendy t-shirts, and stylish lowers!
                 </p>
                 <button
                   onClick={() => setIsCartOpen(false)}

@@ -1,5 +1,5 @@
-﻿/**
- * Security & Anti-Bot Shield for Leovra Enterprises
+/**
+ * Security & Anti-Bot Shield for Baraka Bizz
  * 
  * Provides:
  * 1. Honeypot trap validation (detects automated form fillers)

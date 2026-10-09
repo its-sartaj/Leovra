@@ -79,7 +79,7 @@ export const Footer: React.FC = () => {
           <div className="space-y-4 md:col-span-2">
             <Logo size="lg" theme="dark" />
             <p className="text-xs text-neutral-400 leading-relaxed max-w-md">
-              <strong>Leovra Enterprises</strong> is your trusted destination for designer artisanal earrings, heavy-cotton streetwear graphic tees, and high-comfort stretch lowers & cargo joggers. We combine fine craftsmanship with unbeatable value.
+              <strong>Baraka Bizz</strong> is your trusted destination for designer artisanal jewellerys, heavy-cotton streetwear graphic tees, and high-comfort stretch lowers & cargo joggers. We combine fine craftsmanship with unbeatable value.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -111,7 +111,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-1 text-xs text-neutral-300 font-medium">
               <li>
                 <button onClick={() => handleCategory('earrings')} className="py-2 hover:text-amber-400 transition-colors text-left cursor-pointer inline-flex items-center min-h-[40px]">
-                  Designer Earrings (झुमके व बालियां)
+                  Designer Jewellerys (शाही ज्वेलरी)
                 </button>
               </li>
               <li>
@@ -175,19 +175,19 @@ export const Footer: React.FC = () => {
         {/* SEO Overview & Search Engine Optimization Content */}
         <div className="pt-8 mt-6 border-t border-neutral-900 text-xs text-neutral-400 space-y-3">
           <h2 className="font-bold text-neutral-200 text-xs uppercase tracking-wider">
-            Online Shopping at Leovra Enterprises — Premium Fashion & Lifestyle
+            Online Shopping at Baraka Bizz — Premium Fashion & Lifestyle
           </h2>
           <p className="text-[11px] text-neutral-400 leading-relaxed">
-            Welcome to <strong>Leovra Enterprises</strong>, your trusted online destination for handcrafted designer earrings, trendy oversized graphic t-shirts, and premium activewear lowers. From royal Kundan jhumkas and oxidized statement jewelry to breathable 100% cotton streetwear and flexible training trackpants, we bring you unmatched quality at fair prices. Shop with complete peace of mind with <strong>Cash on Delivery (COD)</strong>, real-time stock sync, a 3-day return policy, and express doorstep delivery across all Indian pincodes.
+            Welcome to <strong>Baraka Bizz</strong>, your trusted online destination for handcrafted designer jewellerys, trendy oversized graphic t-shirts, and premium activewear lowers. From royal Kundan jewellerys and oxidized statement jewellerys to breathable 100% cotton streetwear and flexible training trackpants, we bring you unmatched quality at fair prices. Shop with complete peace of mind with <strong>Cash on Delivery (COD)</strong>, real-time stock sync, a 3-day return policy, and express doorstep delivery across all Indian pincodes.
           </p>
           <div className="flex flex-wrap gap-2 pt-1 text-[10px] text-neutral-400">
             <span className="text-neutral-300 font-semibold">Popular Searches:</span>
-            <span>Leovra Enterprises</span> •
-            <span>LeovraEnterprises</span> •
-            <span>Loevra Enterprises</span> •
-            <span>Buy Designer Earrings Online</span> •
-            <span>Kundan Jhumka</span> •
-            <span>Oxidized Silver Earrings</span> •
+            <span>Baraka Bizz</span> •
+            <span>BarakaBizz</span> •
+            <span>Baraka Bizz Online</span> •
+            <span>Buy Designer Jewellerys Online</span> •
+            <span>Kundan Jewellerys</span> •
+            <span>Oxidized Silver Jewellerys</span> •
             <span>Oversized T-Shirts India</span> •
             <span>Mens Gym Trackpants</span> •
             <span>Stretch Lowers</span> •
@@ -198,7 +198,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-6 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-400 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-4 text-[11px] text-neutral-400">
-            <span>Specialists in Earrings, T-Shirts & Lowers</span>
+            <span>Specialists in Jewellerys, T-Shirts & Lowers</span>
           </div>
           <button
             type="button"

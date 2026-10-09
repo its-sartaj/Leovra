@@ -73,7 +73,7 @@ const MainLayout: React.FC = () => {
             </button>
 
             <a
-              href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I have an inquiry about your products.')}`}
+              href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Baraka Bizz! I have an inquiry about your products.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-2 px-3.5 py-2.5 min-h-[48px] min-w-[48px] rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"

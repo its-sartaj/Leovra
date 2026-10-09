@@ -40,7 +40,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={`inline-flex items-center gap-2 sm:gap-2.5 select-none shrink-0 ${className}`} id="brand-logo-container">
-      {/* Official Royal Crest Emblem (Golden L with wings, ring and stars on luxury dark midnight background) */}
+      {/* Official Royal Crest Emblem (Golden B with wings, ring and stars on luxury dark midnight background) */}
       <div className="shrink-0 flex items-center justify-center">
         <LeovraLogoIcon 
           className={`${emblemHeight} w-auto rounded-lg sm:rounded-xl shadow-md border border-amber-400/40 transition-transform duration-200 hover:scale-105`} 
@@ -54,10 +54,10 @@ export const Logo: React.FC<LogoProps> = ({
           <span className={`${titleSize} font-serif uppercase tracking-wider font-extrabold whitespace-nowrap ${
             isDark ? 'text-white' : 'text-neutral-900'
           }`}>
-            Leovra
+            Baraka
           </span>
-          <span className={`hidden sm:inline ${titleSize} bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent font-sans uppercase font-bold tracking-normal whitespace-nowrap`}>
-            Enterprises
+          <span className={`${titleSize} bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent font-sans uppercase font-bold tracking-normal whitespace-nowrap`}>
+            Bizz
           </span>
         </div>
         {showSubtitle && (
@@ -65,8 +65,8 @@ export const Logo: React.FC<LogoProps> = ({
             <span className={`${subtitleSize} uppercase tracking-wider sm:tracking-[0.16em] font-semibold whitespace-nowrap truncate ${
               isDark ? 'text-neutral-400' : 'text-neutral-500'
             }`}>
-              <span className="hidden sm:inline">Earrings • T-Shirts • Lowers</span>
-              <span className="sm:hidden">Fashion & Lifestyle</span>
+              <span className="hidden sm:inline">Jewellerys • T-Shirts • Lowers</span>
+              <span className="sm:hidden">Jewellerys & Lifestyle</span>
             </span>
           </div>
         )}
