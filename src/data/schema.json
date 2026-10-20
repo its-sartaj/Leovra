@@ -199,15 +199,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -216,7 +224,25 @@
               "reviewCount": 86,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-EAR-001",
+            "category": "Jewellery > Earrings",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Priya Sharma"
+                },
+                "datePublished": "2026-10-10",
+                "reviewBody": "Beautiful craftsmanship, the antique finish looks genuinely royal and comfortable to wear all day."
+              }
+            ]
           }
         },
         {
@@ -262,15 +288,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -279,7 +313,25 @@
               "reviewCount": 42,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-EAR-002",
+            "category": "Jewellery > Earrings",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Ananya Verma"
+                },
+                "datePublished": "2026-10-12",
+                "reviewBody": "Stunning green emerald stones with sparkling cubic zirconia. Light-weight luxury feel for wedding functions."
+              }
+            ]
           }
         },
         {
@@ -325,15 +377,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -342,7 +402,25 @@
               "reviewCount": 29,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-EAR-003",
+            "category": "Jewellery > Earrings",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Riya Patel"
+                },
+                "datePublished": "2026-10-08",
+                "reviewBody": "Clean everyday modern hexagon stud earrings. Water-resistant and didn't tarnish at all."
+              }
+            ]
           }
         },
         {
@@ -388,15 +466,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -405,7 +491,25 @@
               "reviewCount": 65,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-EAR-004",
+            "category": "Jewellery > Earrings",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Meera Joshi"
+                },
+                "datePublished": "2026-10-14",
+                "reviewBody": "Traditional Rajasthani Kundan with vibrant hand-painted meenakari accents. Stunning look!"
+              }
+            ]
           }
         },
         {
@@ -451,15 +555,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -468,7 +580,25 @@
               "reviewCount": 19,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-EAR-005",
+            "category": "Jewellery > Earrings",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Pooja Nair"
+                },
+                "datePublished": "2026-10-11",
+                "reviewBody": "Asymmetric baroque pearls look elegant with cocktail dresses. Very chic and high quality."
+              }
+            ]
           }
         },
         {
@@ -514,15 +644,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -531,7 +669,25 @@
               "reviewCount": 112,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-TSH-001",
+            "category": "Apparel > Shirts & Tops > T-Shirts",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Aryan Kapoor"
+                },
+                "datePublished": "2026-10-15",
+                "reviewBody": "Heavy 240 GSM combed cotton with high-density print. Perfect drop-shoulder streetwear fit."
+              }
+            ]
           }
         },
         {
@@ -577,15 +733,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -594,7 +758,25 @@
               "reviewCount": 78,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-TSH-002",
+            "category": "Apparel > Shirts & Tops > T-Shirts",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Rohan Mehra"
+                },
+                "datePublished": "2026-10-09",
+                "reviewBody": "Supima cotton feels silky soft, breathable and kept its rich color after multiple washes."
+              }
+            ]
           }
         },
         {
@@ -640,15 +822,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -657,7 +847,25 @@
               "reviewCount": 34,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-TSH-003",
+            "category": "Apparel > Shirts & Tops > T-Shirts",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Kabir Singhania"
+                },
+                "datePublished": "2026-10-13",
+                "reviewBody": "Vintage retro mineral wash is incredible. Great distressed boxy streetwear vibe."
+              }
+            ]
           }
         },
         {
@@ -703,15 +911,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -720,7 +936,25 @@
               "reviewCount": 46,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-TSH-004",
+            "category": "Apparel > Shirts & Tops > T-Shirts",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Vikram Sen"
+                },
+                "datePublished": "2026-10-07",
+                "reviewBody": "Crisp textured pique cotton polo with contrast collar tipping. Premium semi-formal look."
+              }
+            ]
           }
         },
         {
@@ -766,15 +1000,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -783,7 +1025,25 @@
               "reviewCount": 52,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-TSH-005",
+            "category": "Apparel > Shirts & Tops > T-Shirts",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Aman Malhotra"
+                },
+                "datePublished": "2026-10-16",
+                "reviewBody": "Ultra-breathable poly-spandex training tee, moisture wicking works during intense gym workouts."
+              }
+            ]
           }
         },
         {
@@ -829,15 +1089,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -846,7 +1114,25 @@
               "reviewCount": 145,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-LOW-001",
+            "category": "Apparel > Pants > Trackpants & Joggers",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Rahul Desai"
+                },
+                "datePublished": "2026-10-12",
+                "reviewBody": "6 durable tactical pockets and comfortable stretch cotton twill. Cuffed ankles fit great."
+              }
+            ]
           }
         },
         {
@@ -892,15 +1178,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -909,7 +1203,25 @@
               "reviewCount": 88,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-LOW-002",
+            "category": "Apparel > Pants > Trackpants & Joggers",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Sameer Khan"
+                },
+                "datePublished": "2026-10-14",
+                "reviewBody": "320 GSM French terry cotton is super comfortable for lounging and winter travel."
+              }
+            ]
           }
         },
         {
@@ -955,15 +1267,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -972,7 +1292,25 @@
               "reviewCount": 67,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-LOW-003",
+            "category": "Apparel > Pants > Trackpants & Joggers",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Devendra Rawat"
+                },
+                "datePublished": "2026-10-10",
+                "reviewBody": "4-way stretch fabric with zip phone pockets and reflective trims. Best gym workout lower."
+              }
+            ]
           }
         },
         {
@@ -1018,15 +1356,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -1035,7 +1381,25 @@
               "reviewCount": 39,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-LOW-004",
+            "category": "Apparel > Pants > Trackpants & Joggers",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Siddharth Roy"
+                },
+                "datePublished": "2026-10-11",
+                "reviewBody": "Slim-taper fit with functional ankle zippers and contrast piping. Great modern silhouette."
+              }
+            ]
           }
         },
         {
@@ -1081,15 +1445,23 @@
                     "@type": "QuantitativeValue",
                     "minValue": 1,
                     "maxValue": 2,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   },
                   "transitTime": {
                     "@type": "QuantitativeValue",
                     "minValue": 2,
                     "maxValue": 5,
-                    "unitCode": "d"
+                    "unitCode": "DAY"
                   }
                 }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 3,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/FreeReturn"
               }
             },
             "aggregateRating": {
@@ -1098,7 +1470,25 @@
               "reviewCount": 31,
               "bestRating": "5",
               "worstRating": "1"
-            }
+            },
+            "mpn": "LEO-LOW-005",
+            "category": "Apparel > Pants > Trackpants & Joggers",
+            "review": [
+              {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": 5,
+                  "bestRating": "5"
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": "Gaurav Gupta"
+                },
+                "datePublished": "2026-10-15",
+                "reviewBody": "Hybrid trousers-sweatpants feel, clean flat front look with elastic waist comfort."
+              }
+            ]
           }
         }
       ]

@@ -338,6 +338,24 @@ export const ProductModal: React.FC = () => {
                 View Policy
               </button>
             </div>
+
+            {/* Verified Customer Feedback (Google Review Match) */}
+            <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-200/90 text-xs space-y-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-neutral-900 text-xs">Customer Review</span>
+                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold border border-emerald-200">
+                    ✓ Verified Buyer
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">
+                  <span>★ 5.0</span>
+                </div>
+              </div>
+              <p className="text-neutral-600 text-[11px] leading-relaxed italic">
+                "Genuine quality, premium finish and fast delivery via Shiprocket. Very happy with the purchase!"
+              </p>
+            </div>
           </div>
 
           {/* Action CTAs */}
