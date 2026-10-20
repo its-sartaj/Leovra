@@ -1,4 +1,4 @@
-# robots.txt for Leovra Enterprises (https://its-sartaj.github.io/Leovra/)
+# robots.txt for Leovra Enterprises (https://loevraenterprises.publicvm.com/)
 User-agent: *
 Allow: /
 
@@ -21,7 +21,7 @@ Allow: /
 User-agent: YandexBot
 Allow: /
 
-# Host & XML Sitemap
-Host: https://its-sartaj.github.io
+# Host & XML Sitemaps
+Host: https://loevraenterprises.publicvm.com
+Sitemap: https://loevraenterprises.publicvm.com/sitemap.xml
 Sitemap: https://its-sartaj.github.io/Leovra/sitemap.xml
-

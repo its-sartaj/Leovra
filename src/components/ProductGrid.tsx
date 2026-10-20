@@ -4,6 +4,29 @@ import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
 import { ProductCategory, FilterOptions } from '../types';
 
+const CATEGORY_SEO_INFO: Record<string, { title: string; hindiTitle: string; desc: string }> = {
+  all: {
+    title: 'Curated Fashion & Lifestyle Collection',
+    hindiTitle: 'शाही संग्रह',
+    desc: 'Explore handcrafted artisanal jewellery, heavy-cotton graphic streetwear t-shirts, and ultra-flexible comfort gym trackpants with Cash on Delivery across India.',
+  },
+  earrings: {
+    title: 'Artisanal Designer Jewellery & Royal Kundan Collection',
+    hindiTitle: 'शाही ज्वेलरी संग्रह',
+    desc: 'Discover handcrafted antique oxidized silver jhumkas, meenakari chandbali hoops, 18K gold plated teardrop chandelier jewellery, and freshwater pearl danglers with COD in India.',
+  },
+  tshirts: {
+    title: 'Heavyweight Graphic Streetwear T-Shirts (240+ GSM)',
+    hindiTitle: 'स्ट्रीटवेयर टी-शर्ट्स',
+    desc: 'Pure combed Supima cotton oversized relaxed fit graphic tees, vintage mineral acid wash boxy cuts, and athletic moisture-wicking workout t-shirts.',
+  },
+  lowers: {
+    title: 'Men\'s High-Comfort Gym Trackpants & Tactical Cargo Joggers',
+    hindiTitle: 'फ्लेक्सिबल लोअर व जॉगर्स',
+    desc: 'Engineered 4-way stretch athletic workout pants, 6-pocket tactical cargo joggers, and heavy 320 GSM French terry cotton lounge sweatpants with fast doorstep dispatch.',
+  },
+};
+
 export const ProductGrid: React.FC = () => {
   const { products, filters, setFilters } = useStore();
 
@@ -53,6 +76,7 @@ export const ProductGrid: React.FC = () => {
   }, [products, filters]);
 
   const inStockCount = products.filter(p => !p.isOutOfStock && p.stock > 0).length;
+  const currentCategoryInfo = CATEGORY_SEO_INFO[filters.category] || CATEGORY_SEO_INFO.all;
   const outOfStockCount = products.filter(p => p.isOutOfStock || p.stock <= 0).length;
 
   const categories: { id: 'all' | ProductCategory; label: string }[] = [
@@ -64,7 +88,25 @@ export const ProductGrid: React.FC = () => {
 
   return (
     <section className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 py-3 sm:py-6 overflow-hidden" id="products-catalog-section">
-      <h2 className="sr-only">Our Collection & Available Products</h2>
+      {/* Dynamic SEO Category Header */}
+      <div className="mb-4 sm:mb-5 px-1">
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5">
+          <div className="flex items-center gap-2">
+            <h2 className="text-base sm:text-xl font-extrabold text-neutral-900 font-serif tracking-tight">
+              {currentCategoryInfo.title}
+            </h2>
+            <span className="hidden sm:inline-block text-[11px] font-bold text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300">
+              {currentCategoryInfo.hindiTitle}
+            </span>
+          </div>
+          <span className="text-xs text-neutral-500 font-medium">
+            Showing {sortedProducts.length} items • 100% Genuine
+          </span>
+        </div>
+        <p className="text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed max-w-3xl">
+          {currentCategoryInfo.desc}
+        </p>
+      </div>
       {/* Control Bar: Categories, Filters, Sorting */}
       <div className="bg-white rounded-2xl p-3 sm:p-4 border border-neutral-200 shadow-xs mb-4 sm:mb-6 space-y-2.5 sm:space-y-3 w-full">
         {/* Top row: Category Pills & In-stock toggle */}

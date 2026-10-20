@@ -178,7 +178,7 @@ export const Footer: React.FC = () => {
             Online Shopping at Leovra Enterprises — Premium Fashion & Lifestyle
           </h2>
           <p className="text-[11px] text-neutral-400 leading-relaxed">
-            Welcome to <strong>Leovra Enterprises</strong>, your trusted online destination for handcrafted designer earrings, trendy oversized graphic t-shirts, and premium activewear lowers. From royal Kundan jhumkas and oxidized statement jewelry to breathable 100% cotton streetwear and flexible training trackpants, we bring you unmatched quality at fair prices. Shop with complete peace of mind with <strong>Cash on Delivery (COD)</strong>, real-time stock sync, a 3-day return policy, and express doorstep delivery across all Indian pincodes.
+            Welcome to <strong>Leovra Enterprises</strong> (also Loevra), your trusted online destination for handcrafted designer jewellery, trendy oversized graphic streetwear t-shirts, and premium activewear lowers. From royal Kundan jhumkas and oxidized statement jewellery to breathable 100% cotton streetwear and flexible training trackpants, we bring you unmatched quality at fair prices. Shop with complete peace of mind with <strong>Cash on Delivery (COD)</strong>, real-time stock sync, a 3-day return policy, and express doorstep delivery across all Indian pincodes.
           </p>
           <div className="flex flex-wrap gap-2 pt-1 text-[10px] text-neutral-400">
             <span className="text-neutral-300 font-semibold">Popular Searches:</span>

@@ -2,20 +2,32 @@
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "ClothingStore",
-      "@id": "https://its-sartaj.github.io/Leovra/#organization",
+      "@type": [
+        "ClothingStore",
+        "OnlineStore",
+        "JewelryStore"
+      ],
+      "@id": "https://loevraenterprises.publicvm.com/#organization",
       "name": "Leovra Enterprises",
       "alternateName": [
-        "LeovraEnterprises",
-        "Loevra Enterprises",
-        "LoevraEnterprises",
         "Leovra",
-        "Loevra"
+        "Loevra",
+        "Leovra Enterprises",
+        "Loevra Enterprises",
+        "LeovraEnterprises",
+        "LoevraEnterprises",
+        "Leovra Store",
+        "Leovra India"
       ],
-      "url": "https://its-sartaj.github.io/Leovra/",
-      "logo": "https://its-sartaj.github.io/Leovra/brand-logo.svg",
-      "image": "https://its-sartaj.github.io/Leovra/brand-logo.svg",
-      "description": "Exclusive Indian designer store for handcrafted artisanal jewellery, heavyweight oversized graphic streetwear t-shirts, and ultra-flexible comfort lowers with Cash on Delivery (COD) and express shipping.",
+      "url": "https://loevraenterprises.publicvm.com/",
+      "logo": "https://loevraenterprises.publicvm.com/brand-logo.svg",
+      "image": [
+        "https://loevraenterprises.publicvm.com/brand-logo.svg",
+        "https://loevraenterprises.publicvm.com/hero-earring.webp",
+        "https://loevraenterprises.publicvm.com/hero-tshirt.webp",
+        "https://loevraenterprises.publicvm.com/hero-lowers.webp"
+      ],
+      "description": "Leovra Enterprises (also Loevra Enterprises) is an exclusive Indian online fashion and lifestyle store for handcrafted artisanal jewellery, Kundan & oxidized jhumkas, heavyweight graphic streetwear t-shirts (240+ GSM), and flexible comfort lowers with Cash on Delivery (COD) and express shipping across India.",
       "telephone": "+91-7979968347",
       "email": "leovraenterprises@gmail.com",
       "priceRange": "₹₹",
@@ -58,25 +70,39 @@
           {
             "@type": "OfferCatalog",
             "name": "Artisanal Designer Jewellery",
-            "url": "https://its-sartaj.github.io/Leovra/?category=earrings"
+            "url": "https://loevraenterprises.publicvm.com/?category=earrings"
           },
           {
             "@type": "OfferCatalog",
             "name": "Trendy Streetwear T-Shirts",
-            "url": "https://its-sartaj.github.io/Leovra/?category=tshirts"
+            "url": "https://loevraenterprises.publicvm.com/?category=tshirts"
           },
           {
             "@type": "OfferCatalog",
             "name": "Premium Trackpants & Lowers",
-            "url": "https://its-sartaj.github.io/Leovra/?category=lowers"
+            "url": "https://loevraenterprises.publicvm.com/?category=lowers"
           }
+        ]
+      },
+      "sameAs": [
+        "https://github.com/its-sartaj/Leovra",
+        "https://its-sartaj.github.io/Leovra/"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-7979968347",
+        "contactType": "customer service",
+        "areaServed": "IN",
+        "availableLanguage": [
+          "English",
+          "Hindi"
         ]
       }
     },
     {
       "@type": "WebSite",
-      "@id": "https://its-sartaj.github.io/Leovra/#website",
-      "url": "https://its-sartaj.github.io/Leovra/",
+      "@id": "https://loevraenterprises.publicvm.com/#website",
+      "url": "https://loevraenterprises.publicvm.com/",
       "name": "Leovra Enterprises",
       "alternateName": [
         "LeovraEnterprises",
@@ -86,47 +112,47 @@
         "Loevra"
       ],
       "publisher": {
-        "@id": "https://its-sartaj.github.io/Leovra/#organization"
+        "@id": "https://loevraenterprises.publicvm.com/#organization"
       },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://its-sartaj.github.io/Leovra/?search={search_term_string}",
+        "target": "https://loevraenterprises.publicvm.com/?search={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://its-sartaj.github.io/Leovra/#breadcrumbs",
+      "@id": "https://loevraenterprises.publicvm.com/#breadcrumbs",
       "itemListElement": [
         {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": "https://its-sartaj.github.io/Leovra/"
+          "item": "https://loevraenterprises.publicvm.com/"
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "Artisanal Designer Jewellery",
-          "item": "https://its-sartaj.github.io/Leovra/?category=earrings"
+          "item": "https://loevraenterprises.publicvm.com/?category=earrings"
         },
         {
           "@type": "ListItem",
           "position": 3,
           "name": "Heavyweight Streetwear T-Shirts",
-          "item": "https://its-sartaj.github.io/Leovra/?category=tshirts"
+          "item": "https://loevraenterprises.publicvm.com/?category=tshirts"
         },
         {
           "@type": "ListItem",
           "position": 4,
           "name": "Comfort Gym Trackpants & Lowers",
-          "item": "https://its-sartaj.github.io/Leovra/?category=lowers"
+          "item": "https://loevraenterprises.publicvm.com/?category=lowers"
         }
       ]
     },
     {
       "@type": "ItemList",
-      "@id": "https://its-sartaj.github.io/Leovra/#catalog",
+      "@id": "https://loevraenterprises.publicvm.com/#catalog",
       "name": "Leovra Featured Products",
       "numberOfItems": 15,
       "itemListElement": [
@@ -135,7 +161,7 @@
           "position": 1,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-earring-1",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-earring-1",
             "name": "Antique Oxidized Royal Silver Jhumkas",
             "description": "Handcrafted floral motif oxidized silver jhumkas with tiny pearl drops. Hypoallergenic alloy with antique finish, ideal for ethnic wear and festivities.",
             "image": "https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -146,7 +172,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-earring-1",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-earring-1",
               "priceCurrency": "INR",
               "price": 399,
               "priceValidUntil": "2027-12-31",
@@ -198,7 +224,7 @@
           "position": 2,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-earring-2",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-earring-2",
             "name": "18K Gold Plated Emerald Teardrop Earrings",
             "description": "Luxurious teardrop chandelier earrings set with faux Colombian emerald green stones and sparkling cubic zirconia. Light-weight luxury feel.",
             "image": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -209,7 +235,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-earring-2",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-earring-2",
               "priceCurrency": "INR",
               "price": 549,
               "priceValidUntil": "2027-12-31",
@@ -261,7 +287,7 @@
           "position": 3,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-earring-3",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-earring-3",
             "name": "Minimalist Geometric Hexagon Studs",
             "description": "Clean everyday modern hexagon stud earrings crafted in surgical-grade stainless steel with mirror polish. Water-resistant and tarnish-free.",
             "image": "https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -272,7 +298,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-earring-3",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-earring-3",
               "priceCurrency": "INR",
               "price": 249,
               "priceValidUntil": "2027-12-31",
@@ -324,7 +350,7 @@
           "position": 4,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-earring-4",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-earring-4",
             "name": "Kundan Meenakari Chandbali Hoops",
             "description": "Traditional Rajasthani Kundan crescent chandbali earrings adorned with hand-painted meenakari accents and beaded fringe.",
             "image": "https://images.unsplash.com/photo-1611591475817-29807538a7c2?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -335,7 +361,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-earring-4",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-earring-4",
               "priceCurrency": "INR",
               "price": 699,
               "priceValidUntil": "2027-12-31",
@@ -387,7 +413,7 @@
           "position": 5,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-earring-5",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-earring-5",
             "name": "Freshwater Pearl Baroque Dangler Earrings",
             "description": "Effortlessly chic asymmetric baroque pearl drops suspended from 14K gold-filled micro hoops. Ideal for modern dates and cocktail parties.",
             "image": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -398,7 +424,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-earring-5",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-earring-5",
               "priceCurrency": "INR",
               "price": 499,
               "priceValidUntil": "2027-12-31",
@@ -450,7 +476,7 @@
           "position": 6,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-tshirt-1",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-tshirt-1",
             "name": "Heavyweight Streetwear Oversized Graphic Tee",
             "description": "240 GSM heavy combed cotton graphic tee with drop shoulder relaxed fit, high-density chest typography and ribbed crew collar. Pre-shrunk bio-washed.",
             "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -461,7 +487,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-tshirt-1",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-tshirt-1",
               "priceCurrency": "INR",
               "price": 649,
               "priceValidUntil": "2027-12-31",
@@ -513,7 +539,7 @@
           "position": 7,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-tshirt-2",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-tshirt-2",
             "name": "Pure Supima Cotton Minimalist Crewneck",
             "description": "Made from 100% extra-long staple Supima cotton for exceptional softness, breathability, and rich color retention wash after wash.",
             "image": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -524,7 +550,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-tshirt-2",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-tshirt-2",
               "priceCurrency": "INR",
               "price": 499,
               "priceValidUntil": "2027-12-31",
@@ -576,7 +602,7 @@
           "position": 8,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-tshirt-3",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-tshirt-3",
             "name": "Vintage Acid Wash Boxy Fit T-Shirt",
             "description": "Custom mineral wash streetwear silhouette with distressed edges and subtle vintage retro faded dye. Comfortable all-day cotton.",
             "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -587,7 +613,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-tshirt-3",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-tshirt-3",
               "priceCurrency": "INR",
               "price": 599,
               "priceValidUntil": "2027-12-31",
@@ -639,7 +665,7 @@
           "position": 9,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-tshirt-4",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-tshirt-4",
             "name": "Classic Honeycomb Pique Polo T-Shirt",
             "description": "Premium textured pique cotton polo with contrast collar tipping and reinforced button placket. Suitable for casual and semi-formal wear.",
             "image": "https://images.unsplash.com/photo-1625910513413-5b8782a46c64?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -650,7 +676,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-tshirt-4",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-tshirt-4",
               "priceCurrency": "INR",
               "price": 699,
               "priceValidUntil": "2027-12-31",
@@ -702,7 +728,7 @@
           "position": 10,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-tshirt-5",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-tshirt-5",
             "name": "Quick-Dry Athletic Performance Training Tee",
             "description": "Lightweight poly-spandex moisture-wicking workout t-shirt with mesh airflow panels and flatlock anti-chafing seams.",
             "image": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -713,7 +739,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-tshirt-5",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-tshirt-5",
               "priceCurrency": "INR",
               "price": 449,
               "priceValidUntil": "2027-12-31",
@@ -765,7 +791,7 @@
           "position": 11,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-lower-1",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-lower-1",
             "name": "Multi-Pocket Tactical Cargo Joggers",
             "description": "Durable stretch cotton twill cargo pants featuring 6 tactical pockets, elasticated drawstring waistband, and snug cuffed ankles. Perfect casual utility.",
             "image": "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -776,7 +802,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-lower-1",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-lower-1",
               "priceCurrency": "INR",
               "price": 899,
               "priceValidUntil": "2027-12-31",
@@ -828,7 +854,7 @@
           "position": 12,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-lower-2",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-lower-2",
             "name": "Heavy Terry Cotton Relaxed Fit Trackpants",
             "description": "Ultra-soft 320 GSM French terry fleece lowers with deep zip pockets, wide cotton drawcord, and relaxed taper for lounging or travel.",
             "image": "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -839,7 +865,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-lower-2",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-lower-2",
               "priceCurrency": "INR",
               "price": 749,
               "priceValidUntil": "2027-12-31",
@@ -891,7 +917,7 @@
           "position": 13,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-lower-3",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-lower-3",
             "name": "4-Way Stretch Pro-Fit Gym & Running Lower",
             "description": "Engineered for gym workouts and athletic training. Sweat-resistant, ultra-elastic, reflective night safety trims, and secure phone zip pocket.",
             "image": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -902,7 +928,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-lower-3",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-lower-3",
               "priceCurrency": "INR",
               "price": 599,
               "priceValidUntil": "2027-12-31",
@@ -954,7 +980,7 @@
           "position": 14,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-lower-4",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-lower-4",
             "name": "Streetwear Tapered Ankle-Zip Track Pants",
             "description": "Modern slim-taper silhouette with functional ankle zippers, contrast side piping, and breathable cotton blend fabric.",
             "image": "https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -965,7 +991,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-lower-4",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-lower-4",
               "priceCurrency": "INR",
               "price": 799,
               "priceValidUntil": "2027-12-31",
@@ -1017,7 +1043,7 @@
           "position": 15,
           "item": {
             "@type": "Product",
-            "@id": "https://its-sartaj.github.io/Leovra/#product-prod-lower-5",
+            "@id": "https://loevraenterprises.publicvm.com/#product-prod-lower-5",
             "name": "Everyday Chino-Knit Comfort Casual Lower",
             "description": "Smart hybrid between trousers and sweatpants. Clean flat-front look with hidden inner elastic waist and premium woven feel.",
             "image": "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=380&q=75&fm=webp",
@@ -1028,7 +1054,7 @@
             },
             "offers": {
               "@type": "Offer",
-              "url": "https://its-sartaj.github.io/Leovra/?product=prod-lower-5",
+              "url": "https://loevraenterprises.publicvm.com/?product=prod-lower-5",
               "priceCurrency": "INR",
               "price": 699,
               "priceValidUntil": "2027-12-31",
@@ -1079,7 +1105,7 @@
     },
     {
       "@type": "FAQPage",
-      "@id": "https://its-sartaj.github.io/Leovra/#faq",
+      "@id": "https://loevraenterprises.publicvm.com/#faq",
       "mainEntity": [
         {
           "@type": "Question",
@@ -1111,6 +1137,22 @@
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "You can track your order directly in the 'My Orders' tab of your account or reach out to our customer support on WhatsApp with your Order ID for real-time Shiprocket AWB updates."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What product categories does Leovra Enterprises specialize in?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Leovra Enterprises specializes in handcrafted artisanal jewellery (Kundan, oxidized silver jhumkas, meenakari chandbalis), heavyweight graphic streetwear t-shirts (240+ GSM combed Supima cotton), and high-comfort men's 4-way stretch gym trackpants & tactical cargo joggers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How to order products on WhatsApp from Leovra Enterprises?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can order directly on our website or tap 'Order on WhatsApp' on any product page. This sends your chosen item, size, and address directly to our WhatsApp support helpline (+91 7979968347) for immediate order dispatch with Cash on Delivery."
           }
         }
       ]

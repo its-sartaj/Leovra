@@ -2,11 +2,21 @@ import React, { useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 
 const SITE_NAME = 'Leovra Enterprises';
+const PRIMARY_DOMAIN = 'https://loevraenterprises.publicvm.com/';
+
 const getBaseCanonical = () => {
   if (typeof window !== 'undefined') {
-    return `${window.location.origin}${window.location.pathname.startsWith('/Leovra') ? '/Leovra/' : '/'}`;
+    // If accessed on PublicVM domain
+    if (window.location.hostname.includes('publicvm.com')) {
+      return 'https://loevraenterprises.publicvm.com/';
+    }
+    // Cross-domain canonical pointing to primary domain to consolidate Google rankings
+    if (window.location.hostname.includes('github.io')) {
+      return 'https://loevraenterprises.publicvm.com/';
+    }
+    return `${window.location.origin}/`;
   }
-  return 'https://its-sartaj.github.io/Leovra/';
+  return PRIMARY_DOMAIN;
 };
 
 export const SEOHead: React.FC = () => {
@@ -18,7 +28,7 @@ export const SEOHead: React.FC = () => {
 
     const baseCanonical = getBaseCanonical();
     let pageTitle = 'Leovra Enterprises | Buy Designer Jewellery, Trendy T-Shirts & Mens Lowers Online India';
-    let metaDescription = 'Shop handcrafted Kundan & oxidized jewellery, oversized graphic streetwear t-shirts, and premium gym trackpants at Leovra Enterprises. Cash on Delivery (COD), 3-day easy returns & express doorstep delivery across India.';
+    let metaDescription = 'Shop handcrafted Kundan & oxidized silver jewellery, oversized streetwear graphic t-shirts (240+ GSM), and premium gym trackpants at Leovra Enterprises (Loevra Enterprises). Cash on Delivery (COD), 3-day easy returns & express doorstep delivery across India.';
     let canonicalUrl = baseCanonical;
     let ogImage = `${baseCanonical}brand-logo.svg`;
 

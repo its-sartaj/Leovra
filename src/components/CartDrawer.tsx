@@ -793,7 +793,7 @@ export const CartDrawer: React.FC = () => {
                 </div>
                 <h3 className="text-base font-bold text-neutral-900">Your bag is empty</h3>
                 <p className="text-xs text-neutral-500 max-w-xs mx-auto">
-                  Explore our exclusive collection of designer earrings, trendy t-shirts, and stylish lowers!
+                  Explore our exclusive collection of designer jewellery, trendy t-shirts, and stylish lowers!
                 </p>
                 <button
                   onClick={() => setIsCartOpen(false)}

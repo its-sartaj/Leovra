@@ -22,5 +22,11 @@
       "sizes": "any",
       "type": "image/svg+xml"
     }
-  ]
+  ],
+  "categories": [
+    "shopping",
+    "fashion",
+    "lifestyle"
+  ],
+  "lang": "en-IN"
 }
