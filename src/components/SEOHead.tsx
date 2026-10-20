@@ -108,6 +108,9 @@ export const SEOHead: React.FC = () => {
         "@context": "https://schema.org",
         "@type": "Product",
         "@id": `${baseCanonical}?product=${selectedProduct.id}#product`,
+        "url": `${baseCanonical}?product=${selectedProduct.id}`,
+        "color": selectedProduct.colors?.[0] || 'Standard',
+        "size": selectedProduct.sizes?.join(', ') || 'Free Size',
         "name": selectedProduct.name,
         "description": selectedProduct.description,
         "image": selectedProduct.image,
@@ -160,10 +163,12 @@ export const SEOHead: React.FC = () => {
           "hasMerchantReturnPolicy": {
             "@type": "MerchantReturnPolicy",
             "applicableCountry": "IN",
+            "returnPolicyCountry": "IN",
             "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
             "merchantReturnDays": 3,
             "returnMethod": "https://schema.org/ReturnByMail",
-            "returnFees": "https://schema.org/FreeReturn"
+            "returnFees": "https://schema.org/FreeReturn",
+            "refundType": "https://schema.org/FullRefund"
           }
         },
         "aggregateRating": {
