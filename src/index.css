@@ -44,11 +44,6 @@ body {
   content-visibility: auto;
 }
 
-#faq-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 0 420px;
-}
-
 #main-footer {
   content-visibility: auto;
   contain-intrinsic-size: 0 520px;

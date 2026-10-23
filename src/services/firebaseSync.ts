@@ -10,16 +10,16 @@ export const fetchRemoteProducts = async (): Promise<Product[] | null> => {
     const res = await fetch(`${FIREBASE_DB_URL}/products.json`);
     if (!res.ok) return null;
     const data = await res.json();
-    if (!data) return null;
+    if (!data || data.error) return null;
+    let list: any[] = [];
     if (Array.isArray(data)) {
-      return data.filter(Boolean);
+      list = data.filter(Boolean);
+    } else if (typeof data === 'object') {
+      list = Object.values(data);
     }
-    if (typeof data === 'object') {
-      return Object.values(data);
-    }
-    return null;
+    const valid = list.filter((p) => p && typeof p === 'object' && typeof p.id === 'string' && typeof p.name === 'string');
+    return valid.length > 0 ? valid : null;
   } catch (err) {
-    console.warn('[Firebase] fetchRemoteProducts error:', err);
     return null;
   }
 };
@@ -98,16 +98,16 @@ export const fetchRemoteOrders = async (): Promise<Order[] | null> => {
     const res = await fetch(`${FIREBASE_DB_URL}/orders.json`);
     if (!res.ok) return null;
     const data = await res.json();
-    if (!data) return null;
+    if (!data || data.error) return null;
+    let list: any[] = [];
     if (Array.isArray(data)) {
-      return data.filter(Boolean);
+      list = data.filter(Boolean);
+    } else if (typeof data === 'object') {
+      list = Object.values(data);
     }
-    if (typeof data === 'object') {
-      return Object.values(data);
-    }
-    return null;
+    const valid = list.filter((o) => o && typeof o === 'object' && typeof o.id === 'string' && typeof o.customerName === 'string');
+    return valid;
   } catch (err) {
-    console.warn('[Firebase] fetchRemoteOrders error:', err);
     return null;
   }
 };
@@ -223,8 +223,7 @@ export const subscribeRemoteProducts = (
           eventSource = null;
         }
         if (!isClosed) {
-          if (retryCount >= 15) {
-            console.warn('[Firebase SSE] Max retries reached, pausing connection.');
+          if (retryCount >= 2) {
             return;
           }
           const delay = Math.min(3000 * Math.pow(1.5, retryCount), 30000);
@@ -306,8 +305,7 @@ export const subscribeRemoteOrders = (
           eventSource = null;
         }
         if (!isClosed) {
-          if (retryCount >= 15) {
-            console.warn('[Firebase SSE Orders] Max retries reached, pausing connection.');
+          if (retryCount >= 2) {
             return;
           }
           const delay = Math.min(3000 * Math.pow(1.5, retryCount), 30000);

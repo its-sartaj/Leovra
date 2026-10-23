@@ -9,6 +9,16 @@ import {
   subscribeRemoteProducts,
   subscribeRemoteOrders 
 } from '../services/firebaseSync';
+import { 
+  fetchApiProducts, 
+  saveApiProducts, 
+  fetchApiOrders, 
+  createApiOrder, 
+  updateApiOrder, 
+  deleteApiOrder, 
+  clearAllApiOrders, 
+  subscribeBackendSse 
+} from '../services/backendApi';
 import { validateOrderSecurity, recordOrderPlaced, sanitizeInput } from '../services/security';
 
 interface StoreContextType {
@@ -76,6 +86,7 @@ interface StoreContextType {
   updateOrderStatus: (orderId: string, status: Order['status'], awbCode?: string, courierName?: string) => void;
   cancelOrder: (orderId: string, restoreInventory?: boolean, cancellationReason?: string) => void;
   deleteOrder: (orderId: string) => void;
+  clearAllOrders: () => void;
   generateWhatsAppOrderUrl: (orderItems?: CartItem[], customerInfo?: { name: string; phone: string; address: string }) => string;
   
   // Toast notifications
@@ -89,11 +100,11 @@ interface StoreContextType {
   businessUpi: string;
 }
 
-const STORAGE_KEY_PRODUCTS = 'leovra_products_v1';
-const STORAGE_KEY_PRODUCTS_VER = 'leovra_products_ver_v1';
-const STORAGE_KEY_CART = 'leovra_cart_v1';
-const STORAGE_KEY_ORDERS = 'leovra_orders_v1';
-const STORAGE_KEY_ORDERS_VER = 'leovra_orders_ver_v1';
+const STORAGE_KEY_PRODUCTS = 'leovra_products_v2';
+const STORAGE_KEY_PRODUCTS_VER = 'leovra_products_ver_v2';
+const STORAGE_KEY_CART = 'leovra_cart_v2';
+const STORAGE_KEY_ORDERS = 'leovra_orders_v2';
+const STORAGE_KEY_ORDERS_VER = 'leovra_orders_ver_v2';
 const STORAGE_KEY_ADMIN_AUTH = 'leovra_admin_auth_v1';
 const STORAGE_KEY_CUSTOMER = 'leovra_customer_user_v1';
 const STORAGE_KEY_ALL_CUSTOMERS = 'leovra_all_customers_v1';
@@ -232,7 +243,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const params = new URLSearchParams(window.location.search);
         const prodId = params.get('product') || params.get('id');
         if (prodId) {
-          const found = INITIAL_PRODUCTS.find(p => p.id === prodId);
+          let pool = INITIAL_PRODUCTS;
+          try {
+            const saved = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              if (Array.isArray(parsed) && parsed.length > 0) pool = parsed;
+            }
+          } catch {}
+          const found = pool.find(p => p.id === prodId);
           if (found) return found;
         }
       } catch {}
@@ -289,7 +308,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!name.trim()) {
       return { success: false, message: 'Please enter your full name.' };
     }
-    if (cleanPhone.length !== 10) {
+    if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
       return { success: false, message: 'Please enter a valid 10-digit mobile number.' };
     }
 
@@ -322,7 +341,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const loginCustomer = useCallback((phone: string, name?: string) => {
     const cleanPhone = phone.replace(/\D/g, '').slice(-10);
-    if (cleanPhone.length !== 10) {
+    if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
       return { success: false, message: 'Please enter a valid 10-digit mobile number.' };
     }
 
@@ -444,7 +463,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.warn('localStorage save warning:', e);
     }
 
-    // 1. Cloud Sync: Send to Firebase Realtime Database (syncs to all devices across internet)
+    // 1. Express Node.js Backend API
+    saveApiProducts(newProducts).catch(() => {});
+
+    // 2. Cloud Sync: Send to Firebase Realtime Database (syncs to all devices across internet)
     saveRemoteProducts(newProducts).catch((err) => {
       console.warn('[Firebase] Save products error:', err);
     });
@@ -511,6 +533,47 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Firebase Realtime Database SSE Stream + Persistent BroadcastChannel + Window Storage Event + Local Custom Event + Heartbeat Polling
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // 0. Connect to Express Node.js Backend API
+    fetchApiProducts().then((apiProds) => {
+      if (apiProds && apiProds.length > 0) {
+        currentVersionRef.current = Date.now();
+        setProducts(apiProds);
+        try {
+          localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(apiProds));
+        } catch {}
+      }
+    });
+
+    fetchApiOrders().then((apiOrders) => {
+      if (apiOrders) {
+        setOrders(apiOrders);
+        try {
+          localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(apiOrders));
+        } catch {}
+      }
+    });
+
+    const unsubscribeBackendSse = subscribeBackendSse(
+      (apiProds) => {
+        if (apiProds && apiProds.length > 0) {
+          currentVersionRef.current = Date.now();
+          setProducts(apiProds);
+          try {
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(apiProds));
+          } catch {}
+          showToast('⚡ Live Inventory updated from server');
+        }
+      },
+      (apiOrders) => {
+        if (apiOrders) {
+          setOrders(apiOrders);
+          try {
+            localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(apiOrders));
+          } catch {}
+        }
+      }
+    );
 
     // 1. Setup Persistent BroadcastChannel
     if ('BroadcastChannel' in window) {
@@ -652,6 +715,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     return () => {
       clearTimeout(initCloudSyncTimer);
+      if (unsubscribeBackendSse) unsubscribeBackendSse();
       if (unsubscribeProducts) unsubscribeProducts();
       if (unsubscribeOrders) unsubscribeOrders();
       if (broadcastChannelRef.current) {
@@ -868,6 +932,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return null;
     }
 
+    // Verify all cart items are in stock and have sufficient quantity
+    for (const item of cart) {
+      const liveProduct = products.find(p => p.id === item.product.id);
+      if (!liveProduct || liveProduct.isOutOfStock || liveProduct.stock < item.quantity) {
+        showToast(`Sorry, "${item.product.name}" (${item.selectedSize}) is out of stock.`);
+        return null;
+      }
+    }
+
     // 2. Sanitize user inputs against XSS and control character injection
     const cleanCustomerName = sanitizeInput(orderData.customerName);
     const cleanCustomerPhone = orderData.customerPhone.replace(/\D/g, '').slice(-10);
@@ -877,7 +950,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const freeDeliveryThreshold = 499;
     const deliveryCharge = cartTotal >= freeDeliveryThreshold ? 0 : 49;
-    const finalTotal = cartTotal + deliveryCharge;
+    const calculatedTotal = cartTotal + deliveryCharge;
+    const finalTotal = typeof orderData.totalAmount === 'number' && orderData.totalAmount > 0
+      ? orderData.totalAmount
+      : calculatedTotal;
     const newOrder: Order = {
       id: 'ORD-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1000).toString(36).toUpperCase(),
       customerId: currentCustomer?.id,
@@ -918,14 +994,33 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       } catch (e) {
         console.error(e);
       }
+    } else if (currentCustomer) {
+      // Keep customer address up-to-date if provided during checkout
+      const needUpdate = (!currentCustomer.address && cleanCustomerAddress) ||
+                         (!currentCustomer.city && cleanCustomerCity);
+      if (needUpdate) {
+        const updatedCust: CustomerUser = {
+          ...currentCustomer,
+          address: currentCustomer.address || cleanCustomerAddress,
+          city: currentCustomer.city || cleanCustomerCity || '',
+        };
+        setCurrentCustomer(updatedCust);
+        setAllCustomers(prev => prev.map(c => c.id === updatedCust.id ? updatedCust : c));
+        try {
+          localStorage.setItem(STORAGE_KEY_CUSTOMER, JSON.stringify(updatedCust));
+          localStorage.setItem(STORAGE_KEY_ALL_CUSTOMERS, JSON.stringify(allCustomers.map(c => c.id === updatedCust.id ? updatedCust : c)));
+        } catch {}
+      }
     }
 
-    // Deduct stock in real-time using functional updater to avoid stale closure
+    // Deduct stock in real-time summing all items for each product to support multiple sizes
     setProducts((prevProducts) => {
       const updatedProducts = prevProducts.map((prod) => {
-        const boughtItem = cart.find((c) => c.product.id === prod.id);
-        if (boughtItem) {
-          const remaining = Math.max(0, prod.stock - boughtItem.quantity);
+        const totalBought = cart
+          .filter((c) => c.product.id === prod.id)
+          .reduce((sum, c) => sum + c.quantity, 0);
+        if (totalBought > 0) {
+          const remaining = Math.max(0, prod.stock - totalBought);
           return {
             ...prod,
             stock: remaining,
@@ -944,6 +1039,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       saveOrders(updatedOrders);
       return updatedOrders;
     });
+
+    // Notify Express backend
+    createApiOrder(newOrder).catch(() => {});
 
     // Record order in sliding-window rate limiter to prevent automated flood
     recordOrderPlaced();
@@ -966,9 +1064,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (existingOrder && existingOrder.status === 'Cancelled' && status !== 'Cancelled') {
         setProducts((prevProducts) => {
           const updatedProds = prevProducts.map((prod) => {
-            const boughtItem = existingOrder.items.find((item) => item.product.id === prod.id);
-            if (boughtItem) {
-              const remaining = Math.max(0, prod.stock - boughtItem.quantity);
+            const totalQty = existingOrder.items
+              .filter((item) => item.product.id === prod.id)
+              .reduce((sum, item) => sum + item.quantity, 0);
+            if (totalQty > 0) {
+              const remaining = Math.max(0, prod.stock - totalQty);
               return {
                 ...prod,
                 stock: remaining,
@@ -996,6 +1096,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       saveOrders(updated);
       return updated;
     });
+    updateApiOrder(orderId, { status, awbCode, courierName }).catch(() => {});
     showToast(`Order #${orderId} updated to ${status}!`);
   }, [saveOrders, saveProducts, showToast]);
 
@@ -1031,9 +1132,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (restoreInventory && targetOrder.items && targetOrder.items.length > 0) {
       setProducts((prevProducts) => {
         const updatedProducts = prevProducts.map((prod) => {
-          const item = targetOrder.items.find((i) => i.product.id === prod.id);
-          if (item) {
-            const restoredStock = prod.stock + item.quantity;
+          const totalQty = targetOrder.items
+            .filter((i) => i.product.id === prod.id)
+            .reduce((sum, i) => sum + i.quantity, 0);
+          if (totalQty > 0) {
+            const restoredStock = prod.stock + totalQty;
             return {
               ...prod,
               stock: restoredStock,
@@ -1047,17 +1150,31 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     }
 
+    updateApiOrder(orderId, { status: 'Cancelled', cancellationReason: cancellationReason || 'Cancelled by Store Admin', restoreInventory }).catch(() => {});
     showToast(`Order #${orderId} has been cancelled.${restoreInventory ? ' Stock restored.' : ''}`);
   }, [orders, saveOrders, saveProducts, showToast]);
 
   // Permanently delete an order from history
   const deleteOrder = useCallback((orderId: string) => {
+    deleteApiOrder(orderId).catch(() => {});
     setOrders((prev) => {
       const updated = prev.filter((ord) => ord.id !== orderId);
       saveOrders(updated);
       return updated;
     });
     showToast(`Order #${orderId} deleted permanently.`);
+  }, [saveOrders, showToast]);
+
+  // Purge all orders (useful to clean dummy and test orders)
+  const clearAllOrders = useCallback(() => {
+    clearAllApiOrders().catch(() => {});
+    setOrders([]);
+    try {
+      localStorage.removeItem(STORAGE_KEY_ORDERS);
+      localStorage.removeItem(STORAGE_KEY_ORDERS_VER);
+    } catch {}
+    saveOrders([]);
+    showToast('All orders purged successfully.');
   }, [saveOrders, showToast]);
 
   // WhatsApp Order Link generator with contact phone
@@ -1133,6 +1250,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateOrderStatus,
         cancelOrder,
         deleteOrder,
+        clearAllOrders,
         generateWhatsAppOrderUrl,
         toastMessage,
         showToast,

@@ -20,7 +20,7 @@ const getBaseCanonical = () => {
 };
 
 export const SEOHead: React.FC = () => {
-  const { filters, setFilters, selectedProduct, setSelectedProduct, currentView } = useStore();
+  const { products, filters, setFilters, selectedProduct, setSelectedProduct, currentView } = useStore();
 
   // 1. Sync document Title & Meta Description dynamically based on current route/selection
   useEffect(() => {
@@ -237,6 +237,11 @@ export const SEOHead: React.FC = () => {
 
         if (!prodId && selectedProduct) {
           setSelectedProduct(null);
+        } else if (prodId && selectedProduct?.id !== prodId) {
+          const matched = products.find(p => p.id === prodId);
+          if (matched && !matched.isOutOfStock && matched.stock > 0) {
+            setSelectedProduct(matched);
+          }
         }
 
         if (cat === 'earrings' || cat === 'tshirts' || cat === 'lowers') {
@@ -255,7 +260,7 @@ export const SEOHead: React.FC = () => {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [selectedProduct, filters.category, setSelectedProduct, setFilters]);
+  }, [selectedProduct, filters.category, setSelectedProduct, setFilters, products]);
 
   return null;
 };

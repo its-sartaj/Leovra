@@ -149,7 +149,11 @@ export const ProductModal: React.FC = () => {
               <div className="flex items-center gap-1 text-xs font-semibold text-neutral-700">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                 <span>{selectedProduct.rating}</span>
-                <span className="text-neutral-400">({selectedProduct.reviewCount} reviews)</span>
+                {selectedProduct.reviewCount > 0 ? (
+                  <span className="text-neutral-400">({selectedProduct.reviewCount} reviews)</span>
+                ) : (
+                  <span className="text-neutral-400 font-normal">(Inspected Quality)</span>
+                )}
               </div>
             </div>
 
@@ -339,21 +343,21 @@ export const ProductModal: React.FC = () => {
               </button>
             </div>
 
-            {/* Verified Customer Feedback (Google Review Match) */}
-            <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-200/90 text-xs space-y-1">
+            {/* Authentic Quality & Delivery Guarantee */}
+            <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-200/90 text-xs space-y-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-neutral-900 text-xs">Customer Review</span>
+                  <span className="font-bold text-neutral-900 text-xs">Leovra Quality Assurance</span>
                   <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold border border-emerald-200">
-                    ✓ Verified Buyer
+                    ✓ Hand-Inspected
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">
-                  <span>★ 5.0</span>
+                <div className="flex items-center gap-1 text-emerald-600 font-bold text-xs">
+                  <span>100% Genuine</span>
                 </div>
               </div>
-              <p className="text-neutral-600 text-[11px] leading-relaxed italic">
-                "Genuine quality, premium finish and fast delivery via Shiprocket. Very happy with the purchase!"
+              <p className="text-neutral-600 text-[11px] leading-relaxed">
+                Direct dispatch from our New Delhi hub. Express courier tracking and Cash on Delivery available across all Indian pincodes.
               </p>
             </div>
           </div>

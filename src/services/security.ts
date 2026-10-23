@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Security & Anti-Bot Shield for Leovra Enterprises
  * 
  * Provides:
@@ -29,19 +29,7 @@ export const sanitizeInput = (val: string): string => {
     .replace(/\0/g, '') // remove null bytes
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // strip script tags
     .replace(/<[^>]+>/g, '') // strip any other HTML tags
-    .replace(/[<>'"`;\\]/g, (char) => {
-      // Escape critical characters
-      const map: Record<string, string> = {
-        '<': '&lt;',
-        '>': '&gt;',
-        "'": '&#39;',
-        '"': '&quot;',
-        '`': '&#96;',
-        ';': '&#59;',
-        '\\': '&#92;'
-      };
-      return map[char] || char;
-    })
+    .replace(/[<>]/g, '') // strip remaining angle brackets
     .trim();
 };
 
@@ -144,8 +132,9 @@ export const validateOrderSecurity = (params: {
     };
   }
 
-  // 10-digit Indian Mobile check (starts with 6, 7, 8, 9)
-  const cleanDigits = params.customerPhone.replace(/\D/g, '');
+  // 10-digit Indian Mobile check (handles +91, 91, 0 prefixes, starts with 6, 7, 8, 9)
+  const rawDigits = params.customerPhone.replace(/\D/g, '');
+  const cleanDigits = rawDigits.length > 10 ? rawDigits.slice(-10) : rawDigits;
   if (cleanDigits.length !== 10 || !/^[6-9]\d{9}$/.test(cleanDigits)) {
     return {
       isValid: false,

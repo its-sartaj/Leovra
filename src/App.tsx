@@ -3,7 +3,6 @@ import { StoreProvider, useStore } from './context/StoreContext';
 import { Header } from './components/Header';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductGrid } from './components/ProductGrid';
-import { FAQSection } from './components/FAQSection';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
 import { SEOHead } from './components/SEOHead';
@@ -57,7 +56,6 @@ const MainLayout: React.FC = () => {
           <main className="flex-1 w-full max-w-full overflow-x-hidden">
             <HeroBanner />
             <ProductGrid />
-            <FAQSection />
           </main>
 
           {/* Floating WhatsApp Quick Action Button (Visible on both Mobile & Desktop) */}

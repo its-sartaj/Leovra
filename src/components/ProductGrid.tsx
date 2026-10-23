@@ -33,6 +33,10 @@ export const ProductGrid: React.FC = () => {
   // Filter and sort products with memoization for performance
   const sortedProducts = useMemo(() => {
     const filtered = products.filter((product) => {
+      // In-stock filter
+      if (filters.inStockOnly && (product.isOutOfStock || product.stock <= 0)) {
+        return false;
+      }
       // Category filter
       if (filters.category !== 'all' && product.category !== filters.category) {
         return false;
@@ -46,10 +50,6 @@ export const ProductGrid: React.FC = () => {
         if (!matchName && !matchDesc && !matchCat) {
           return false;
         }
-      }
-      // In-Stock only filter
-      if (filters.inStockOnly && (product.isOutOfStock || product.stock <= 0)) {
-        return false;
       }
       return true;
     });
@@ -67,17 +67,11 @@ export const ProductGrid: React.FC = () => {
       if (filters.sortBy === 'stock') {
         return b.stock - a.stock;
       }
-      // featured: put in-stock first, then by date
-      if (a.isOutOfStock !== b.isOutOfStock) {
-        return a.isOutOfStock ? 1 : -1;
-      }
       return 0;
     });
-  }, [products, filters]);
+  }, [products, filters.category, filters.searchQuery, filters.sortBy]);
 
-  const inStockCount = products.filter(p => !p.isOutOfStock && p.stock > 0).length;
   const currentCategoryInfo = CATEGORY_SEO_INFO[filters.category] || CATEGORY_SEO_INFO.all;
-  const outOfStockCount = products.filter(p => p.isOutOfStock || p.stock <= 0).length;
 
   const categories: { id: 'all' | ProductCategory; label: string }[] = [
     { id: 'all', label: 'All Collection' },
@@ -107,44 +101,25 @@ export const ProductGrid: React.FC = () => {
           {currentCategoryInfo.desc}
         </p>
       </div>
-      {/* Control Bar: Categories, Filters, Sorting */}
+      {/* Control Bar: Categories & Sorting */}
       <div className="bg-white rounded-2xl p-3 sm:p-4 border border-neutral-200 shadow-xs mb-4 sm:mb-6 space-y-2.5 sm:space-y-3 w-full">
-        {/* Top row: Category Pills & In-stock toggle */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          
-          {/* Category Pills with smooth horizontal scroll on mobile */}
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full min-w-0">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setFilters(prev => ({ ...prev, category: cat.id }))}
-                className={`px-3.5 py-2.5 min-h-[48px] rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
-                  filters.category === cat.id
-                    ? 'bg-neutral-900 text-white shadow-xs'
-                    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                }`}
-                id={`filter-cat-${cat.id}`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          {/* In-Stock Only Toggle Switch */}
-          <label htmlFor="in-stock-filter-toggle" className="inline-flex items-center gap-2 cursor-pointer select-none bg-neutral-50 px-3 py-2.5 rounded-xl border border-neutral-200 hover:bg-neutral-100 transition-colors text-xs font-semibold text-neutral-800 self-start sm:self-auto shrink-0 min-h-[48px]">
-            <input
-              id="in-stock-filter-toggle"
-              type="checkbox"
-              checked={filters.inStockOnly}
-              onChange={(e) => setFilters(prev => ({ ...prev, inStockOnly: e.target.checked }))}
-              className="w-4.5 h-4.5 rounded text-amber-600 focus:ring-amber-500 border-neutral-300 cursor-pointer"
-            />
-            <span>In-Stock Only</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
-              {inStockCount}
-            </span>
-          </label>
+        {/* Category Pills */}
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full min-w-0">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setFilters(prev => ({ ...prev, category: cat.id }))}
+              className={`px-3.5 py-2.5 min-h-[48px] rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 ${
+                filters.category === cat.id
+                  ? 'bg-neutral-900 text-white shadow-xs'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              }`}
+              id={`filter-cat-${cat.id}`}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
 
         {/* Bottom row: Counter & Sort Dropdown */}
@@ -155,16 +130,8 @@ export const ProductGrid: React.FC = () => {
             </span>
             <span>•</span>
             <span className="text-emerald-700 font-medium">
-              {inStockCount} in stock
+              100% In Stock & Ready to Dispatch
             </span>
-            {outOfStockCount > 0 && (
-              <>
-                <span>•</span>
-                <span className="text-rose-600 font-medium">
-                  {outOfStockCount} out of stock
-                </span>
-              </>
-            )}
           </div>
 
           {/* Sort By Dropdown */}
@@ -180,7 +147,7 @@ export const ProductGrid: React.FC = () => {
               id="sort-by-select"
               aria-label="Sort products by"
             >
-              <option value="featured">Featured & Availability</option>
+              <option value="featured">Featured Collection</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
               <option value="rating">Top Rated</option>
@@ -207,14 +174,14 @@ export const ProductGrid: React.FC = () => {
           <p className="text-xs text-neutral-500">
             {filters.searchQuery 
               ? `No items match "${filters.searchQuery}". Try searching for jewellery, lowers, or t-shirts.`
-              : 'Try turning off "In-Stock Only" or choosing another category.'}
+              : 'No products currently in stock in this category.'}
           </p>
           <div className="pt-2 flex justify-center">
             <button
-              onClick={() => setFilters({ category: 'all', searchQuery: '', sortBy: 'featured', inStockOnly: false })}
+              onClick={() => setFilters(prev => ({ ...prev, category: 'all', searchQuery: '', sortBy: 'featured' }))}
               className="px-4 py-2.5 min-h-[48px] rounded-xl bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800 transition-colors inline-flex items-center justify-center cursor-pointer"
             >
-              Reset All Filters
+              View All In-Stock Products
             </button>
           </div>
         </div>

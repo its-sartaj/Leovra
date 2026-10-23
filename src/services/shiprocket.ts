@@ -67,6 +67,35 @@ export const estimateDeliveryByPincode = (pincode: string): PincodeEstimation =>
 };
 
 /**
+ * Resolves Indian state from standard 6-digit postal pincode prefix
+ */
+export const getStateFromPincode = (pincode: string): string => {
+  const p = (pincode || '').replace(/\D/g, '').substring(0, 2);
+  const n = parseInt(p, 10);
+  if (isNaN(n)) return 'Delhi';
+  if (n === 11) return 'Delhi';
+  if (n === 12 || n === 13) return 'Haryana';
+  if (n >= 14 && n <= 16) return 'Punjab';
+  if (n === 17) return 'Himachal Pradesh';
+  if (n === 18 || n === 19) return 'Jammu & Kashmir';
+  if (n >= 20 && n <= 28) return 'Uttar Pradesh';
+  if (n >= 30 && n <= 34) return 'Rajasthan';
+  if (n >= 36 && n <= 39) return 'Gujarat';
+  if (n >= 40 && n <= 44) return 'Maharashtra';
+  if (n >= 45 && n <= 48) return 'Madhya Pradesh';
+  if (n === 49) return 'Chhattisgarh';
+  if (n >= 50 && n <= 53) return 'Telangana';
+  if (n >= 56 && n <= 59) return 'Karnataka';
+  if (n >= 60 && n <= 64) return 'Tamil Nadu';
+  if (n >= 67 && n <= 69) return 'Kerala';
+  if (n >= 70 && n <= 74) return 'West Bengal';
+  if (n >= 75 && n <= 77) return 'Odisha';
+  if (n >= 78 && n <= 79) return 'Assam';
+  if (n >= 80 && n <= 85) return 'Bihar';
+  return 'Delhi';
+};
+
+/**
  * Generates and downloads a Shiprocket-compatible CSV for Bulk Order Import
  */
 export const exportShiprocketCSV = (orders: Order[]) => {
@@ -122,7 +151,7 @@ export const exportShiprocketCSV = (orders: Order[]) => {
         sanitizeCsv(order.customerAddress || ''),
         sanitizeCsv(city),
         `"${pincode}"`,
-        sanitizeCsv(order.customerCity || 'Delhi'),
+        sanitizeCsv(getStateFromPincode(pincode)),
         `"India"`,
         sanitizeCsv(`${item.product.name} (${item.selectedSize})`),
         `"${item.product.id}-${item.selectedSize}"`,

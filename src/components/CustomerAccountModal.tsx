@@ -62,6 +62,7 @@ export const CustomerAccountModal: React.FC = () => {
   // Login Form State
   const [loginPhone, setLoginPhone] = useState('');
   const [loginName, setLoginName] = useState('');
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // Profile Edit State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -115,17 +116,23 @@ export const CustomerAccountModal: React.FC = () => {
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError(null);
     const res = registerCustomer(regName, regPhone, regEmail, regAddress, regCity);
     if (res.success) {
       setAccountModalTab('orders');
+    } else {
+      setAuthError(res.message);
     }
   };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError(null);
     const res = loginCustomer(loginPhone, loginName);
     if (res.success) {
       setAccountModalTab('orders');
+    } else {
+      setAuthError(res.message);
     }
   };
 
@@ -261,6 +268,12 @@ export const CustomerAccountModal: React.FC = () => {
           {/* TAB 1: CREATE ACCOUNT FORM */}
           {!currentCustomer && accountModalTab === 'register' && (
             <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
+              {authError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-800 font-semibold flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{authError}</span>
+                </div>
+              )}
               <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex items-start gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div className="text-[11px] text-neutral-600 leading-relaxed">
@@ -372,6 +385,12 @@ export const CustomerAccountModal: React.FC = () => {
           {/* TAB 2: SIGN IN FORM */}
           {!currentCustomer && accountModalTab === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-3.5">
+              {authError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-800 font-semibold flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{authError}</span>
+                </div>
+              )}
               <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-2xl">
                 <h4 className="text-xs font-bold text-neutral-800">Quick Sign In / तुरंत लॉगिन करें</h4>
                 <p className="text-[11px] text-neutral-500 mt-0.5">
@@ -653,8 +672,8 @@ export const CustomerAccountModal: React.FC = () => {
                             <span className="hidden sm:inline">Support</span>
                           </a>
 
-                          {/* Customer Self-Cancellation Button (Only for active / non-cancelled orders) */}
-                          {order.status !== 'Cancelled' && (
+                          {/* Customer Self-Cancellation: Only allowed before order is dispatched/delivered */}
+                          {(order.status === 'Pending' || order.status === 'Confirmed') && (
                             <button
                               type="button"
                               onClick={() => handleOpenCancelModal(order)}
@@ -663,6 +682,19 @@ export const CustomerAccountModal: React.FC = () => {
                             >
                               <XCircle className="w-3.5 h-3.5 text-rose-600" />
                               <span>Cancel Order</span>
+                            </button>
+                          )}
+
+                          {/* If Delivered, provide quick access to 3-Day Return & Replacement */}
+                          {order.status === 'Delivered' && (
+                            <button
+                              type="button"
+                              onClick={() => setIsReturnPolicyOpen(true)}
+                              className="py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                              title="View 3-Day Return & Replacement Policy"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
+                              <span>Return / Exchange</span>
                             </button>
                           )}
                         </div>

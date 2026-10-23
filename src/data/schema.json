@@ -267,31 +267,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.8,
-        "reviewCount": 86,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-EAR-001",
       "category": "Jewellery > Earrings",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Priya Sharma"
-          },
-          "datePublished": "2026-10-10",
-          "reviewBody": "Beautiful craftsmanship, the antique finish looks genuinely royal and comfortable to wear all day."
-        }
-      ],
       "color": "Antique Silver",
       "size": "Free Size",
       "material": "Oxidized Silver Alloy",
@@ -358,31 +335,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.9,
-        "reviewCount": 42,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-EAR-002",
       "category": "Jewellery > Earrings",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Ananya Verma"
-          },
-          "datePublished": "2026-10-12",
-          "reviewBody": "Stunning green emerald stones with sparkling cubic zirconia. Light-weight luxury feel for wedding functions."
-        }
-      ],
       "color": "Emerald Gold",
       "size": "Free Size",
       "material": "18K Gold Plated Alloy & Cubic Zirconia",
@@ -449,31 +403,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.6,
-        "reviewCount": 29,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-EAR-003",
       "category": "Jewellery > Earrings",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Riya Patel"
-          },
-          "datePublished": "2026-10-08",
-          "reviewBody": "Clean everyday modern hexagon stud earrings. Water-resistant and didn't tarnish at all."
-        }
-      ],
       "color": "Mirror Silver",
       "size": "Free Size",
       "material": "Surgical-Grade Stainless Steel",
@@ -540,31 +471,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.7,
-        "reviewCount": 65,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-EAR-004",
       "category": "Jewellery > Earrings",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Meera Joshi"
-          },
-          "datePublished": "2026-10-14",
-          "reviewBody": "Traditional Rajasthani Kundan with vibrant hand-painted meenakari accents. Stunning look!"
-        }
-      ],
       "color": "Multi Pastel",
       "size": "Free Size",
       "material": "Kundan & Hand-Painted Meenakari Alloy",
@@ -631,31 +539,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.9,
-        "reviewCount": 19,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-EAR-005",
       "category": "Jewellery > Earrings",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Pooja Nair"
-          },
-          "datePublished": "2026-10-11",
-          "reviewBody": "Asymmetric baroque pearls look elegant with cocktail dresses. Very chic and high quality."
-        }
-      ],
       "color": "Natural Pearl",
       "size": "Free Size",
       "material": "Freshwater Baroque Pearl & 14K Gold-Filled Hoops",
@@ -722,31 +607,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.8,
-        "reviewCount": 112,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-TSH-001",
       "category": "Apparel > Shirts & Tops > T-Shirts",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Aryan Kapoor"
-          },
-          "datePublished": "2026-10-15",
-          "reviewBody": "Heavy 240 GSM combed cotton with high-density print. Perfect drop-shoulder streetwear fit."
-        }
-      ],
       "color": "Onyx Black",
       "size": "S, M, L, XL, XXL",
       "material": "240 GSM Combed Cotton",
@@ -813,31 +675,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.7,
-        "reviewCount": 78,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-TSH-002",
       "category": "Apparel > Shirts & Tops > T-Shirts",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Rohan Mehra"
-          },
-          "datePublished": "2026-10-09",
-          "reviewBody": "Supima cotton feels silky soft, breathable and kept its rich color after multiple washes."
-        }
-      ],
       "color": "Classic White",
       "size": "M, L, XL",
       "material": "100% Extra-Long Staple Supima Cotton",
@@ -904,31 +743,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.6,
-        "reviewCount": 34,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-TSH-003",
       "category": "Apparel > Shirts & Tops > T-Shirts",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Kabir Singhania"
-          },
-          "datePublished": "2026-10-13",
-          "reviewBody": "Vintage retro mineral wash is incredible. Great distressed boxy streetwear vibe."
-        }
-      ],
       "color": "Washed Charcoal",
       "size": "S, M, L",
       "material": "100% Bio-Washed Cotton",
@@ -995,31 +811,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.5,
-        "reviewCount": 46,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-TSH-004",
       "category": "Apparel > Shirts & Tops > T-Shirts",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Vikram Sen"
-          },
-          "datePublished": "2026-10-07",
-          "reviewBody": "Crisp textured pique cotton polo with contrast collar tipping. Premium semi-formal look."
-        }
-      ],
       "color": "Deep Royal Navy",
       "size": "M, L, XL",
       "material": "Honeycomb Pique Cotton",
@@ -1086,31 +879,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.8,
-        "reviewCount": 52,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-TSH-005",
       "category": "Apparel > Shirts & Tops > T-Shirts",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Aman Malhotra"
-          },
-          "datePublished": "2026-10-16",
-          "reviewBody": "Ultra-breathable poly-spandex training tee, moisture wicking works during intense gym workouts."
-        }
-      ],
       "color": "Stealth Grey",
       "size": "S, M, L, XL",
       "material": "Poly-Spandex Quick-Dry Moisture Wicking",
@@ -1177,31 +947,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.9,
-        "reviewCount": 145,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-LOW-001",
       "category": "Apparel > Pants > Trackpants & Joggers",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Rahul Desai"
-          },
-          "datePublished": "2026-10-12",
-          "reviewBody": "6 durable tactical pockets and comfortable stretch cotton twill. Cuffed ankles fit great."
-        }
-      ],
       "color": "Military Olive",
       "size": "28-30 (S), 32 (M), 34 (L), 36 (XL)",
       "material": "Durable Stretch Cotton Twill",
@@ -1268,31 +1015,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.8,
-        "reviewCount": 88,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-LOW-002",
       "category": "Apparel > Pants > Trackpants & Joggers",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Sameer Khan"
-          },
-          "datePublished": "2026-10-14",
-          "reviewBody": "320 GSM French terry cotton is super comfortable for lounging and winter travel."
-        }
-      ],
       "color": "Heather Grey",
       "size": "M (30-32), L (34), XL (36)",
       "material": "320 GSM French Terry Cotton Fleece",
@@ -1359,31 +1083,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.7,
-        "reviewCount": 67,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-LOW-003",
       "category": "Apparel > Pants > Trackpants & Joggers",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Devendra Rawat"
-          },
-          "datePublished": "2026-10-10",
-          "reviewBody": "4-way stretch fabric with zip phone pockets and reflective trims. Best gym workout lower."
-        }
-      ],
       "color": "Deep Anthracite",
       "size": "S, M, L, XL",
       "material": "4-Way Stretch High-Flexibility Poly Blend",
@@ -1450,31 +1151,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.6,
-        "reviewCount": 39,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-LOW-004",
       "category": "Apparel > Pants > Trackpants & Joggers",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Siddharth Roy"
-          },
-          "datePublished": "2026-10-11",
-          "reviewBody": "Slim-taper fit with functional ankle zippers and contrast piping. Great modern silhouette."
-        }
-      ],
       "color": "Black & White Stripe",
       "size": "M, L, XL",
       "material": "Breathable Cotton Blend Stretch",
@@ -1541,31 +1219,8 @@
           "refundType": "https://schema.org/FullRefund"
         }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": 4.7,
-        "reviewCount": 31,
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "mpn": "LEO-LOW-005",
       "category": "Apparel > Pants > Trackpants & Joggers",
-      "review": [
-        {
-          "@type": "Review",
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": 5,
-            "bestRating": "5"
-          },
-          "author": {
-            "@type": "Person",
-            "name": "Gaurav Gupta"
-          },
-          "datePublished": "2026-10-15",
-          "reviewBody": "Hybrid trousers-sweatpants feel, clean flat front look with elastic waist comfort."
-        }
-      ],
       "color": "Dune Beige",
       "size": "30 (S), 32 (M), 34 (L), 36 (XL)",
       "material": "Chino-Knit Cotton Elastane Woven Blend",

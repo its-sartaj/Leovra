@@ -108,6 +108,7 @@ export const AdminDashboard: React.FC = () => {
     updateOrderStatus,
     cancelOrder,
     deleteOrder,
+    clearAllOrders,
     isAdminLoggedIn,
     loginAdmin,
     logoutAdmin
@@ -211,6 +212,7 @@ export const AdminDashboard: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isClearOrdersModalOpen, setIsClearOrdersModalOpen] = useState(false);
 
   // Form State for Adding / Editing Product
   const [formName, setFormName] = useState('');
@@ -371,8 +373,8 @@ export const AdminDashboard: React.FC = () => {
         image: finalImage,
         tag: (formTag as any) || undefined,
         sizes: formSizes.length > 0 ? formSizes : ['Free Size'],
-        rating: 4.9,
-        reviewCount: 1,
+        rating: 5.0,
+        reviewCount: 0,
       });
       // Clear filters so new product appears right away at the top
       setAdminCategory('all');
@@ -945,6 +947,17 @@ export const AdminDashboard: React.FC = () => {
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Shiprocket CSV</span>
               </button>
+              {orders.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsClearOrdersModalOpen(true)}
+                  className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Purge all test and dummy orders"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Clear Test Orders</span>
+                </button>
+              )}
               <span className="text-xs font-bold text-neutral-700 bg-neutral-100 px-3 py-1.5 rounded-full">
                 {orders.length} Total Orders
               </span>
@@ -2035,6 +2048,43 @@ export const AdminDashboard: React.FC = () => {
                 id="confirm-delete-product-btn"
               >
                 Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clear All Test Orders Confirmation Modal */}
+      {isClearOrdersModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full border border-neutral-200 shadow-2xl text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-base font-extrabold text-neutral-900">Clear All Test Orders?</h4>
+              <p className="text-xs text-neutral-500 mt-1">
+                Are you sure you want to purge all orders from database? All test and dummy orders will be permanently removed.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsClearOrdersModalOpen(false)}
+                className="py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-bold text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  clearAllOrders();
+                  setIsClearOrdersModalOpen(false);
+                }}
+                className="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs cursor-pointer"
+                id="confirm-clear-orders-btn"
+              >
+                Yes, Purge Orders
               </button>
             </div>
           </div>

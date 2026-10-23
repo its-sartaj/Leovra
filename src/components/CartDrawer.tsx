@@ -80,8 +80,8 @@ export const CartDrawer: React.FC = () => {
 
   const freeDeliveryThreshold = 499;
   const isFreeDelivery = cartTotal >= freeDeliveryThreshold;
-  const deliveryCharge = isFreeDelivery ? 0 : 49;
-  const grandTotal = cartTotal + deliveryCharge;
+  const deliveryCharge = cartTotal === 0 || isFreeDelivery ? 0 : 49;
+  const grandTotal = cartTotal === 0 ? 0 : cartTotal + deliveryCharge;
   const amountNeeded = Math.max(0, freeDeliveryThreshold - cartTotal);
 
   const businessUpiId = businessUpi || '7979968347@slc';
@@ -115,8 +115,20 @@ export const CartDrawer: React.FC = () => {
     e.preventDefault();
     setFormError(null);
 
+    // Verify none of the items in bag are out of stock or exceed inventory
+    const outOfStockItem = cart.find(item => {
+      const live = products.find(p => p.id === item.product.id) || item.product;
+      return live.isOutOfStock || live.stock <= 0 || item.quantity > live.stock;
+    });
+
+    if (outOfStockItem) {
+      setFormError(`"${outOfStockItem.product.name}" (${outOfStockItem.selectedSize}) is currently out of stock or exceeds available units. Please adjust your bag.`);
+      return;
+    }
+
     const cleanName = customerName.trim();
-    const cleanPhone = customerPhone.trim().replace(/\D/g, '');
+    const rawDigits = customerPhone.replace(/\D/g, '');
+    const cleanPhone = rawDigits.length > 10 ? rawDigits.slice(-10) : rawDigits;
     const cleanAddress = customerAddress.trim();
 
     if (!cleanName) {
@@ -124,8 +136,8 @@ export const CartDrawer: React.FC = () => {
       return;
     }
 
-    if (!cleanPhone || cleanPhone.length < 10) {
-      setFormError('Please enter a valid 10-digit mobile number for order delivery.');
+    if (cleanPhone.length !== 10 || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setFormError('Please enter a valid 10-digit mobile number for order delivery (e.g. 9876543210).');
       return;
     }
 
@@ -134,8 +146,8 @@ export const CartDrawer: React.FC = () => {
       return;
     }
 
-    if (customerPincode.trim() && !/^\d{6}$/.test(customerPincode.trim())) {
-      setFormError('Please enter a valid 6-digit Indian pincode.');
+    if (customerPincode.trim() && !/^[1-9]\d{5}$/.test(customerPincode.trim())) {
+      setFormError('Please enter a valid 6-digit Indian pincode (e.g. 110001).');
       return;
     }
 
@@ -164,7 +176,7 @@ export const CartDrawer: React.FC = () => {
     });
 
     if (!order) {
-      setFormError('Order could not be submitted due to security verification. Please verify your details or wait a moment.');
+      setFormError('Order could not be placed. Please verify your details or check if items in your bag went out of stock.');
       return;
     }
 

@@ -199,6 +199,19 @@ export const Footer: React.FC = () => {
         <div className="pt-6 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-400 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-4 text-[11px] text-neutral-400">
             <span>Specialists in Jewellery, T-Shirts & Lowers</span>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentView('admin');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-amber-400 transition-colors cursor-pointer text-[11px] inline-flex items-center gap-1 text-neutral-400"
+              title="Open Admin Inventory Management Portal"
+              id="footer-admin-portal-btn"
+            >
+              <span>🔒 Admin Portal</span>
+            </button>
           </div>
           <button
             type="button"
