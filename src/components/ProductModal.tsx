@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   X, 
   ShoppingBag, 
@@ -9,7 +9,9 @@ import {
   AlertCircle,
   Truck,
   MapPin,
-  RotateCcw
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { estimateDeliveryByPincode, PincodeEstimation } from '../services/shiprocket';
@@ -31,6 +33,18 @@ export const ProductModal: React.FC = () => {
   const [pincodeInput, setPincodeInput] = useState('');
   const [pincodeResult, setPincodeResult] = useState<PincodeEstimation | null>(null);
 
+  // Multi-image list for carousel
+  const productImages = useMemo(() => {
+    if (!selectedProduct) return [];
+    if (selectedProduct.images && selectedProduct.images.length > 0) {
+      return selectedProduct.images;
+    }
+    return [selectedProduct.image];
+  }, [selectedProduct]);
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isHoveringImage, setIsHoveringImage] = useState(false);
+
   // Synchronize state whenever a new product is selected
   useEffect(() => {
     if (selectedProduct) {
@@ -40,8 +54,21 @@ export const ProductModal: React.FC = () => {
       setIsAdded(false);
       setPincodeInput('');
       setPincodeResult(null);
+      setActiveImageIndex(0);
+      setIsHoveringImage(false);
     }
   }, [selectedProduct]);
+
+  // Auto-slide effect: automatically advances every 3.2 seconds when multiple photos exist and user isn't hovering
+  useEffect(() => {
+    if (productImages.length <= 1 || isHoveringImage) return;
+
+    const interval = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % productImages.length);
+    }, 3200);
+
+    return () => clearInterval(interval);
+  }, [productImages.length, isHoveringImage]);
 
   const handleCheckPincode = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,25 +101,32 @@ export const ProductModal: React.FC = () => {
       id="product-detail-modal-overlay"
     >
       <div 
-        className="relative w-full max-w-3xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-y-auto max-h-[92vh] flex flex-col md:flex-row border border-neutral-200 animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-neutral-200 animate-in zoom-in-95 duration-200 max-h-[92vh] md:max-h-[88vh]"
         onClick={(e) => e.stopPropagation()}
         id="product-detail-modal-content"
       >
         {/* Close Button */}
         <button
           onClick={() => setSelectedProduct(null)}
-          className="absolute right-3 top-3 z-20 w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-white/95 text-neutral-700 hover:text-neutral-950 flex items-center justify-center shadow-md hover:bg-white transition-all cursor-pointer"
+          className="absolute right-3 top-3 z-30 w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/95 text-neutral-700 hover:text-neutral-950 flex items-center justify-center shadow-md hover:bg-white transition-all cursor-pointer border border-neutral-200/80 active:scale-95"
           aria-label="Close modal"
           id="close-product-modal-btn"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Left: Product Image */}
-        <div className="md:w-1/2 relative bg-neutral-100 min-h-[200px] max-h-[280px] md:max-h-none md:min-h-[420px] flex items-center justify-center overflow-hidden shrink-0">
+        {/* Left: Product Image Slider with Auto-Slide */}
+        <div 
+          className="w-full md:w-1/2 relative bg-neutral-100 flex flex-col items-center justify-center overflow-hidden shrink-0 h-64 sm:h-72 md:h-auto md:min-h-[480px] select-none group"
+          onMouseEnter={() => setIsHoveringImage(true)}
+          onMouseLeave={() => setIsHoveringImage(false)}
+          onTouchStart={() => setIsHoveringImage(true)}
+          onTouchEnd={() => setIsHoveringImage(false)}
+        >
           <img
-            src={selectedProduct.image}
-            alt={`${selectedProduct.name} - Handcrafted Premium Quality by Leovra Enterprises`}
+            key={activeImageIndex}
+            src={productImages[activeImageIndex] || selectedProduct.image}
+            alt={`${selectedProduct.name} - Photo ${activeImageIndex + 1}`}
             width={600}
             height={600}
             referrerPolicy="no-referrer"
@@ -101,13 +135,13 @@ export const ProductModal: React.FC = () => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.webp`;
             }}
-            className={`w-full h-full object-cover object-center ${
+            className={`w-full h-full object-cover object-center transition-all duration-300 ease-out ${
               isOutOfStock ? 'grayscale-40' : ''
             }`}
           />
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-20 pointer-events-none">
             {selectedProduct.tag && (
               <span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase bg-neutral-900 text-white shadow-xs">
                 {selectedProduct.tag}
@@ -120,15 +154,74 @@ export const ProductModal: React.FC = () => {
             )}
           </div>
 
+          {/* Multi-Photo Counter & Auto-Slide Indicator Badge */}
+          {productImages.length > 1 && (
+            <div className="absolute top-3 right-16 md:right-4 z-20 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-xs text-white text-[11px] font-bold flex items-center gap-1.5 shadow-xs">
+              <span>{activeImageIndex + 1}/{productImages.length}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="text-[10px] text-amber-300 font-medium">Auto</span>
+            </div>
+          )}
+
+          {/* Manual Controls (Previous & Next Arrows) */}
+          {productImages.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
+                }}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-neutral-800 shadow-md flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
+                aria-label="Previous photo"
+                title="Previous photo"
+              >
+                <ChevronLeft className="w-5 h-5 text-neutral-800" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((prev) => (prev + 1) % productImages.length);
+                }}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-neutral-800 shadow-md flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
+                aria-label="Next photo"
+                title="Next photo"
+              >
+                <ChevronRight className="w-5 h-5 text-neutral-800" />
+              </button>
+
+              {/* Dot Indicators */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-xs">
+                {productImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(idx);
+                    }}
+                    className={`transition-all rounded-full cursor-pointer ${
+                      activeImageIndex === idx 
+                        ? 'w-5 h-2 bg-amber-400' 
+                        : 'w-2 h-2 bg-white/70 hover:bg-white'
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
           {/* Stock Tag on Image */}
-          <div className="absolute bottom-3 left-3">
+          <div className="absolute bottom-3 left-3 z-20 pointer-events-none">
             {isOutOfStock ? (
-              <span className="px-3 py-1 rounded-lg text-xs font-bold bg-rose-600 text-white shadow-md flex items-center gap-1.5">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-600 text-white shadow-md flex items-center gap-1.5">
                 <AlertCircle className="w-3.5 h-3.5" />
                 <span>Out of Stock</span>
               </span>
             ) : (
-              <span className="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-md flex items-center gap-1.5">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-md flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                 <span>In Stock: {selectedProduct.stock} Available</span>
               </span>
@@ -137,7 +230,7 @@ export const ProductModal: React.FC = () => {
         </div>
 
         {/* Right: Product Details & Purchase Form */}
-        <div className="md:w-1/2 p-5 sm:p-6 overflow-y-auto flex flex-col justify-between">
+        <div className="w-full md:w-1/2 p-4 sm:p-5 md:p-6 overflow-y-auto flex flex-col justify-between max-h-[calc(92vh-260px)] md:max-h-[88vh] bg-white">
           <div className="space-y-4">
             {/* Category and Rating */}
             <div className="flex items-center justify-between">

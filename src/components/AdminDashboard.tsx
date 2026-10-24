@@ -222,6 +222,7 @@ export const AdminDashboard: React.FC = () => {
   const [formStock, setFormStock] = useState<string>('12');
   const [formDescription, setFormDescription] = useState('');
   const [formImage, setFormImage] = useState('');
+  const [formImages, setFormImages] = useState<string[]>([]);
   const [formTag, setFormTag] = useState<string>('Trending');
   const [formSizes, setFormSizes] = useState<string[]>(['Free Size']);
   const [customSizeInput, setCustomSizeInput] = useState('');
@@ -262,7 +263,9 @@ export const AdminDashboard: React.FC = () => {
     setFormOriginalPrice('799');
     setFormStock('12');
     setFormDescription('Handcrafted with premium materials. Long-lasting polish, anti-allergic finish, and lightweight comfort.');
-    setFormImage(SAMPLE_IMAGE_PRESETS[0].url);
+    const def = SAMPLE_IMAGE_PRESETS[0].url;
+    setFormImage(def);
+    setFormImages([def]);
     setFormTag('New');
     setFormSizes(['Free Size']);
     setFormError('');
@@ -280,6 +283,8 @@ export const AdminDashboard: React.FC = () => {
     setFormStock(String(p.stock));
     setFormDescription(p.description);
     setFormImage(p.image);
+    const pImgs = (p.images && p.images.length > 0) ? p.images : (p.image ? [p.image] : []);
+    setFormImages(pImgs);
     setFormTag(p.tag || 'Trending');
     setFormSizes(p.sizes && p.sizes.length > 0 ? p.sizes : ['Free Size']);
     setFormError('');
@@ -287,39 +292,78 @@ export const AdminDashboard: React.FC = () => {
     setIsAddModalOpen(true);
   };
 
-  // Image file handler (Gallery / Computer)
-  const handleProcessImageFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      setFormError('Please choose a valid image file (JPG, PNG, WEBP).');
-      return;
-    }
-    if (file.size > 8 * 1024 * 1024) {
-      setFormError('Image size is too large (max 8MB). Please choose a smaller photo.');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (typeof event.target?.result === 'string') {
-        setFormImage(event.target.result);
-        setFormError('');
+  // Image files handler (Device Gallery / Computer - supports 1 or multiple photos!)
+  const handleProcessImageFiles = (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    fileArray.forEach((file) => {
+      if (!file.type.startsWith('image/')) {
+        setFormError('Please choose a valid image file (JPG, PNG, WEBP).');
+        return;
       }
-    };
-    reader.readAsDataURL(file);
+      if (file.size > 8 * 1024 * 1024) {
+        setFormError('Image size is too large (max 8MB). Please choose a smaller photo.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          const res = event.target.result;
+          setFormImages((prev) => [...prev, res]);
+          setFormImage(res);
+          setFormError('');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleProcessImageFile(file);
+    if (e.target.files && e.target.files.length > 0) {
+      handleProcessImageFiles(e.target.files);
     }
   };
 
   const handleDropImage = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingFile(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleProcessImageFile(file);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleProcessImageFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleRemoveFormImage = (indexToRemove: number) => {
+    setFormImages((prev) => {
+      const updated = prev.filter((_, i) => i !== indexToRemove);
+      if (updated.length > 0) {
+        setFormImage(updated[0]);
+      } else {
+        setFormImage('');
+      }
+      return updated;
+    });
+  };
+
+  const handleSetPrimaryImage = (indexToPrimary: number) => {
+    setFormImages((prev) => {
+      const selected = prev[indexToPrimary];
+      const others = prev.filter((_, i) => i !== indexToPrimary);
+      const updated = [selected, ...others];
+      setFormImage(selected);
+      return updated;
+    });
+  };
+
+  const handleAddPresetImage = (url: string) => {
+    setFormImages((prev) => {
+      if (prev.includes(url)) return prev;
+      return [...prev, url];
+    });
+    setFormImage(url);
+  };
+
+  const handleAddUrlImage = () => {
+    if (formImage.trim() && !formImages.includes(formImage.trim())) {
+      setFormImages((prev) => [...prev, formImage.trim()]);
     }
   };
 
@@ -343,8 +387,10 @@ export const AdminDashboard: React.FC = () => {
     const stockNum = isNaN(Number(formStock)) ? 10 : Math.max(0, parseInt(formStock, 10));
 
     // Fallback image if left blank
+    const validImages = formImages.filter(img => img && img.trim().length > 0);
     const fallbackImage = SAMPLE_IMAGE_PRESETS.find(p => p.cat === formCategory)?.url || SAMPLE_IMAGE_PRESETS[0].url;
-    const finalImage = formImage.trim() || fallbackImage;
+    const finalPrimaryImage = validImages[0] || formImage.trim() || fallbackImage;
+    const finalImagesList = validImages.length > 0 ? validImages : [finalPrimaryImage];
 
     if (editingProduct) {
       updateProduct(editingProduct.id, {
@@ -355,7 +401,8 @@ export const AdminDashboard: React.FC = () => {
         stock: stockNum,
         isOutOfStock: stockNum <= 0,
         description: formDescription.trim() || 'Handcrafted premium quality product from Leovra Enterprises.',
-        image: finalImage,
+        image: finalPrimaryImage,
+        images: finalImagesList,
         tag: (formTag as any) || undefined,
         sizes: formSizes.length > 0 ? formSizes : ['Free Size'],
         // Preserve existing colors when editing (form has no colors field)
@@ -370,7 +417,8 @@ export const AdminDashboard: React.FC = () => {
         stock: stockNum,
         isOutOfStock: stockNum <= 0,
         description: formDescription.trim() || 'Handcrafted premium quality product from Leovra Enterprises.',
-        image: finalImage,
+        image: finalPrimaryImage,
+        images: finalImagesList,
         tag: (formTag as any) || undefined,
         sizes: formSizes.length > 0 ? formSizes : ['Free Size'],
         rating: 5.0,
@@ -1768,20 +1816,27 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Product Image Section: Device Upload + Presets + URL */}
-              <div className="space-y-2">
+              {/* Product Photos Section: Multi-Photo Auto-Slide Supported */}
+              <div className="space-y-2.5 p-3 rounded-2xl bg-neutral-50 border border-neutral-200">
                 <div className="flex items-center justify-between">
-                  <label className="font-bold text-neutral-700">
-                    Product Photo
-                  </label>
+                  <div>
+                    <label className="font-bold text-neutral-800 text-xs sm:text-sm block">
+                      Product Photos ({formImages.length} {formImages.length === 1 ? 'Photo' : 'Photos'})
+                    </label>
+                    <span className="text-[10px] text-amber-700 font-semibold block">
+                      {formImages.length >= 2 
+                        ? '✨ 2+ Photos Uploaded — Auto-Slide Carousel Active on Storefront!' 
+                        : '💡 Upload 2 or more photos to enable Auto-Slide Carousel on product!'}
+                    </span>
+                  </div>
                   
                   {/* Tabs: Device / Presets / URL */}
-                  <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px] font-semibold">
+                  <div className="flex items-center bg-white border border-neutral-200 p-0.5 rounded-lg text-[11px] font-semibold">
                     <button
                       type="button"
                       onClick={() => setImageSourceTab('device')}
                       className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
-                        imageSourceTab === 'device' ? 'bg-white text-neutral-900 font-bold shadow-2xs' : 'text-neutral-500'
+                        imageSourceTab === 'device' ? 'bg-neutral-900 text-white font-bold shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
                       }`}
                     >
                       Gallery / File
@@ -1790,7 +1845,7 @@ export const AdminDashboard: React.FC = () => {
                       type="button"
                       onClick={() => setImageSourceTab('presets')}
                       className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
-                        imageSourceTab === 'presets' ? 'bg-white text-neutral-900 font-bold shadow-2xs' : 'text-neutral-500'
+                        imageSourceTab === 'presets' ? 'bg-neutral-900 text-white font-bold shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
                       }`}
                     >
                       Sample Photos
@@ -1799,7 +1854,7 @@ export const AdminDashboard: React.FC = () => {
                       type="button"
                       onClick={() => setImageSourceTab('url')}
                       className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
-                        imageSourceTab === 'url' ? 'bg-white text-neutral-900 font-bold shadow-2xs' : 'text-neutral-500'
+                        imageSourceTab === 'url' ? 'bg-neutral-900 text-white font-bold shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
                       }`}
                     >
                       Web Link
@@ -1807,17 +1862,18 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Hidden File Input */}
+                {/* Hidden File Input (supports multiple file selection!) */}
                 <input
                   type="file"
                   ref={fileInputRef}
                   accept="image/*"
+                  multiple
                   onChange={handleFileInputChange}
                   className="hidden"
                   id="admin-file-upload-input"
                 />
 
-                {/* Image Tab 1: Device File Upload */}
+                {/* Upload Action Card */}
                 {imageSourceTab === 'device' && (
                   <div
                     onDragOver={(e) => {
@@ -1827,115 +1883,153 @@ export const AdminDashboard: React.FC = () => {
                     onDragLeave={() => setIsDraggingFile(false)}
                     onDrop={handleDropImage}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`border-2 border-dashed rounded-2xl p-4 sm:p-5 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
+                    className={`border-2 border-dashed rounded-2xl p-3.5 sm:p-4 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5 ${
                       isDraggingFile 
-                        ? 'border-amber-500 bg-amber-50/50' 
-                        : 'border-neutral-200 hover:border-amber-400 bg-neutral-50/50 hover:bg-neutral-50'
+                        ? 'border-amber-500 bg-amber-50' 
+                        : 'border-neutral-300 hover:border-amber-500 bg-white hover:bg-neutral-50'
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
-                      <Upload className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+                      <Upload className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="font-bold text-neutral-900 text-xs sm:text-sm">
-                        Click to select photo from device
+                      <span className="font-bold text-neutral-900 text-xs">
+                        Click to select photo(s) from device
                       </span>
-                      <p className="text-[11px] text-neutral-500 mt-0.5">
-                        Supports phone gallery photos, JPG, PNG or WebP (up to 8MB)
+                      <p className="text-[10px] text-neutral-500">
+                        Supports phone gallery photos, JPG, PNG or WebP (select 1 or multiple)
                       </p>
                     </div>
                   </div>
                 )}
 
-                {/* Image Tab 2: Sample Presets */}
+                {/* Presets Tab */}
                 {imageSourceTab === 'presets' && (
-                  <div className="p-2.5 bg-neutral-50 rounded-xl border border-neutral-200 space-y-1.5">
+                  <div className="p-2.5 bg-white rounded-xl border border-neutral-200 space-y-1.5">
                     <div className="text-[10px] font-bold text-neutral-500 uppercase">
-                      Click any sample image for {formCategory}:
+                      Click any photo to add to slider ({formCategory}):
                     </div>
                     <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                       {SAMPLE_IMAGE_PRESETS.filter(s => s.cat === formCategory).concat(
                         SAMPLE_IMAGE_PRESETS.filter(s => s.cat !== formCategory)
-                      ).slice(0, 6).map((sample, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setFormImage(sample.url)}
-                          className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer group ${
-                            formImage === sample.url 
-                              ? 'border-amber-500 ring-2 ring-amber-400/40' 
-                              : 'border-neutral-200 hover:border-neutral-400'
-                          }`}
-                          title={sample.label}
-                        >
-                          <img
-                            src={sample.url}
-                            alt={sample.label}
-                            width={80}
-                            height={80}
-                            loading="lazy"
-                            decoding="async"
-                            referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          />
-                          {formImage === sample.url && (
-                            <div className="absolute inset-0 bg-amber-500/30 flex items-center justify-center">
-                              <div className="w-5 h-5 rounded-full bg-amber-500 text-neutral-950 flex items-center justify-center">
-                                <Check className="w-3 h-3 stroke-[3]" />
+                      ).slice(0, 6).map((sample, idx) => {
+                        const isIncluded = formImages.includes(sample.url);
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => handleAddPresetImage(sample.url)}
+                            className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer group ${
+                              isIncluded
+                                ? 'border-amber-500 ring-2 ring-amber-400/40' 
+                                : 'border-neutral-200 hover:border-neutral-400'
+                            }`}
+                            title={`Add ${sample.label}`}
+                          >
+                            <img
+                              src={sample.url}
+                              alt={sample.label}
+                              width={80}
+                              height={80}
+                              loading="lazy"
+                              decoding="async"
+                              referrerPolicy="no-referrer"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                            {isIncluded && (
+                              <div className="absolute inset-0 bg-amber-500/30 flex items-center justify-center">
+                                <div className="w-5 h-5 rounded-full bg-amber-500 text-neutral-950 flex items-center justify-center">
+                                  <Check className="w-3 h-3 stroke-[3]" />
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </button>
-                      ))}
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
 
-                {/* Image Tab 3: URL Paste */}
+                {/* URL Paste Tab */}
                 {imageSourceTab === 'url' && (
-                  <div className="space-y-1.5">
-                    <input
-                      type="text"
-                      placeholder="Paste image link: https://..."
-                      value={formImage}
-                      onChange={(e) => setFormImage(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-neutral-300 focus:border-amber-500 outline-hidden font-mono text-[11px] bg-neutral-50/50"
-                      id="admin-form-image"
-                    />
+                  <div className="space-y-1.5 bg-white p-2.5 rounded-xl border border-neutral-200">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Paste image link: https://..."
+                        value={formImage}
+                        onChange={(e) => setFormImage(e.target.value)}
+                        className="flex-1 px-3 py-1.5 rounded-xl border border-neutral-300 focus:border-amber-500 outline-hidden font-mono text-[11px]"
+                        id="admin-form-image"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddUrlImage}
+                        className="px-3 py-1.5 rounded-xl bg-neutral-900 text-white text-xs font-bold hover:bg-neutral-800 transition-colors"
+                      >
+                        + Add Photo
+                      </button>
+                    </div>
                     <p className="text-[10px] text-neutral-400">
-                      You can paste any public image link from Unsplash, Imgur, or cloud storage.
+                      Paste any public image link and click "+ Add Photo".
                     </p>
                   </div>
                 )}
 
-                {/* Selected Image Preview Pill */}
-                {formImage && (
-                  <div className="flex items-center gap-3 p-2 bg-neutral-100/70 rounded-xl border border-neutral-200">
-                    <img
-                      src={formImage}
-                      alt="Preview"
-                      width={48}
-                      height={48}
-                      loading="lazy"
-                      decoding="async"
-                      referrerPolicy="no-referrer"
-                      className="w-12 h-12 rounded-lg object-cover bg-white shrink-0 border border-neutral-200"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <span className="text-[11px] font-bold text-neutral-800 block">
-                        Photo Ready
-                      </span>
-                      <span className="text-[10px] text-neutral-400 truncate block">
-                        {formImage.startsWith('data:') ? 'Custom uploaded image from device' : formImage}
-                      </span>
+                {/* Uploaded Photos Grid Preview */}
+                {formImages.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    <div className="text-[11px] font-bold text-neutral-700 flex items-center justify-between">
+                      <span>Uploaded Photos ({formImages.length}):</span>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="text-[11px] font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1 cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Upload 2nd / Another Photo</span>
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="px-2.5 py-1 rounded-lg bg-white border border-neutral-200 text-[11px] font-bold text-neutral-700 hover:bg-neutral-50 transition-colors"
-                    >
-                      Change
-                    </button>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {formImages.map((imgUrl, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`relative rounded-xl overflow-hidden border p-1 bg-white shadow-2xs group flex flex-col ${
+                            idx === 0 ? 'border-amber-500 ring-1 ring-amber-400' : 'border-neutral-200'
+                          }`}
+                        >
+                          <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-neutral-100">
+                            <img
+                              src={imgUrl}
+                              alt={`Photo ${idx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {/* Slide Number Badge */}
+                            <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-neutral-900/80 text-white backdrop-blur-xs">
+                              {idx === 0 ? '★ Main' : `#${idx + 1} Slide`}
+                            </div>
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveFormImage(idx)}
+                              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-xs cursor-pointer"
+                              title="Delete this photo"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          {idx !== 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleSetPrimaryImage(idx)}
+                              className="mt-1 text-[9px] font-bold text-amber-700 hover:text-amber-900 text-center py-0.5 cursor-pointer"
+                            >
+                              Set as Main Photo
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

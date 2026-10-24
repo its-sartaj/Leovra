@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShoppingBag, 
   MessageCircle, 
@@ -16,6 +16,16 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = false }) => {
+  const cardImages = (product.images && product.images.length > 0) ? product.images : [product.image];
+  const [cardImgIndex, setCardImgIndex] = useState(0);
+
+  useEffect(() => {
+    if (cardImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setCardImgIndex((prev) => (prev + 1) % cardImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [cardImages.length]);
   const { 
     addToCart, 
     setSelectedProduct, 
@@ -70,7 +80,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
       {/* Product Image Area - Clean Standard E-Commerce Ratio */}
       <div className="relative w-full h-44 sm:h-52 md:h-56 lg:h-60 xl:h-64 bg-neutral-100/90 overflow-hidden flex items-center justify-center">
         <img
-          src={product.image}
+          src={cardImages[cardImgIndex] || product.image}
           alt={`${product.name} - Buy online at Leovra Enterprises`}
           width={360}
           height={360}
@@ -86,6 +96,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
             isOutOfStock ? 'grayscale-40 contrast-95' : ''
           }`}
         />
+
+        {/* Multi-Photo Carousel Indicator */}
+        {cardImages.length > 1 && (
+          <div className="absolute bottom-2 right-2 z-10 px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-black/60 backdrop-blur-xs text-white shadow-xs flex items-center gap-1">
+            <span>{cardImgIndex + 1}/{cardImages.length}</span>
+            <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" />
+          </div>
+        )}
 
         {/* Top Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
