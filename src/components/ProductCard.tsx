@@ -67,14 +67,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
       }`}
       id={`product-card-${product.id}`}
     >
-      {/* Product Image Area */}
-      <div className="relative aspect-[4/5] w-full bg-neutral-100 overflow-hidden" style={{ aspectRatio: '4/5' }}>
+      {/* Product Image Area - Clean Standard E-Commerce Ratio */}
+      <div className="relative w-full h-44 sm:h-52 md:h-56 lg:h-60 xl:h-64 bg-neutral-100/90 overflow-hidden flex items-center justify-center">
         <img
           src={product.image}
           alt={`${product.name} - Buy online at Leovra Enterprises`}
-          width={400}
-          height={500}
-          style={{ aspectRatio: '4/5' }}
+          width={360}
+          height={360}
           referrerPolicy="no-referrer"
           decoding="async"
           loading={priority ? "eager" : "lazy"}

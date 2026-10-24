@@ -157,9 +157,9 @@ export const ProductGrid: React.FC = () => {
         </div>
       </div>
 
-      {/* Product Grid: 2-column on mobile phones for optimal e-commerce layout! */}
+      {/* Product Grid: Standard E-Commerce 2-col Mobile, 3-4 col Tablet, 5-col Desktop */}
       {sortedProducts.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-5 w-full" id="product-list-grid">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3.5 md:gap-4.5 w-full" id="product-list-grid">
           {sortedProducts.map((product) => (
             <ProductCard key={product.id} product={product} priority={false} />
           ))}
