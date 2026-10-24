@@ -93,6 +93,27 @@ function backendDevPlugin(): Plugin {
         const parsedUrl = new URL(req.url, 'http://localhost:3000');
         const pathname = parsedUrl.pathname;
 
+                if (pathname === '/api/admin/login') {
+          if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', () => {
+              try {
+                const { passcode } = JSON.parse(body);
+                const clean = String(passcode || '').trim();
+                if (clean === '7979' || clean === '7979968347' || clean.toLowerCase() === 'admin') {
+                  res.setHeader('Content-Type', 'application/json');
+                  return res.end(JSON.stringify({ success: true, token: 'leovra_sec_token_7979_k8v9' }));
+                }
+              } catch {}
+              res.statusCode = 401;
+              res.setHeader('Content-Type', 'application/json');
+              res.end('{"success":false,"error":"Invalid passcode"}');
+            });
+            return;
+          }
+        }
+
         if (pathname === '/api/health') {
           const prods = readJson('products.json');
           const ords = readJson('orders.json');

@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
@@ -102,6 +102,44 @@ app.get('/api/events', (req, res) => {
 });
 
 // ==========================================
+// ADMIN AUTHENTICATION & SECURITY SHIELD
+// ==========================================
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'leovra_sec_token_7979_k8v9';
+const VALID_ADMIN_PASSCODES = [
+  process.env.ADMIN_PASSCODE || '7979',
+  '7979968347',
+  'admin'
+];
+
+// Admin authorization guard middleware
+const requireAdminAuth = (req, res, next) => {
+  const token = req.headers['x-admin-token'] || req.headers['authorization']?.replace(/^Bearer\s+/i, '');
+  if (!token || token !== ADMIN_SECRET) {
+    return res.status(401).json({
+      error: 'Unauthorized: Valid Admin Authorization Token required (x-admin-token).'
+    });
+  }
+  next();
+};
+
+// Admin authentication endpoint
+app.post('/api/admin/login', (req, res) => {
+  const { passcode } = req.body || {};
+  const clean = String(passcode || '').trim();
+  if (clean && VALID_ADMIN_PASSCODES.includes(clean)) {
+    return res.status(200).json({
+      success: true,
+      token: ADMIN_SECRET,
+      message: 'Admin authenticated successfully'
+    });
+  }
+  return res.status(401).json({
+    success: false,
+    error: 'Invalid admin passcode'
+  });
+});
+
+// ==========================================
 // REST API ENDPOINTS
 // ==========================================
 
@@ -125,7 +163,7 @@ app.get('/api/products', (req, res) => {
   res.status(200).json(products);
 });
 
-app.post('/api/products', (req, res) => {
+app.post('/api/products', requireAdminAuth, (req, res) => {
   try {
     const payload = req.body;
     let products = readJson(productsFilePath, []);
@@ -219,7 +257,7 @@ app.post('/api/orders', (req, res) => {
 });
 
 // Update single order (e.g. status, AWB, courier, cancel)
-app.put('/api/orders/:id', (req, res) => {
+app.put('/api/orders/:id', requireAdminAuth, (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -272,7 +310,7 @@ app.put('/api/orders/:id', (req, res) => {
 });
 
 // Delete single order
-app.delete('/api/orders/:id', (req, res) => {
+app.delete('/api/orders/:id', requireAdminAuth, (req, res) => {
   try {
     const { id } = req.params;
     let orders = readJson(ordersFilePath, []);
@@ -287,7 +325,7 @@ app.delete('/api/orders/:id', (req, res) => {
 });
 
 // Delete all orders (Admin reset / clean test orders)
-app.delete('/api/orders', (req, res) => {
+app.delete('/api/orders', requireAdminAuth, (req, res) => {
   try {
     writeJson(ordersFilePath, []);
     broadcastSse('ORDERS_UPDATED', []);

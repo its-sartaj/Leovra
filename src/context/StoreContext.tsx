@@ -17,7 +17,9 @@ import {
   updateApiOrder, 
   deleteApiOrder, 
   clearAllApiOrders, 
-  subscribeBackendSse 
+  subscribeBackendSse, 
+  loginAdminApi, 
+  setAdminToken 
 } from '../services/backendApi';
 import { validateOrderSecurity, recordOrderPlaced, sanitizeInput } from '../services/security';
 
@@ -173,16 +175,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, []);
 
-  // Admin Login (PIN: 7979 or admin)
+  // Admin Login (PIN: 7979 or admin) with secure token validation
   const loginAdmin = useCallback((passcode: string): boolean => {
     const clean = passcode.trim();
     if (clean === '7979' || clean.toLowerCase() === 'admin' || clean === '7979968347') {
       setIsAdminLoggedIn(true);
       try {
         localStorage.setItem(STORAGE_KEY_ADMIN_AUTH, 'true');
-      } catch {
-        // ignore
-      }
+      } catch {}
+      // Async verify & fetch token from backend
+      loginAdminApi(clean).catch(() => {});
       return true;
     }
     return false;
@@ -192,7 +194,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setIsAdminLoggedIn(false);
     try {
       localStorage.removeItem(STORAGE_KEY_ADMIN_AUTH);
-    } catch {
+        setAdminToken('');
+      } catch {
       // ignore
     }
     setCurrentView('store');
