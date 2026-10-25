@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Product, CartItem, Order, FilterOptions, CustomerUser } from '../types';
-import { INITIAL_PRODUCTS } from '../data/initialProducts';
 import { 
   fetchRemoteProducts, 
   saveRemoteProducts, 
@@ -12,6 +11,7 @@ import {
 import { 
   fetchApiProducts, 
   saveApiProducts, 
+  deleteApiProduct,
   fetchApiOrders, 
   createApiOrder, 
   updateApiOrder, 
@@ -22,6 +22,67 @@ import {
   setAdminToken 
 } from '../services/backendApi';
 import { validateOrderSecurity, recordOrderPlaced, sanitizeInput } from '../services/security';
+
+export const STORAGE_VERSION = 'leovra_v3_clean_catalog';
+export const DUMMY_PRODUCT_IDS = new Set([
+  'prod-earring-1', 'prod-earring-2', 'prod-earring-3', 'prod-earring-4', 'prod-earring-5',
+  'prod-tshirt-1', 'prod-tshirt-2', 'prod-tshirt-3', 'prod-tshirt-4', 'prod-tshirt-5',
+  'prod-lower-1', 'prod-lower-2', 'prod-lower-3', 'prod-lower-4', 'prod-lower-5'
+]);
+
+export const runStorageMigration = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const existingVersion = localStorage.getItem('leovra_storage_version');
+    if (existingVersion !== STORAGE_VERSION) {
+      // 1. Purge legacy localStorage keys that carried dummy data
+      const legacyKeys = [
+        'leovra_products',
+        'leovra_products_v1',
+        'leovra_products_v2',
+        'leovra_products_ver_v1',
+        'leovra_products_ver_v2',
+        'leovra_orders_v1',
+        'leovra_orders_v2',
+        'leovra_orders_ver_v2'
+      ];
+      legacyKeys.forEach(k => {
+        try { localStorage.removeItem(k); } catch {}
+      });
+
+      // 2. Clear browser caches
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          keys.forEach(k => caches.delete(k));
+        }).catch(() => {});
+      }
+
+      // 3. Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          for (const reg of regs) {
+            reg.unregister();
+          }
+        }).catch(() => {});
+      }
+
+      // 4. Clear legacy IndexedDB databases
+      if ('indexedDB' in window && indexedDB.databases) {
+        indexedDB.databases().then(dbs => {
+          for (const db of dbs) {
+            if (db.name && (db.name.includes('leovra') || db.name.includes('firebase'))) {
+              try { indexedDB.deleteDatabase(db.name); } catch {}
+            }
+          }
+        }).catch(() => {});
+      }
+
+      localStorage.setItem('leovra_storage_version', STORAGE_VERSION);
+    }
+  } catch (err) {
+    console.warn('[Storage Migration Warning]:', err);
+  }
+};
 
 interface StoreContextType {
   products: Product[];
@@ -63,7 +124,6 @@ interface StoreContextType {
   removeProduct: (id: string) => void;
   toggleStockStatus: (id: string) => void;
   updateStockQuantity: (id: string, quantity: number) => void;
-  resetInventoryToDefaults: () => void;
 
   // Cart operations
   addToCart: (product: Product, size: string, color?: string, quantity?: number) => void;
@@ -102,11 +162,12 @@ interface StoreContextType {
   businessUpi: string;
 }
 
-const STORAGE_KEY_PRODUCTS = 'leovra_products_v2';
-const STORAGE_KEY_PRODUCTS_VER = 'leovra_products_ver_v2';
-const STORAGE_KEY_CART = 'leovra_cart_v2';
-const STORAGE_KEY_ORDERS = 'leovra_orders_v2';
-const STORAGE_KEY_ORDERS_VER = 'leovra_orders_ver_v2';
+const STORAGE_KEY_PRODUCTS = 'leovra_products_v3';
+const STORAGE_KEY_PRODUCTS_VER = 'leovra_products_ver_v3';
+const STORAGE_KEY_CART = 'leovra_cart_v3';
+const STORAGE_KEY_ORDERS = 'leovra_orders_v3';
+const STORAGE_KEY_ORDERS_VER = 'leovra_orders_ver_v3';
+const STORAGE_KEY_DELETED_IDS = 'leovra_deleted_product_ids_v1';
 const STORAGE_KEY_ADMIN_AUTH = 'leovra_admin_auth_v1';
 const STORAGE_KEY_CUSTOMER = 'leovra_customer_user_v1';
 const STORAGE_KEY_ALL_CUSTOMERS = 'leovra_all_customers_v1';
@@ -201,17 +262,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCurrentView('store');
   }, [setCurrentView]);
 
-  // Initialize products from localStorage or defaults
+  // Initialize products from persistent storage (never auto-seed dummy data)
   const [products, setProducts] = useState<Product[]>(() => {
     try {
+      runStorageMigration();
       const saved = localStorage.getItem(STORAGE_KEY_PRODUCTS);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
+        }
       }
     } catch {
       // Fallback
     }
-    return INITIAL_PRODUCTS;
+    return [];
   });
 
   // Cart state
@@ -246,16 +311,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const params = new URLSearchParams(window.location.search);
         const prodId = params.get('product') || params.get('id');
         if (prodId) {
-          let pool = INITIAL_PRODUCTS;
-          try {
-            const saved = localStorage.getItem(STORAGE_KEY_PRODUCTS);
-            if (saved) {
-              const parsed = JSON.parse(saved);
-              if (Array.isArray(parsed) && parsed.length > 0) pool = parsed;
+          const saved = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed)) {
+              const found = parsed.find(p => p && p.id === prodId && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
+              if (found) return found;
             }
-          } catch {}
-          const found = pool.find(p => p.id === prodId);
-          if (found) return found;
+          }
         }
       } catch {}
     }
@@ -456,30 +519,32 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Persist products and broadcast to other tabs + Firebase Realtime Database for GLOBAL REAL-TIME synchronization
   const saveProducts = useCallback((newProducts: Product[], skipBroadcast = false) => {
+    // Filter out any dummy products or deleted products
+    const filtered = newProducts.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
     const newVersion = Date.now();
     currentVersionRef.current = newVersion;
-    setProducts(newProducts);
+    setProducts(filtered);
     try {
-      localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(newProducts));
+      localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(filtered));
       localStorage.setItem(STORAGE_KEY_PRODUCTS_VER, String(newVersion));
     } catch (e) {
       console.warn('localStorage save warning:', e);
     }
 
     // 1. Express Node.js Backend API
-    saveApiProducts(newProducts).catch(() => {});
+    saveApiProducts(filtered).catch(() => {});
 
     // 2. Cloud Sync: Send to Firebase Realtime Database (syncs to all devices across internet)
-    saveRemoteProducts(newProducts).catch((err) => {
+    saveRemoteProducts(filtered).catch((err) => {
       console.warn('[Firebase] Save products error:', err);
     });
 
-    // 2. Send via persistent BroadcastChannel (for instant same-browser tabs)
+    // 3. Send via persistent BroadcastChannel (for instant same-browser tabs)
     if (!skipBroadcast && broadcastChannelRef.current) {
       try {
         broadcastChannelRef.current.postMessage({ 
           type: 'PRODUCTS_UPDATED', 
-          payload: newProducts, 
+          payload: filtered, 
           version: newVersion, 
           timestamp: newVersion 
         });
@@ -488,10 +553,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
 
-    // 3. Dispatch custom event for same-window / iframe components
+    // 4. Dispatch custom event for same-window / iframe components
     if (!skipBroadcast && typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('leovra_sync_products', { 
-        detail: { payload: newProducts, version: newVersion } 
+        detail: { payload: filtered, version: newVersion } 
       }));
     }
   }, []);
@@ -539,11 +604,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // 0. Connect to Express Node.js Backend API
     fetchApiProducts().then((apiProds) => {
-      if (apiProds && apiProds.length > 0) {
+      if (apiProds) {
+        const clean = apiProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
         currentVersionRef.current = Date.now();
-        setProducts(apiProds);
+        setProducts(clean);
         try {
-          localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(apiProds));
+          localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
         } catch {}
       }
     });
@@ -559,11 +625,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const unsubscribeBackendSse = subscribeBackendSse(
       (apiProds) => {
-        if (apiProds && apiProds.length > 0) {
+        if (apiProds) {
+          const clean = apiProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
           currentVersionRef.current = Date.now();
-          setProducts(apiProds);
+          setProducts(clean);
           try {
-            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(apiProds));
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
           } catch {}
           showToast('⚡ Live Inventory updated from server');
         }
@@ -590,8 +657,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             if (event.data.version && event.data.version <= currentVersionRef.current) {
               return; // Already processed
             }
+            const clean = event.data.payload.filter((p: Product) => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
             currentVersionRef.current = event.data.version || Date.now();
-            setProducts(event.data.payload);
+            setProducts(clean);
             showToast('⚡ Live Inventory updated in real time');
           } else if (event.data.type === 'ORDERS_UPDATED' && Array.isArray(event.data.payload)) {
             setOrders(event.data.payload);
@@ -608,10 +676,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         try {
           const parsed = JSON.parse(e.newValue);
           if (Array.isArray(parsed)) {
+            const clean = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
             const ver = Number(localStorage.getItem(STORAGE_KEY_PRODUCTS_VER) || Date.now());
             if (ver > currentVersionRef.current) {
               currentVersionRef.current = ver;
-              setProducts(parsed);
+              setProducts(clean);
               showToast('⚡ Live Inventory updated in real time');
             }
           }
@@ -638,8 +707,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (customEvent.detail.version && customEvent.detail.version <= currentVersionRef.current) {
           return;
         }
+        const clean = customEvent.detail.payload.filter((p: Product) => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
         currentVersionRef.current = customEvent.detail.version || Date.now();
-        setProducts(customEvent.detail.payload);
+        setProducts(clean);
       }
     };
     window.addEventListener('leovra_sync_products', handleCustomSync);
@@ -652,11 +722,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const initCloudSyncTimer = setTimeout(() => {
       fetchRemoteProducts()
         .then((remoteProds) => {
-          if (remoteProds && remoteProds.length > 0) {
+          if (remoteProds) {
+            const clean = remoteProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
             currentVersionRef.current = Date.now();
-            setProducts(remoteProds);
+            setProducts(clean);
             try {
-              localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
+              localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
             } catch {
               // ignore
             }
@@ -667,11 +738,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         });
 
       unsubscribeProducts = subscribeRemoteProducts((remoteProds) => {
-        if (remoteProds && remoteProds.length > 0) {
+        if (remoteProds) {
+          const clean = remoteProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
           currentVersionRef.current = Date.now();
-          setProducts(remoteProds);
+          setProducts(clean);
           try {
-            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(remoteProds));
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
           } catch {
             // ignore
           }
@@ -774,6 +846,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [saveProducts, showToast]);
 
   const removeProduct = useCallback((id: string) => {
+    // Record deletion tombstone in local storage
+    try {
+      const deletedList: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY_DELETED_IDS) || '[]');
+      if (!deletedList.includes(id)) {
+        deletedList.push(id);
+        localStorage.setItem(STORAGE_KEY_DELETED_IDS, JSON.stringify(deletedList));
+      }
+    } catch {}
+
+    // Call backend DELETE API
+    deleteApiProduct(id).catch(() => {});
+
     setProducts((prev) => {
       const target = prev.find(p => p.id === id);
       const updated = prev.filter((p) => p.id !== id);
@@ -835,11 +919,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return updated;
     });
     showToast(`Stock updated to ${safeQty} units`);
-  }, [saveProducts, showToast]);
-
-  const resetInventoryToDefaults = useCallback(() => {
-    saveProducts(INITIAL_PRODUCTS);
-    showToast('Inventory reset to original catalog items.');
   }, [saveProducts, showToast]);
 
   // Cart Actions
@@ -1242,7 +1321,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         removeProduct,
         toggleStockStatus,
         updateStockQuantity,
-        resetInventoryToDefaults,
         addToCart,
         removeFromCart,
         updateCartQuantity,

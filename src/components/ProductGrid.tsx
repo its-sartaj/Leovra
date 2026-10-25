@@ -158,14 +158,28 @@ export const ProductGrid: React.FC = () => {
       </div>
 
       {/* Product Grid: Standard E-Commerce 2-col Mobile, 3-4 col Tablet, 5-col Desktop */}
-      {sortedProducts.length > 0 ? (
+      {products.length === 0 ? (
+        /* Store Catalog Empty State */
+        <div className="bg-white rounded-2xl border border-neutral-200 p-12 text-center space-y-4 max-w-lg mx-auto shadow-xs my-8" id="empty-catalog-state">
+          <div className="w-16 h-16 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600">
+            <SlidersHorizontal className="w-8 h-8" />
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-xl font-extrabold text-neutral-900 tracking-tight">No products yet</h3>
+            <p className="text-xs text-amber-800 font-semibold">नया कलेक्शन जल्द ही उपलब्ध होगा</p>
+            <p className="text-xs text-neutral-500 max-w-sm mx-auto leading-relaxed pt-1">
+              Our curated catalog is currently being updated with fresh arrivals. Please check back soon or contact us directly on WhatsApp for custom orders.
+            </p>
+          </div>
+        </div>
+      ) : sortedProducts.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3.5 md:gap-4.5 w-full" id="product-list-grid">
           {sortedProducts.map((product) => (
             <ProductCard key={product.id} product={product} priority={false} />
           ))}
         </div>
       ) : (
-        /* Empty State */
+        /* Filter / Search Empty State */
         <div className="bg-white rounded-2xl border border-neutral-200 p-10 text-center space-y-4 max-w-md mx-auto">
           <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mx-auto text-neutral-400">
             <SlidersHorizontal className="w-8 h-8" />

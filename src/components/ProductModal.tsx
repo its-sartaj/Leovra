@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { estimateDeliveryByPincode, PincodeEstimation } from '../services/shiprocket';
+import { PRODUCT_FALLBACK_PLACEHOLDER } from '../types';
 
 export const ProductModal: React.FC = () => {
   const { 
@@ -133,7 +134,7 @@ export const ProductModal: React.FC = () => {
             decoding="async"
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.webp`;
+              e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
             }}
             className={`w-full h-full object-cover object-center transition-all duration-300 ease-out ${
               isOutOfStock ? 'grayscale-40' : ''
@@ -235,9 +236,9 @@ export const ProductModal: React.FC = () => {
             {/* Category and Rating */}
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
-                {selectedProduct.category === 'earrings' && 'Artisanal Jewellery / शाही ज्वेलरी'}
-                {selectedProduct.category === 'tshirts' && 'Streetwear T-Shirt / टी-शर्ट'}
-                {selectedProduct.category === 'lowers' && 'Trackpants & Lowers / लोअर'}
+                {selectedProduct.category === 'earrings' && (selectedProduct.subcategory ? `Jewellery • ${selectedProduct.subcategory}` : 'Artisanal Jewellery / शाही ज्वेलरी')}
+                {selectedProduct.category === 'tshirts' && (selectedProduct.subcategory ? `Streetwear • ${selectedProduct.subcategory}` : 'Streetwear T-Shirt / टी-शर्ट')}
+                {selectedProduct.category === 'lowers' && (selectedProduct.subcategory ? `Lowers • ${selectedProduct.subcategory}` : 'Trackpants & Lowers / लोअर')}
               </span>
               <div className="flex items-center gap-1 text-xs font-semibold text-neutral-700">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />

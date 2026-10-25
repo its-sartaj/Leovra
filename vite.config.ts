@@ -124,8 +124,10 @@ function backendDevPlugin(): Plugin {
         if (pathname === '/api/products') {
           if (req.method === 'GET') {
             const prods = readJson('products.json');
+            const deletedIds = new Set(readJson('deleted_products.json', []));
+            const activeProds = (prods || []).filter((p: any) => p && !deletedIds.has(p.id) && !p.deletedAt);
             res.setHeader('Content-Type', 'application/json');
-            return res.end(JSON.stringify(prods));
+            return res.end(JSON.stringify(activeProds));
           } else if (req.method === 'POST') {
             let body = '';
             req.on('data', chunk => body += chunk);
@@ -133,15 +135,33 @@ function backendDevPlugin(): Plugin {
               try {
                 const parsed = JSON.parse(body);
                 if (Array.isArray(parsed)) {
-                  writeJson('products.json', parsed);
+                  const deletedIds = new Set(readJson('deleted_products.json', []));
+                  const cleanProds = parsed.filter((p: any) => p && !deletedIds.has(p.id) && !p.deletedAt);
+                  writeJson('products.json', cleanProds);
                   res.setHeader('Content-Type', 'application/json');
-                  return res.end(JSON.stringify({ success: true, count: parsed.length }));
+                  return res.end(JSON.stringify({ success: true, count: cleanProds.length }));
                 }
               } catch {}
               res.statusCode = 400;
               res.end('{"error":"Invalid payload"}');
             });
             return;
+          }
+        }
+
+        if (pathname.startsWith('/api/products/')) {
+          const prodId = pathname.replace('/api/products/', '');
+          if (req.method === 'DELETE') {
+            let prods = readJson('products.json');
+            prods = prods.filter((p: any) => p.id !== prodId);
+            writeJson('products.json', prods);
+            let deletedIds = readJson('deleted_products.json', []);
+            if (!deletedIds.includes(prodId)) {
+              deletedIds.push(prodId);
+              writeJson('deleted_products.json', deletedIds);
+            }
+            res.setHeader('Content-Type', 'application/json');
+            return res.end(JSON.stringify({ success: true, message: `Product #${prodId} deleted` }));
           }
         }
 

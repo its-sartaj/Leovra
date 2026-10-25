@@ -82,7 +82,7 @@ export const fetchApiProducts = async (): Promise<Product[] | null> => {
     const res = await fetch('/api/products', { method: 'GET', headers: { 'Accept': 'application/json' } });
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         backendOnline = true;
         return data;
       }
@@ -94,14 +94,36 @@ export const fetchApiProducts = async (): Promise<Product[] | null> => {
 };
 
 /**
- * Save products catalog to Express backend
+ * Save products catalog to Express backend (requires admin token)
  */
 export const saveApiProducts = async (products: Product[]): Promise<boolean> => {
   try {
     const res = await fetch('/api/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-admin-token': getAdminToken(),
+      },
       body: JSON.stringify(products),
+    });
+    if (res.ok) {
+      backendOnline = true;
+      return true;
+    }
+  } catch {
+    // Offline / static
+  }
+  return false;
+};
+
+/**
+ * Permanently delete a product on Express backend
+ */
+export const deleteApiProduct = async (productId: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`/api/products/${encodeURIComponent(productId)}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-token': getAdminToken() },
     });
     if (res.ok) {
       backendOnline = true;

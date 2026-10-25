@@ -7,7 +7,7 @@ import {
   Star, 
   Eye
 } from 'lucide-react';
-import { Product } from '../types';
+import { Product, PRODUCT_FALLBACK_PLACEHOLDER } from '../types';
 import { useStore } from '../context/StoreContext';
 
 interface ProductCardProps {
@@ -90,7 +90,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
           fetchPriority={priority ? "high" : "auto"}
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = `${import.meta.env.BASE_URL}hero-earring.webp`;
+            e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
           }}
           className={`w-full h-full object-cover object-center transition-transform duration-300 transform-gpu group-hover:scale-105 ${
             isOutOfStock ? 'grayscale-40 contrast-95' : ''
@@ -153,9 +153,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
           {/* Category & Rating */}
           <div className="flex items-center justify-between text-[10px] sm:text-xs text-neutral-500 mb-0.5">
             <span className="font-bold uppercase tracking-wider text-[9px] sm:text-[10px] text-amber-700 truncate max-w-[65%]">
-              {product.category === 'earrings' && 'Jewellery'}
-              {product.category === 'tshirts' && 'T-Shirt'}
-              {product.category === 'lowers' && 'Lower'}
+              {product.category === 'earrings' && (product.subcategory ? `Jewellery • ${product.subcategory}` : 'Jewellery')}
+              {product.category === 'tshirts' && (product.subcategory ? `T-Shirt • ${product.subcategory}` : 'T-Shirt')}
+              {product.category === 'lowers' && (product.subcategory ? `Lower • ${product.subcategory}` : 'Lower')}
             </span>
             <div className="flex items-center gap-0.5 font-semibold text-neutral-700">
               <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />

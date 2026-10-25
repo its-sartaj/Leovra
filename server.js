@@ -28,6 +28,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Canonical host redirect (removes trailing dot like loevraenterprises.publicvm.com. to prevent origin splitting)
+app.use((req, res, next) => {
+  const host = req.headers.host || '';
+  const hostParts = host.split(':');
+  const hostname = hostParts[0];
+  const portPart = hostParts.length > 1 ? `:${hostParts[1]}` : '';
+  if (hostname.endsWith('.')) {
+    const cleanHostname = hostname.replace(/\.+$/, '');
+    const proto = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    return res.redirect(301, `${proto}://${cleanHostname}${portPart}${req.originalUrl}`);
+  }
+  next();
+});
+
 // ==========================================
 // PERSISTENT DATA STORAGE LAYER (server-data/)
 // ==========================================
@@ -39,6 +53,7 @@ if (!fs.existsSync(dataDir)) {
 const productsFilePath = path.join(dataDir, 'products.json');
 const ordersFilePath = path.join(dataDir, 'orders.json');
 const customersFilePath = path.join(dataDir, 'customers.json');
+const deletedProductsFilePath = path.join(dataDir, 'deleted_products.json');
 
 const readJson = (filePath, defaultValue = []) => {
   try {
@@ -160,19 +175,24 @@ app.get(['/healthz', '/api/health'], (req, res) => {
 // 1. PRODUCTS API
 app.get('/api/products', (req, res) => {
   const products = readJson(productsFilePath, []);
-  res.status(200).json(products);
+  const deletedIds = new Set(readJson(deletedProductsFilePath, []));
+  const activeProducts = products.filter(p => p && !deletedIds.has(p.id) && !p.deletedAt);
+  res.status(200).json(activeProducts);
 });
 
 app.post('/api/products', requireAdminAuth, (req, res) => {
   try {
     const payload = req.body;
     let products = readJson(productsFilePath, []);
+    const deletedIds = new Set(readJson(deletedProductsFilePath, []));
 
     if (Array.isArray(payload)) {
-      // Full catalog sync / replacement
-      products = payload;
+      // Full catalog sync / replacement: exclude permanently deleted products
+      products = payload.filter(p => p && !deletedIds.has(p.id) && !p.deletedAt);
     } else if (payload && typeof payload === 'object' && payload.name) {
-      // Single product add or update
+      if (deletedIds.has(payload.id)) {
+        return res.status(400).json({ error: 'This product has been permanently deleted' });
+      }
       const existingIdx = products.findIndex((p) => p.id === payload.id);
       if (existingIdx >= 0) {
         products[existingIdx] = { ...products[existingIdx], ...payload };
@@ -194,6 +214,28 @@ app.post('/api/products', requireAdminAuth, (req, res) => {
   } catch (err) {
     console.error('[API Products Error]:', err);
     res.status(500).json({ error: 'Failed to save products' });
+  }
+});
+
+app.delete('/api/products/:id', requireAdminAuth, (req, res) => {
+  try {
+    const { id } = req.params;
+    let products = readJson(productsFilePath, []);
+    products = products.filter((p) => p.id !== id);
+    writeJson(productsFilePath, products);
+
+    // Record tombstone so it can never be resurrected
+    let deletedIds = readJson(deletedProductsFilePath, []);
+    if (!deletedIds.includes(id)) {
+      deletedIds.push(id);
+      writeJson(deletedProductsFilePath, deletedIds);
+    }
+
+    broadcastSse('PRODUCTS_UPDATED', products);
+    res.status(200).json({ success: true, message: `Product #${id} permanently deleted` });
+  } catch (err) {
+    console.error('[API Delete Product Error]:', err);
+    res.status(500).json({ error: 'Failed to delete product' });
   }
 });
 

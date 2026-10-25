@@ -32,7 +32,7 @@ import {
   Undo2
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { Product, ProductCategory, Order } from '../types';
+import { Product, ProductCategory, Order, PRODUCT_FALLBACK_PLACEHOLDER } from '../types';
 import { Logo } from './Logo';
 import { 
   SHIPROCKET_CONFIG, 
@@ -45,55 +45,6 @@ import {
   clearAdminLockout 
 } from '../services/security';
 
-// Preset high quality images for quick 1-click photo selection when adding product
-const SAMPLE_IMAGE_PRESETS: { label: string; cat: ProductCategory; url: string }[] = [
-  {
-    label: 'Oxidized Silver Jhumka',
-    cat: 'earrings',
-    url: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: 'Gold Kundan Chandelier',
-    cat: 'earrings',
-    url: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: 'Modern Minimal Studs',
-    cat: 'earrings',
-    url: 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: 'Oversized Streetwear Black Tee',
-    cat: 'tshirts',
-    url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: 'Supima Cotton White Tee',
-    cat: 'tshirts',
-    url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: 'Acid Wash Boxy Tee',
-    cat: 'tshirts',
-    url: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: 'Cargo Joggers with Pockets',
-    cat: 'lowers',
-    url: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: 'French Terry Trackpants',
-    cat: 'lowers',
-    url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    label: '4-Way Stretch Training Lower',
-    cat: 'lowers',
-    url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80',
-  },
-];
-
 export const AdminDashboard: React.FC = () => {
   const { 
     products, 
@@ -102,7 +53,6 @@ export const AdminDashboard: React.FC = () => {
     removeProduct, 
     toggleStockStatus, 
     updateStockQuantity, 
-    resetInventoryToDefaults,
     setCurrentView,
     orders,
     updateOrderStatus,
@@ -217,9 +167,10 @@ export const AdminDashboard: React.FC = () => {
   // Form State for Adding / Editing Product
   const [formName, setFormName] = useState('');
   const [formCategory, setFormCategory] = useState<ProductCategory>('earrings');
-  const [formPrice, setFormPrice] = useState<string>('399');
-  const [formOriginalPrice, setFormOriginalPrice] = useState<string>('799');
-  const [formStock, setFormStock] = useState<string>('12');
+  const [formSubcategory, setFormSubcategory] = useState<string>('Necklace');
+  const [formPrice, setFormPrice] = useState<string>('99');
+  const [formOriginalPrice, setFormOriginalPrice] = useState<string>('299');
+  const [formStock, setFormStock] = useState<string>('10');
   const [formDescription, setFormDescription] = useState('');
   const [formImage, setFormImage] = useState('');
   const [formImages, setFormImages] = useState<string[]>([]);
@@ -227,7 +178,7 @@ export const AdminDashboard: React.FC = () => {
   const [formSizes, setFormSizes] = useState<string[]>(['Free Size']);
   const [customSizeInput, setCustomSizeInput] = useState('');
   const [formError, setFormError] = useState('');
-  const [imageSourceTab, setImageSourceTab] = useState<'device' | 'presets' | 'url'>('device');
+  const [imageSourceTab, setImageSourceTab] = useState<'device' | 'url'>('device');
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -259,13 +210,13 @@ export const AdminDashboard: React.FC = () => {
     setEditingProduct(null);
     setFormName('');
     setFormCategory('earrings');
-    setFormPrice('399');
-    setFormOriginalPrice('799');
-    setFormStock('12');
-    setFormDescription('Handcrafted with premium materials. Long-lasting polish, anti-allergic finish, and lightweight comfort.');
-    const def = SAMPLE_IMAGE_PRESETS[0].url;
-    setFormImage(def);
-    setFormImages([def]);
+    setFormSubcategory('Necklace');
+    setFormPrice('99');
+    setFormOriginalPrice('299');
+    setFormStock('10');
+    setFormDescription('Handcrafted luxury jewellery with high quality finish and long lasting shine.');
+    setFormImage('');
+    setFormImages([]);
     setFormTag('New');
     setFormSizes(['Free Size']);
     setFormError('');
@@ -278,6 +229,7 @@ export const AdminDashboard: React.FC = () => {
     setEditingProduct(p);
     setFormName(p.name);
     setFormCategory(p.category);
+    setFormSubcategory(p.subcategory || (p.category === 'earrings' ? 'Necklace' : 'Standard'));
     setFormPrice(String(p.price));
     setFormOriginalPrice(String(p.originalPrice));
     setFormStock(String(p.stock));
@@ -353,14 +305,6 @@ export const AdminDashboard: React.FC = () => {
     });
   };
 
-  const handleAddPresetImage = (url: string) => {
-    setFormImages((prev) => {
-      if (prev.includes(url)) return prev;
-      return [...prev, url];
-    });
-    setFormImage(url);
-  };
-
   const handleAddUrlImage = () => {
     if (formImage.trim() && !formImages.includes(formImage.trim())) {
       setFormImages((prev) => [...prev, formImage.trim()]);
@@ -386,16 +330,20 @@ export const AdminDashboard: React.FC = () => {
     const parsedOriginal = isNaN(origPriceNum) || origPriceNum <= priceNum ? Math.round(priceNum * 1.5) : origPriceNum;
     const stockNum = isNaN(Number(formStock)) ? 10 : Math.max(0, parseInt(formStock, 10));
 
-    // Fallback image if left blank
+    // Clean primary image
     const validImages = formImages.filter(img => img && img.trim().length > 0);
-    const fallbackImage = SAMPLE_IMAGE_PRESETS.find(p => p.cat === formCategory)?.url || SAMPLE_IMAGE_PRESETS[0].url;
-    const finalPrimaryImage = validImages[0] || formImage.trim() || fallbackImage;
+    const finalPrimaryImage = validImages[0] || formImage.trim() || PRODUCT_FALLBACK_PLACEHOLDER;
     const finalImagesList = validImages.length > 0 ? validImages : [finalPrimaryImage];
+
+    const subcategoryVal = formCategory === 'earrings' 
+      ? (formSubcategory.trim() || 'Necklace')
+      : (formSubcategory.trim() || undefined);
 
     if (editingProduct) {
       updateProduct(editingProduct.id, {
         name: formName.trim(),
         category: formCategory,
+        subcategory: subcategoryVal,
         price: priceNum,
         originalPrice: parsedOriginal,
         stock: stockNum,
@@ -405,13 +353,13 @@ export const AdminDashboard: React.FC = () => {
         images: finalImagesList,
         tag: (formTag as any) || undefined,
         sizes: formSizes.length > 0 ? formSizes : ['Free Size'],
-        // Preserve existing colors when editing (form has no colors field)
         colors: editingProduct.colors,
       });
     } else {
       addProduct({
         name: formName.trim(),
         category: formCategory,
+        subcategory: subcategoryVal,
         price: priceNum,
         originalPrice: parsedOriginal,
         stock: stockNum,
@@ -440,20 +388,20 @@ export const AdminDashboard: React.FC = () => {
     // Auto-suggest smart defaults if starting new product
     if (!editingProduct) {
       if (cat === 'earrings') {
+        setFormSubcategory('Necklace');
         setFormSizes(['Free Size']);
-        setFormPrice('399');
-        setFormOriginalPrice('799');
-        setFormImage(SAMPLE_IMAGE_PRESETS[0].url);
+        setFormPrice('99');
+        setFormOriginalPrice('299');
       } else if (cat === 'tshirts') {
+        setFormSubcategory('Oversized Tee');
         setFormSizes(['S', 'M', 'L', 'XL']);
         setFormPrice('599');
         setFormOriginalPrice('1199');
-        setFormImage(SAMPLE_IMAGE_PRESETS[3].url);
       } else if (cat === 'lowers') {
+        setFormSubcategory('Cargo Joggers');
         setFormSizes(['M', 'L', 'XL', 'XXL']);
         setFormPrice('699');
         setFormOriginalPrice('1399');
-        setFormImage(SAMPLE_IMAGE_PRESETS[6].url);
       }
     } else {
       // If editing, adjust sizes if empty
@@ -600,13 +548,14 @@ export const AdminDashboard: React.FC = () => {
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <a
-            href={import.meta.env.BASE_URL || './'}
+            href="./"
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => {
               e.preventDefault();
-              const baseUrl = window.location.origin + (import.meta.env.BASE_URL || '/');
-              window.open(baseUrl, '_blank');
+              const origin = window.location.origin.replace(/\.+$/, '');
+              const cleanBase = (import.meta.env.BASE_URL || '/').replace(/^\.?\//, '/');
+              window.open(`${origin}${cleanBase}`, '_blank');
             }}
             className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold text-xs transition-colors cursor-pointer"
             title="Open customer website in a separate tab to test real-time stock updates side-by-side"
@@ -742,15 +691,6 @@ export const AdminDashboard: React.FC = () => {
           <span>Shiprocket Logistics</span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-0.5" title="Shiprocket Connected" />
         </button>
-
-        <button
-          onClick={resetInventoryToDefaults}
-          className="ml-auto text-xs font-semibold text-neutral-500 hover:text-rose-600 p-2 rounded-lg hover:bg-neutral-100 transition-colors inline-flex items-center gap-1"
-          title="Reset back to standard initial products"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Reset Default Catalog</span>
-        </button>
       </div>
 
       {/* Main Content Area */}
@@ -820,7 +760,29 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Product Items Table / Cards */}
-          {filteredProducts.length === 0 ? (
+          {products.length === 0 ? (
+            <div className="py-16 text-center space-y-4 max-w-md mx-auto" id="admin-empty-catalog-state">
+              <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600">
+                <Package className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base sm:text-lg font-bold text-neutral-900">Add your first product</h3>
+                <p className="text-xs text-neutral-500">
+                  Your store catalog is currently empty. Add your real products with pricing, photos, and stock to start selling across India.
+                </p>
+              </div>
+              <div className="pt-2">
+                <button
+                  onClick={openAddModal}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-md transition-all cursor-pointer"
+                  id="admin-add-first-product-btn"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add First Product</span>
+                </button>
+              </div>
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className="py-12 text-center text-neutral-400 space-y-2">
               <Package className="w-8 h-8 mx-auto text-neutral-300" />
               <p className="text-xs">No products match your search or filter.</p>
@@ -840,19 +802,27 @@ export const AdminDashboard: React.FC = () => {
                     {/* Left: Thumbnail & Name & Category */}
                     <div className="flex items-center gap-3 w-full md:w-auto md:min-w-[260px] max-w-md">
                       <img
-                        src={product.image}
+                        src={product.image || PRODUCT_FALLBACK_PLACEHOLDER}
                         alt={product.name}
                         width={56}
                         height={64}
                         loading="lazy"
                         decoding="async"
                         referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
+                        }}
                         className="w-14 h-16 rounded-xl object-cover bg-neutral-100 shrink-0 border border-neutral-200 shadow-2xs"
                       />
                       <div className="space-y-1 flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-700">
-                            {product.category}
+                            {product.category === 'earrings' 
+                              ? (product.subcategory ? `Jewellery • ${product.subcategory}` : 'Jewellery')
+                              : product.category === 'tshirts'
+                              ? (product.subcategory ? `T-Shirts • ${product.subcategory}` : 'T-Shirts')
+                              : (product.subcategory ? `Lowers • ${product.subcategory}` : 'Lowers')}
                           </span>
                           {product.tag && (
                             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
@@ -1698,6 +1668,73 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
+              {/* Subcategory selector */}
+              <div>
+                <label className="block font-bold text-neutral-700 mb-1.5">
+                  Subcategory (विशिष्ट प्रकार)
+                </label>
+                {formCategory === 'earrings' ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Necklace', 'Earrings & Jhumkas', 'Bangles & Bracelets', 'Rings', 'Pendants', 'Anklets', 'Other'].map((sub) => (
+                      <button
+                        key={sub}
+                        type="button"
+                        onClick={() => setFormSubcategory(sub)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                          formSubcategory === sub
+                            ? 'bg-amber-500 text-neutral-950 border-amber-600 font-bold shadow-2xs'
+                            : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                        }`}
+                      >
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                ) : formCategory === 'tshirts' ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Oversized Tee', 'Polo T-Shirt', 'Classic Crewneck', 'Graphic Streetwear', 'Sleeveless / Tank', 'Other'].map((sub) => (
+                      <button
+                        key={sub}
+                        type="button"
+                        onClick={() => setFormSubcategory(sub)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                          formSubcategory === sub
+                            ? 'bg-amber-500 text-neutral-950 border-amber-600 font-bold shadow-2xs'
+                            : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                        }`}
+                      >
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Cargo Joggers', 'Trackpants', 'Gym & Running Lower', 'Chino Casual Lower', 'Shorts', 'Other'].map((sub) => (
+                      <button
+                        key={sub}
+                        type="button"
+                        onClick={() => setFormSubcategory(sub)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                          formSubcategory === sub
+                            ? 'bg-amber-500 text-neutral-950 border-amber-600 font-bold shadow-2xs'
+                            : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                        }`}
+                      >
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <input
+                  type="text"
+                  placeholder="Or enter custom subcategory (e.g. Necklace, Choker, etc.)..."
+                  value={formSubcategory}
+                  onChange={(e) => setFormSubcategory(e.target.value)}
+                  className="mt-2 w-full px-3 py-1.5 rounded-xl border border-neutral-300 text-xs font-medium focus:border-amber-500 outline-hidden bg-neutral-50/50"
+                  id="admin-form-subcategory"
+                />
+              </div>
+
               {/* Pricing & Stock Row */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
@@ -1830,12 +1867,12 @@ export const AdminDashboard: React.FC = () => {
                     </span>
                   </div>
                   
-                  {/* Tabs: Device / Presets / URL */}
+                  {/* Tabs: Device / URL */}
                   <div className="flex items-center bg-white border border-neutral-200 p-0.5 rounded-lg text-[11px] font-semibold">
                     <button
                       type="button"
                       onClick={() => setImageSourceTab('device')}
-                      className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                         imageSourceTab === 'device' ? 'bg-neutral-900 text-white font-bold shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
                       }`}
                     >
@@ -1843,17 +1880,8 @@ export const AdminDashboard: React.FC = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setImageSourceTab('presets')}
-                      className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
-                        imageSourceTab === 'presets' ? 'bg-neutral-900 text-white font-bold shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
-                      }`}
-                    >
-                      Sample Photos
-                    </button>
-                    <button
-                      type="button"
                       onClick={() => setImageSourceTab('url')}
-                      className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                         imageSourceTab === 'url' ? 'bg-neutral-900 text-white font-bold shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
                       }`}
                     >
@@ -1899,53 +1927,6 @@ export const AdminDashboard: React.FC = () => {
                       <p className="text-[10px] text-neutral-500">
                         Supports phone gallery photos, JPG, PNG or WebP (select 1 or multiple)
                       </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Presets Tab */}
-                {imageSourceTab === 'presets' && (
-                  <div className="p-2.5 bg-white rounded-xl border border-neutral-200 space-y-1.5">
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase">
-                      Click any photo to add to slider ({formCategory}):
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                      {SAMPLE_IMAGE_PRESETS.filter(s => s.cat === formCategory).concat(
-                        SAMPLE_IMAGE_PRESETS.filter(s => s.cat !== formCategory)
-                      ).slice(0, 6).map((sample, idx) => {
-                        const isIncluded = formImages.includes(sample.url);
-                        return (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => handleAddPresetImage(sample.url)}
-                            className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer group ${
-                              isIncluded
-                                ? 'border-amber-500 ring-2 ring-amber-400/40' 
-                                : 'border-neutral-200 hover:border-neutral-400'
-                            }`}
-                            title={`Add ${sample.label}`}
-                          >
-                            <img
-                              src={sample.url}
-                              alt={sample.label}
-                              width={80}
-                              height={80}
-                              loading="lazy"
-                              decoding="async"
-                              referrerPolicy="no-referrer"
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                            />
-                            {isIncluded && (
-                              <div className="absolute inset-0 bg-amber-500/30 flex items-center justify-center">
-                                <div className="w-5 h-5 rounded-full bg-amber-500 text-neutral-950 flex items-center justify-center">
-                                  <Check className="w-3 h-3 stroke-[3]" />
-                                </div>
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
                     </div>
                   </div>
                 )}

@@ -17,8 +17,8 @@ export const fetchRemoteProducts = async (): Promise<Product[] | null> => {
     } else if (typeof data === 'object') {
       list = Object.values(data);
     }
-    const valid = list.filter((p) => p && typeof p === 'object' && typeof p.id === 'string' && typeof p.name === 'string');
-    return valid.length > 0 ? valid : null;
+    const valid = list.filter((p) => p && typeof p === 'object' && typeof p.id === 'string' && typeof p.name === 'string' && !p.deletedAt);
+    return valid;
   } catch (err) {
     return null;
   }
