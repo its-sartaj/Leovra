@@ -714,84 +714,101 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
     window.addEventListener('leovra_sync_products', handleCustomSync);
 
-    // 4. Firebase Cloud Realtime Database: Deferred background sync
-    // Defers network connection by 3s to keep LCP, FCP, and TBT fast on mobile devices
+    // 4. Firebase Cloud Realtime Database: Instant Two-Way Sync for Customers & Sellers
     let unsubscribeProducts: (() => void) | null = null;
     let unsubscribeOrders: (() => void) | null = null;
 
-    const initCloudSyncTimer = setTimeout(() => {
-      fetchRemoteProducts()
-        .then((remoteProds) => {
-          if (remoteProds && remoteProds.length > 0) {
-            const clean = remoteProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
-            if (clean.length > 0) {
-              currentVersionRef.current = Date.now();
-              setProducts(clean);
-              try {
-                localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
-              } catch {
-                // ignore
-              }
+    // Fetch products immediately on app load (0ms delay) so customers see products right away without any login
+    const syncCloudData = async () => {
+      try {
+        const remoteProds = await fetchRemoteProducts();
+        
+        let localProds: Product[] = [];
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              localProds = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
             }
           }
-        })
-        .catch((err) => {
-          console.warn('[Firebase] Remote products sync deferred/offline:', err);
-        });
+        } catch {}
 
-      unsubscribeProducts = subscribeRemoteProducts((remoteProds) => {
-        if (remoteProds) {
-          const clean = remoteProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
+        const cleanRemote = (remoteProds || []).filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
+
+        // Check if this device has any locally added products that are missing from Firebase Cloud
+        const remoteIdMap = new Map(cleanRemote.map(p => [p.id, p]));
+        const missingInRemote = localProds.filter(p => !remoteIdMap.has(p.id));
+
+        if (missingInRemote.length > 0) {
+          // Auto-sync: Push missing local products (added from Admin) directly to Firebase Cloud!
+          const merged = [...missingInRemote, ...cleanRemote];
+          currentVersionRef.current = Date.now();
+          setProducts(merged);
+          try {
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(merged));
+            localStorage.setItem(STORAGE_KEY_PRODUCTS_VER, String(currentVersionRef.current));
+          } catch {}
+          saveRemoteProducts(merged).catch(() => {});
+        } else if (cleanRemote.length > 0) {
+          currentVersionRef.current = Date.now();
+          setProducts(cleanRemote);
+          try {
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(cleanRemote));
+            localStorage.setItem(STORAGE_KEY_PRODUCTS_VER, String(currentVersionRef.current));
+          } catch {}
+        }
+      } catch (err) {
+        console.warn('[Firebase] Immediate products sync error:', err);
+      }
+    };
+
+    // Execute immediately on load
+    syncCloudData();
+
+    // Subscribe to instant real-time push updates from Firebase Cloud
+    unsubscribeProducts = subscribeRemoteProducts((remoteProds) => {
+      if (remoteProds && remoteProds.length > 0) {
+        const clean = remoteProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
+        if (clean.length > 0) {
           currentVersionRef.current = Date.now();
           setProducts(clean);
           try {
             localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
-          } catch {
-            // ignore
-          }
-          showToast('⚡ Live Inventory updated in real time');
+          } catch {}
         }
-      });
-
-      // Only sync orders if admin is active or customer has placed orders
-      let isAdminActive = false;
-      try {
-        isAdminActive = localStorage.getItem(STORAGE_KEY_ADMIN_AUTH) === 'true';
-      } catch {
-        // ignore
       }
+    });
 
-      if (typeof window !== 'undefined' && (window.location.hash.includes('admin') || isAdminActive)) {
-        fetchRemoteOrders()
-          .then((remoteOrders) => {
-            if (remoteOrders && remoteOrders.length > 0) {
-              setOrders(remoteOrders);
-              try {
-                localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
-              } catch {
-                // ignore
-              }
-            }
-          })
-          .catch((err) => {
-            console.warn('[Firebase] Remote orders sync deferred/offline:', err);
-          });
+    // Only sync orders if admin is active or customer has placed orders
+    let isAdminActive = false;
+    try {
+      isAdminActive = localStorage.getItem(STORAGE_KEY_ADMIN_AUTH) === 'true';
+    } catch {}
 
-        unsubscribeOrders = subscribeRemoteOrders((remoteOrders) => {
-          if (remoteOrders) {
+    if (typeof window !== 'undefined' && (window.location.hash.includes('admin') || isAdminActive)) {
+      fetchRemoteOrders()
+        .then((remoteOrders) => {
+          if (remoteOrders && remoteOrders.length > 0) {
             setOrders(remoteOrders);
             try {
               localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
-            } catch {
-              // ignore
-            }
+            } catch {}
           }
-        });
-      }
-    }, 3000);
+        })
+        .catch(() => {});
+
+      unsubscribeOrders = subscribeRemoteOrders((remoteOrders) => {
+        if (remoteOrders) {
+          setOrders(remoteOrders);
+          try {
+            localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remoteOrders));
+          } catch {}
+        }
+      });
+    }
 
     return () => {
-      clearTimeout(initCloudSyncTimer);
       if (unsubscribeBackendSse) unsubscribeBackendSse();
       if (unsubscribeProducts) unsubscribeProducts();
       if (unsubscribeOrders) unsubscribeOrders();
