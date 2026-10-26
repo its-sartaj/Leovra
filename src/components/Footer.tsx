@@ -194,33 +194,6 @@ export const Footer: React.FC = () => {
             <span>Cash on Delivery Shopping India</span>
           </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="pt-6 mt-4 border-t border-neutral-900 text-center text-xs text-neutral-400 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-4 text-[11px] text-neutral-400">
-            <span>Specialists in Jewellery, T-Shirts & Lowers</span>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => {
-                setCurrentView('admin');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="hover:text-amber-400 transition-colors cursor-pointer text-[11px] inline-flex items-center gap-1 text-neutral-400"
-              title="Open Admin Inventory Management Portal"
-              id="footer-admin-portal-btn"
-            >
-              <span>🔒 Admin Portal</span>
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsReturnPolicyOpen(true)}
-            className="py-2.5 px-3 min-h-[44px] inline-flex items-center text-[11px] text-neutral-300 hover:text-amber-400 transition-colors cursor-pointer font-medium"
-          >
-            Return & Refund Policy (3 Days)
-          </button>
-        </div>
       </div>
     </footer>
   );
