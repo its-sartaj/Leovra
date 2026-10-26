@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Plus, 
   Trash2, 
@@ -29,7 +29,9 @@ import {
   Building,
   Ban,
   XCircle,
-  Undo2
+  Undo2,
+  Cloud,
+  CloudOff
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Product, ProductCategory, Order, PRODUCT_FALLBACK_PLACEHOLDER } from '../types';
@@ -44,6 +46,10 @@ import {
   recordFailedAdminAttempt, 
   clearAdminLockout 
 } from '../services/security';
+import {
+  checkFirebaseStatus,
+  forcePushProductsToRemote
+} from '../services/firebaseSync';
 
 export const AdminDashboard: React.FC = () => {
   const { 
@@ -61,12 +67,47 @@ export const AdminDashboard: React.FC = () => {
     clearAllOrders,
     isAdminLoggedIn,
     loginAdmin,
-    logoutAdmin
+    logoutAdmin,
+    showToast
   } = useStore();
 
   const [passcode, setPasscode] = useState('');
   const [authError, setAuthError] = useState('');
   const [lockoutSecs, setLockoutSecs] = useState<number>(() => getAdminLockoutStatus().remainingSeconds);
+
+  // Cloud sync status state
+  const [cloudStatus, setCloudStatus] = useState<{
+    checked: boolean;
+    ok: boolean;
+    error?: string;
+  }>({ checked: false, ok: false });
+  const [isSyncingCloud, setIsSyncingCloud] = useState(false);
+
+  const checkCloudHealth = useCallback(async () => {
+    const res = await checkFirebaseStatus();
+    setCloudStatus({ checked: true, ok: res.ok, error: res.error });
+  }, []);
+
+  useEffect(() => {
+    if (isAdminLoggedIn) {
+      checkCloudHealth();
+      const interval = setInterval(checkCloudHealth, 25000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdminLoggedIn, checkCloudHealth]);
+
+  const handleManualCloudSync = async () => {
+    setIsSyncingCloud(true);
+    const result = await forcePushProductsToRemote(products);
+    setIsSyncingCloud(false);
+    if (result.success) {
+      setCloudStatus({ checked: true, ok: true });
+      showToast(`✅ Synced ${products.length} products to Cloud! Live on all devices.`);
+    } else {
+      setCloudStatus({ checked: true, ok: false, error: result.error });
+      showToast(`❌ Cloud sync failed: ${result.error}`);
+    }
+  };
 
   // Active countdown timer for security lockout
   useEffect(() => {
@@ -244,29 +285,81 @@ export const AdminDashboard: React.FC = () => {
     setIsAddModalOpen(true);
   };
 
-  // Image files handler (Device Gallery / Computer - supports 1 or multiple photos!)
-  const handleProcessImageFiles = (files: FileList | File[]) => {
-    const fileArray = Array.from(files);
-    fileArray.forEach((file) => {
-      if (!file.type.startsWith('image/')) {
-        setFormError('Please choose a valid image file (JPG, PNG, WEBP).');
-        return;
-      }
-      if (file.size > 8 * 1024 * 1024) {
-        setFormError('Image size is too large (max 8MB). Please choose a smaller photo.');
+  // Compress uploaded photo using offscreen canvas to keep quality high and size tiny (~60KB)
+  const compressImageFile = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      if (file.type === 'image/svg+xml') {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(typeof e.target?.result === 'string' ? e.target.result : '');
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(file);
         return;
       }
       const reader = new FileReader();
       reader.onload = (event) => {
-        if (typeof event.target?.result === 'string') {
-          const res = event.target.result;
-          setFormImages((prev) => [...prev, res]);
-          setFormImage(res);
-          setFormError('');
+        const rawDataUrl = event.target?.result;
+        if (typeof rawDataUrl !== 'string') {
+          resolve('');
+          return;
         }
+        const img = new Image();
+        img.onload = () => {
+          const MAX_DIM = 1000;
+          let width = img.width;
+          let height = img.height;
+          if (width > MAX_DIM || height > MAX_DIM) {
+            if (width > height) {
+              height = Math.round((height * MAX_DIM) / width);
+              width = MAX_DIM;
+            } else {
+              width = Math.round((width * MAX_DIM) / height);
+              height = MAX_DIM;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(rawDataUrl);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL('image/jpeg', 0.82);
+          resolve(compressed);
+        };
+        img.onerror = () => resolve(rawDataUrl);
+        img.src = rawDataUrl;
       };
+      reader.onerror = () => resolve('');
       reader.readAsDataURL(file);
     });
+  };
+
+  // Image files handler (Device Gallery / Camera - auto compresses photos for instant sync!)
+  const handleProcessImageFiles = async (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    setFormError('');
+    for (const file of fileArray) {
+      if (!file.type.startsWith('image/')) {
+        setFormError('Please choose a valid image file (JPG, PNG, WEBP).');
+        continue;
+      }
+      if (file.size > 20 * 1024 * 1024) {
+        setFormError('Image size is too large (max 20MB). Please choose a smaller photo.');
+        continue;
+      }
+      try {
+        const compressed = await compressImageFile(file);
+        if (compressed) {
+          setFormImages((prev) => [...prev, compressed]);
+          setFormImage(compressed);
+          setFormError('');
+        }
+      } catch {
+        setFormError('Failed to process image photo.');
+      }
+    }
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -531,10 +624,22 @@ export const AdminDashboard: React.FC = () => {
               <span>Back to Storefront</span>
             </button>
             <span className="text-neutral-300">•</span>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Firebase Cloud Sync Active (Live on all devices)</span>
-            </div>
+            {cloudStatus.checked && cloudStatus.ok ? (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
+                <Cloud className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Cloud Sync Active (Live on all devices)</span>
+              </div>
+            ) : cloudStatus.checked && !cloudStatus.ok ? (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[11px] font-bold" title={cloudStatus.error}>
+                <CloudOff className="w-3.5 h-3.5 text-rose-600" />
+                <span>Cloud Locked: Permission Denied (Only saved on this phone)</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-600 text-[11px] font-bold">
+                <RefreshCw className="w-3 h-3 animate-spin" />
+                <span>Checking Cloud Connection...</span>
+              </div>
+            )}
           </div>
           
           <h1 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight">
@@ -547,6 +652,17 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <button
+            onClick={handleManualCloudSync}
+            disabled={isSyncingCloud}
+            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold text-xs transition-colors cursor-pointer disabled:opacity-60"
+            title="Push all products to Firebase Cloud so other phones can see them immediately"
+            id="admin-sync-cloud-btn"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingCloud ? 'animate-spin text-sky-600' : 'text-sky-600'}`} />
+            <span>{isSyncingCloud ? 'Syncing...' : 'Sync to Cloud'}</span>
+          </button>
+
           <a
             href="./"
             target="_blank"
@@ -585,6 +701,44 @@ export const AdminDashboard: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Cloud locked alert banner */}
+      {cloudStatus.checked && !cloudStatus.ok && (
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 sm:p-5 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-200/80 flex items-center justify-center shrink-0 text-amber-800">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="font-extrabold text-sm text-amber-900">
+                Firebase Cloud Sync Blocked (Permission Denied)
+              </div>
+              <div className="text-xs text-amber-800 mt-0.5 leading-relaxed">
+                Naye products sirf is phone me dikh rahe hain kyunki Firebase Realtime Database me Rules locked hain. Firebase Console me Rules ko publish karein taaki sabhi phones par products live dikhein.
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <a
+              href="https://console.firebase.google.com/project/leovra-9e869/database/leovra-9e869-default-rtdb/rules"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow transition-all cursor-pointer"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Open Firebase Rules</span>
+            </a>
+            <button
+              onClick={handleManualCloudSync}
+              disabled={isSyncingCloud}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs transition-colors cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingCloud ? 'animate-spin' : ''}`} />
+              <span>Test & Sync</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">

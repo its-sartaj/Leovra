@@ -33,8 +33,54 @@ let pendingOrdersTimer: ReturnType<typeof setTimeout> | null = null;
 let latestOrdersPayload: Order[] | null = null;
 let lastOrdersWriteTime = 0;
 
-const MAX_PAYLOAD_SIZE = 500 * 1024; // 500 KB safety limit
+const MAX_PAYLOAD_SIZE = 5 * 1024 * 1024; // 5 MB safety limit
 const MIN_WRITE_INTERVAL_MS = 1500; // Minimum 1.5s between cloud writes to prevent DoS
+
+/**
+ * Check connectivity and security rules permission on Firebase Realtime Database
+ */
+export const checkFirebaseStatus = async (): Promise<{ ok: boolean; status: number; error?: string }> => {
+  try {
+    const res = await fetch(`${FIREBASE_DB_URL}/products.json`);
+    if (res.status === 401 || res.status === 403) {
+      return { ok: false, status: res.status, error: 'Permission denied: Firebase rules are locked.' };
+    }
+    const data = await res.json();
+    if (data && data.error) {
+      return { ok: false, status: res.status, error: String(data.error) };
+    }
+    return { ok: true, status: res.status };
+  } catch (err: any) {
+    return { ok: false, status: 0, error: err?.message || 'Network unreachable' };
+  }
+};
+
+/**
+ * Force-sync / push all products directly to Firebase Cloud with instant feedback
+ */
+export const forcePushProductsToRemote = async (products: Product[]): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const jsonStr = JSON.stringify(products);
+    if (jsonStr.length > MAX_PAYLOAD_SIZE) {
+      return { success: false, error: 'Payload exceeds 5MB size limit.' };
+    }
+    const res = await fetch(`${FIREBASE_DB_URL}/products.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonStr,
+    });
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        return { success: false, error: 'Permission denied: Please enable Read/Write rules in Firebase Console.' };
+      }
+      return { success: false, error: `HTTP ${res.status}: ${res.statusText}` };
+    }
+    lastProductsWriteTime = Date.now();
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Network error' };
+  }
+};
 
 /**
  * Execute actual HTTP PUT to Firebase for products with payload validation

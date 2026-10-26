@@ -722,14 +722,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const initCloudSyncTimer = setTimeout(() => {
       fetchRemoteProducts()
         .then((remoteProds) => {
-          if (remoteProds) {
+          if (remoteProds && remoteProds.length > 0) {
             const clean = remoteProds.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !p.deletedAt);
-            currentVersionRef.current = Date.now();
-            setProducts(clean);
-            try {
-              localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
-            } catch {
-              // ignore
+            if (clean.length > 0) {
+              currentVersionRef.current = Date.now();
+              setProducts(clean);
+              try {
+                localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(clean));
+              } catch {
+                // ignore
+              }
             }
           }
         })
