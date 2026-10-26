@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { 
   Plus, 
   Trash2, 
@@ -31,7 +31,21 @@ import {
   XCircle,
   Undo2,
   Cloud,
-  CloudOff
+  CloudOff,
+  Grid,
+  List,
+  Eye,
+  TrendingUp,
+  Tag,
+  SlidersHorizontal,
+  ChevronRight,
+  Copy,
+  Phone,
+  MessageSquare,
+  Calendar,
+  Hash,
+  CheckCheck,
+  Percent
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Product, ProductCategory, Order, PRODUCT_FALLBACK_PLACEHOLDER } from '../types';
@@ -109,6 +123,16 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const copyToClipboard = (text: string, label: string) => {
+    try {
+      navigator.clipboard.writeText(text);
+      showToast(`📋 Copied ${label} to clipboard!`);
+    } catch {
+      // Fallback
+      showToast(`Copied: ${text}`);
+    }
+  };
+
   // Active countdown timer for security lockout
   useEffect(() => {
     if (lockoutSecs <= 0) return;
@@ -151,9 +175,14 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'shiprocket'>('inventory');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [adminSearch, setAdminSearch] = useState('');
   const [adminCategory, setAdminCategory] = useState<'all' | ProductCategory>('all');
   const [adminStockFilter, setAdminStockFilter] = useState<'all' | 'in_stock' | 'out_of_stock' | 'low_stock'>('all');
+  
+  // Orders search & status filter
+  const [orderSearch, setOrderSearch] = useState('');
+  const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all');
   
   // Shiprocket dispatch state
   const [dispatchOrder, setDispatchOrder] = useState<Order | null>(null);
@@ -245,6 +274,24 @@ export const AdminDashboard: React.FC = () => {
     if (adminStockFilter === 'low_stock' && (p.isOutOfStock || p.stock > 4 || p.stock <= 0)) return false;
     return true;
   });
+
+  // Filtered orders for admin
+  const filteredOrders = useMemo(() => {
+    return orders.filter((ord) => {
+      if (orderStatusFilter !== 'all' && (ord.status || 'Pending').toLowerCase() !== orderStatusFilter.toLowerCase()) {
+        return false;
+      }
+      if (orderSearch.trim()) {
+        const q = orderSearch.toLowerCase();
+        const matchId = ord.id.toLowerCase().includes(q);
+        const matchName = ord.customerName.toLowerCase().includes(q);
+        const matchPhone = ord.customerPhone.includes(q);
+        const matchAwb = ord.awbCode ? ord.awbCode.toLowerCase().includes(q) : false;
+        if (!matchId && !matchName && !matchPhone && !matchAwb) return false;
+      }
+      return true;
+    });
+  }, [orders, orderStatusFilter, orderSearch]);
 
   // Open Add Modal
   const openAddModal = () => {
@@ -523,56 +570,61 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  // If admin is not logged in, render the dedicated secure Login Portal
+  // If admin is not logged in, render the dedicated luxury executive Login Portal
   if (!isAdminLoggedIn) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4 py-12" id="admin-login-screen">
-        <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-neutral-200 shadow-xl space-y-6">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-4 py-12 relative overflow-hidden" id="admin-login-screen">
+        {/* Ambient luxury radial glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-gradient-to-tr from-amber-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 w-full max-w-md bg-neutral-900/90 backdrop-blur-xl rounded-3xl p-8 sm:p-9 border border-neutral-800 shadow-2xl space-y-6">
           <div className="flex flex-col items-center text-center space-y-3">
-            <Logo size="lg" />
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mt-2">
-              <Lock className="w-6 h-6" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-inner">
+              <Lock className="w-8 h-8" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-neutral-900">Admin Inventory Portal</h2>
-              <p className="text-xs text-neutral-500 mt-1">
-                Enter your merchant passcode to access live stock controls, product editing, and orders.
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest mb-1.5">
+                Merchant HQ • Leovra
+              </div>
+              <h2 className="text-2xl font-black text-white font-serif tracking-tight">Leovra Commerce OS</h2>
+              <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+                Enter your merchant passcode to access live catalog controls, orders, and real-time syncing.
               </p>
             </div>
           </div>
 
           <form onSubmit={handleAuthSubmit} className="space-y-4" id="admin-login-form">
             <div>
-              <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
-                Owner Passcode / PIN
+              <label className="block text-[11px] font-extrabold text-neutral-300 uppercase tracking-wider mb-2">
+                Merchant Passcode / PIN
               </label>
               <div className="relative">
-                <Key className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Key className="w-4 h-4 text-amber-400/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
-                  placeholder={lockoutSecs > 0 ? `Locked (${lockoutSecs}s)` : "Enter Passcode / PIN"}
+                  placeholder={lockoutSecs > 0 ? `Locked for ${lockoutSecs}s` : "Enter PIN (Default: 7979)"}
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
                   disabled={lockoutSecs > 0}
-                  className={`w-full pl-10 pr-4 py-3 bg-neutral-50 border rounded-xl text-sm font-semibold outline-hidden transition-all ${
+                  className={`w-full pl-10 pr-4 py-3.5 bg-neutral-950 border rounded-xl text-sm font-semibold text-white outline-hidden transition-all ${
                     lockoutSecs > 0 
-                      ? 'border-rose-300 bg-rose-50/50 text-rose-500 cursor-not-allowed' 
-                      : 'border-neutral-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200'
+                      ? 'border-rose-500/50 bg-rose-950/20 text-rose-400 cursor-not-allowed' 
+                      : 'border-neutral-800 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20'
                   }`}
                   id="admin-passcode-input"
                   autoFocus={lockoutSecs === 0}
                 />
               </div>
               {authError && (
-                <p className="text-rose-600 text-xs mt-1.5 font-medium flex items-center gap-1">
+                <p className="text-rose-400 text-xs mt-2 font-medium flex items-center gap-1.5 animate-in shake">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>{authError}</span>
                 </p>
               )}
               {lockoutSecs === 0 && (
-                <p className="text-[11px] text-neutral-400 mt-1 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3 text-emerald-600 shrink-0" />
-                  <span>Protected against brute-force & automated guessing.</span>
+                <p className="text-[11px] text-neutral-500 mt-1.5 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Brute-force security and automated attack protection active.</span>
                 </p>
               )}
             </div>
@@ -580,27 +632,27 @@ export const AdminDashboard: React.FC = () => {
             <button
               type="submit"
               disabled={lockoutSecs > 0}
-              className={`w-full py-3 px-4 rounded-xl font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2 ${
+              className={`w-full py-3.5 px-4 rounded-xl font-black text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 lockoutSecs > 0
-                  ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
-                  : 'bg-neutral-900 hover:bg-neutral-800 text-white cursor-pointer'
+                  ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-neutral-950 shadow-amber-500/25 active:scale-95'
               }`}
               id="admin-login-submit-btn"
             >
-              <Lock className="w-4 h-4 text-amber-400" />
-              <span>{lockoutSecs > 0 ? `Locked (${lockoutSecs}s)` : 'Unlock Admin Dashboard'}</span>
+              <Lock className="w-4 h-4" />
+              <span>{lockoutSecs > 0 ? `System Locked (${lockoutSecs}s)` : 'Unlock Merchant Dashboard'}</span>
             </button>
           </form>
 
-          <div className="pt-2 border-t border-neutral-100 space-y-3 text-center">
+          <div className="pt-3 border-t border-neutral-800 text-center">
             <button
               type="button"
               onClick={() => setCurrentView('store')}
-              className="text-xs text-neutral-500 hover:text-neutral-900 font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
+              className="text-xs text-neutral-400 hover:text-amber-300 font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
               id="admin-login-back-btn"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Return to Public Customer Storefront</span>
+              <span>Return to Customer Storefront</span>
             </button>
           </div>
         </div>
@@ -611,96 +663,120 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6" id="admin-dashboard-container">
       
-      {/* Top Banner / Actions Header */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-neutral-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <button
-              onClick={() => setCurrentView('store')}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-950 px-2 py-1 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer"
-              id="admin-back-to-store-btn"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Storefront</span>
-            </button>
-            <span className="text-neutral-300">•</span>
-            {cloudStatus.checked && cloudStatus.ok ? (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
-                <Cloud className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Cloud Sync Active (Live on all devices)</span>
-              </div>
-            ) : cloudStatus.checked && !cloudStatus.ok ? (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[11px] font-bold" title={cloudStatus.error}>
-                <CloudOff className="w-3.5 h-3.5 text-rose-600" />
-                <span>Cloud Locked: Permission Denied (Only saved on this phone)</span>
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-600 text-[11px] font-bold">
-                <RefreshCw className="w-3 h-3 animate-spin" />
-                <span>Checking Cloud Connection...</span>
-              </div>
-            )}
+      {/* Executive Command Header */}
+      <header className="bg-neutral-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-neutral-800/80 relative overflow-hidden">
+        {/* Ambient luxury glow */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-amber-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          {/* Brand & Store Info */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <button
+                onClick={() => setCurrentView('store')}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-300 hover:text-white px-3 py-1.5 rounded-xl bg-neutral-800/80 hover:bg-neutral-800 border border-neutral-700/60 transition-all cursor-pointer"
+                id="admin-back-to-store-btn"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-amber-400" />
+                <span>Storefront</span>
+              </button>
+
+              <span className="text-neutral-700">•</span>
+
+              {cloudStatus.checked && cloudStatus.ok ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <Cloud className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Cloud Active • All Phones Synced</span>
+                </div>
+              ) : cloudStatus.checked && !cloudStatus.ok ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/80 text-rose-300 border border-rose-500/40 text-[11px] font-bold animate-pulse" title={cloudStatus.error}>
+                  <CloudOff className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Cloud Locked • Saving locally</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-800 text-neutral-400 text-[11px] font-bold">
+                  <RefreshCw className="w-3 h-3 animate-spin text-amber-400" />
+                  <span>Verifying Cloud Sync...</span>
+                </div>
+              )}
+
+              <span className="text-neutral-700 hidden sm:inline">•</span>
+              
+              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[10px] font-extrabold uppercase tracking-wider">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                Merchant HQ
+              </span>
+            </div>
+
+            <div className="flex items-baseline gap-3 pt-1">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white font-serif">
+                Leovra Commerce OS
+              </h1>
+              <span className="text-xs font-semibold text-neutral-400 hidden sm:inline">
+                Live Inventory & Fulfillment Hub
+              </span>
+            </div>
+            <p className="text-xs text-neutral-400 max-w-xl leading-relaxed">
+              Real-time multi-device stock synchronization, instant out-of-stock toggling, and customer order management.
+            </p>
           </div>
-          
-          <h1 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight">
-            Leovra Enterprises Inventory Admin
-          </h1>
-          <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">
-            Real-time stock controls, instant out-of-stock toggling, and product management.
-          </p>
+
+          {/* Quick Operations Actions */}
+          <div className="flex flex-wrap items-center gap-2.5 pt-2 lg:pt-0">
+            {/* Sync to Cloud Button */}
+            <button
+              onClick={handleManualCloudSync}
+              disabled={isSyncingCloud}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-750 text-neutral-200 hover:text-white border border-neutral-700 font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-60"
+              title="Force sync all products to Firebase Cloud"
+              id="admin-sync-cloud-btn"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-sky-400 ${isSyncingCloud ? 'animate-spin' : ''}`} />
+              <span>{isSyncingCloud ? 'Syncing...' : 'Sync Cloud'}</span>
+            </button>
+
+            {/* Open Storefront in New Tab */}
+            <a
+              href="./"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                const origin = window.location.origin.replace(/\.+$/, '');
+                const cleanBase = (import.meta.env.BASE_URL || '/').replace(/^\.?\//, '/');
+                window.open(`${origin}${cleanBase}`, '_blank');
+              }}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-750 text-neutral-200 hover:text-white border border-neutral-700 font-bold text-xs transition-all cursor-pointer shadow-xs"
+              title="Preview public storefront in a new tab"
+              id="admin-open-store-new-tab-btn"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
+              <span>Live Store</span>
+            </a>
+
+            {/* Primary Action: Add Product */}
+            <button
+              onClick={openAddModal}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-neutral-950 font-black text-xs shadow-lg shadow-amber-500/25 transition-all cursor-pointer active:scale-95"
+              id="admin-add-product-btn"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>Add New Product</span>
+            </button>
+
+            {/* Lock / Logout */}
+            <button
+              onClick={logoutAdmin}
+              className="inline-flex items-center justify-center p-2.5 rounded-xl bg-neutral-800 hover:bg-rose-950/80 hover:text-rose-400 text-neutral-400 hover:border-rose-800/60 border border-neutral-700 transition-all cursor-pointer"
+              title="Lock Admin Session"
+              id="admin-logout-btn"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          <button
-            onClick={handleManualCloudSync}
-            disabled={isSyncingCloud}
-            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold text-xs transition-colors cursor-pointer disabled:opacity-60"
-            title="Push all products to Firebase Cloud so other phones can see them immediately"
-            id="admin-sync-cloud-btn"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingCloud ? 'animate-spin text-sky-600' : 'text-sky-600'}`} />
-            <span>{isSyncingCloud ? 'Syncing...' : 'Sync to Cloud'}</span>
-          </button>
-
-          <a
-            href="./"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.preventDefault();
-              const origin = window.location.origin.replace(/\.+$/, '');
-              const cleanBase = (import.meta.env.BASE_URL || '/').replace(/^\.?\//, '/');
-              window.open(`${origin}${cleanBase}`, '_blank');
-            }}
-            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold text-xs transition-colors cursor-pointer"
-            title="Open customer website in a separate tab to test real-time stock updates side-by-side"
-            id="admin-open-store-new-tab-btn"
-          >
-            <ExternalLink className="w-3.5 h-3.5 text-neutral-600" />
-            <span>Open Store in New Tab</span>
-          </a>
-
-          <button
-            onClick={openAddModal}
-            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-md transition-all cursor-pointer"
-            id="admin-add-product-btn"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add New Product</span>
-          </button>
-
-          <button
-            onClick={logoutAdmin}
-            className="inline-flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-neutral-100 hover:bg-rose-50 hover:text-rose-600 text-neutral-600 font-bold text-xs transition-colors cursor-pointer"
-            title="Lock / Logout Admin"
-            id="admin-logout-btn"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Lock</span>
-          </button>
-        </div>
-      </div>
+      </header>
 
       {/* Cloud locked alert banner */}
       {cloudStatus.checked && !cloudStatus.ok && (
@@ -740,133 +816,201 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Metrics Row */}
+      {/* Luxury Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        {/* Total Products */}
-        <div className="bg-white rounded-2xl p-4 border border-neutral-200 shadow-xs">
+        {/* Total Catalog */}
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-xs hover:shadow-md transition-all group">
           <div className="flex items-center justify-between text-neutral-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Products</span>
-            <Package className="w-4 h-4 text-neutral-500" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-neutral-500">Live Catalog</span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+              <Package className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-neutral-900">{totalProducts}</div>
-          <div className="text-[11px] text-neutral-500 mt-0.5">Active styles</div>
+          <div className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">{totalProducts}</div>
+          <div className="flex items-center gap-1.5 text-[11px] text-neutral-500 mt-1 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            <span>Active styles in store</span>
+          </div>
         </div>
 
         {/* In Stock */}
-        <div className="bg-white rounded-2xl p-4 border border-emerald-100 bg-emerald-50/20 shadow-xs">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-emerald-200/70 shadow-xs hover:shadow-md transition-all group">
           <div className="flex items-center justify-between text-emerald-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">In Stock</span>
-            <CheckCircle2 className="w-4 h-4" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700">Available Stock</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-emerald-700">{inStockProducts}</div>
-          <div className="text-[11px] text-emerald-600 mt-0.5">Available for sale</div>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-800 tracking-tight">{inStockProducts}</div>
+          <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 mt-1 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Ready for customers</span>
+          </div>
         </div>
 
-        {/* Out of Stock Alert */}
-        <div className={`rounded-2xl p-4 border shadow-xs ${
+        {/* Out of Stock */}
+        <div className={`rounded-2xl p-4 sm:p-5 border shadow-xs hover:shadow-md transition-all group ${
           outOfStockProducts > 0 
-            ? 'bg-rose-50/70 border-rose-200 text-rose-900' 
-            : 'bg-white border-neutral-200'
+            ? 'bg-rose-50/60 border-rose-300 text-rose-950' 
+            : 'bg-white border-neutral-200/80'
         }`}>
           <div className="flex items-center justify-between text-rose-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Out of Stock</span>
-            <AlertCircle className="w-4 h-4" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-neutral-500">Sold Out</span>
+            <div className="w-8 h-8 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 group-hover:scale-110 transition-transform">
+              <AlertCircle className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-rose-700">{outOfStockProducts}</div>
-          <div className="text-[11px] text-rose-600 mt-0.5">
-            {outOfStockProducts > 0 ? 'Action needed to restock' : 'Zero sold-out items'}
+          <div className={`text-2xl sm:text-3xl font-black tracking-tight ${outOfStockProducts > 0 ? 'text-rose-700' : 'text-neutral-900'}`}>
+            {outOfStockProducts}
+          </div>
+          <div className="text-[11px] mt-1 font-medium text-neutral-500">
+            {outOfStockProducts > 0 ? (
+              <span className="text-rose-600 font-bold">⚠️ Needs restocking</span>
+            ) : (
+              '100% styles in stock'
+            )}
           </div>
         </div>
 
-        {/* Low Stock Alert */}
-        <div className="bg-white rounded-2xl p-4 border border-amber-200 bg-amber-50/30 shadow-xs">
-          <div className="flex items-center justify-between text-amber-600 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Low Stock (&le; 4)</span>
-            <AlertTriangle className="w-4 h-4" />
-          </div>
-          <div className="text-2xl font-black text-amber-800">{lowStockProducts}</div>
-          <div className="text-[11px] text-amber-700 mt-0.5">Nearing out-of-stock</div>
-        </div>
-
-        {/* Total Stock Valuation */}
-        <div className="col-span-2 sm:col-span-1 bg-white rounded-2xl p-4 border border-neutral-200 shadow-xs">
+        {/* Inventory Units & Valuation */}
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-xs hover:shadow-md transition-all group">
           <div className="flex items-center justify-between text-neutral-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Stock Units</span>
-            <Layers className="w-4 h-4 text-neutral-500" />
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-neutral-500">Stock Valuation</span>
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+              <Layers className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-neutral-900">{totalStockUnits}</div>
-          <div className="text-[11px] text-neutral-500 mt-0.5">Valuation: ₹{totalValuation.toLocaleString('en-IN')}</div>
+          <div className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">
+            ₹{totalValuation.toLocaleString('en-IN')}
+          </div>
+          <div className="text-[11px] text-neutral-500 mt-1 font-medium">
+            {totalStockUnits} units in warehouse
+          </div>
+        </div>
+
+        {/* Customer Orders */}
+        <div className="col-span-2 sm:col-span-1 bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-xs hover:shadow-md transition-all group">
+          <div className="flex items-center justify-between text-neutral-400 mb-2">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-neutral-500">Customer Orders</span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">{orders.length}</div>
+          <div className="text-[11px] text-purple-700 mt-1 font-semibold flex items-center gap-1">
+            <Truck className="w-3.5 h-3.5" />
+            <span>{orders.filter(o => o.status === 'Dispatched' || o.status === 'Confirmed').length} active shipments</span>
+          </div>
         </div>
       </div>
 
-      {/* Admin Tabs */}
-      <div className="flex items-center gap-2 border-b border-neutral-200 pb-2" role="tablist" aria-label="Admin Navigation Tabs">
-        <button
-          role="tab"
-          aria-selected={activeTab === 'inventory'}
-          onClick={() => setActiveTab('inventory')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === 'inventory'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200'
-          }`}
-          id="admin-tab-inventory"
-        >
-          <span>Inventory & Products ({products.length})</span>
-        </button>
+      {/* Modern Floating Navigation Tabs Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-2 sm:p-2.5 rounded-2xl border border-neutral-200/90 shadow-xs">
+        <div className="flex items-center gap-1.5 p-1 bg-neutral-100 rounded-xl overflow-x-auto" role="tablist">
+          <button
+            role="tab"
+            aria-selected={activeTab === 'inventory'}
+            onClick={() => setActiveTab('inventory')}
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'inventory'
+                ? 'bg-neutral-900 text-white shadow-xs'
+                : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60'
+            }`}
+            id="admin-tab-inventory"
+          >
+            <Package className="w-3.5 h-3.5" />
+            <span>Products Catalog</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+              activeTab === 'inventory' ? 'bg-amber-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700'
+            }`}>
+              {products.length}
+            </span>
+          </button>
 
-        <button
-          role="tab"
-          aria-selected={activeTab === 'orders'}
-          onClick={() => setActiveTab('orders')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-            activeTab === 'orders'
-              ? 'bg-neutral-900 text-white shadow-xs'
-              : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200'
-          }`}
-          id="admin-tab-orders"
-        >
-          <ShoppingBag className="w-3.5 h-3.5" />
-          <span>Customer Orders ({orders.length})</span>
-        </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === 'orders'}
+            onClick={() => setActiveTab('orders')}
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'orders'
+                ? 'bg-neutral-900 text-white shadow-xs'
+                : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60'
+            }`}
+            id="admin-tab-orders"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span>Orders & Dispatch</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+              activeTab === 'orders' ? 'bg-amber-400 text-neutral-950' : 'bg-neutral-200 text-neutral-700'
+            }`}>
+              {orders.length}
+            </span>
+          </button>
 
-        <button
-          role="tab"
-          aria-selected={activeTab === 'shiprocket'}
-          onClick={() => setActiveTab('shiprocket')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-            activeTab === 'shiprocket'
-              ? 'bg-gradient-to-r from-purple-800 to-indigo-800 text-white shadow-xs'
-              : 'bg-white text-neutral-700 hover:bg-purple-50 border border-neutral-200'
-          }`}
-          id="admin-tab-shiprocket"
-        >
-          <Truck className="w-3.5 h-3.5 text-purple-400" />
-          <span>Shiprocket Logistics</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-0.5" title="Shiprocket Connected" />
-        </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === 'shiprocket'}
+            onClick={() => setActiveTab('shiprocket')}
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'shiprocket'
+                ? 'bg-purple-900 text-white shadow-xs'
+                : 'text-neutral-600 hover:text-purple-900 hover:bg-purple-50'
+            }`}
+            id="admin-tab-shiprocket"
+          >
+            <Truck className="w-3.5 h-3.5 text-purple-500" />
+            <span>Shiprocket</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
+          </button>
+        </div>
+
+        {/* View Mode Switcher on Inventory Tab */}
+        {activeTab === 'inventory' && (
+          <div className="flex items-center gap-1 self-end sm:self-center bg-neutral-100 p-1 rounded-xl border border-neutral-200/80">
+            <button
+              onClick={() => setViewMode('table')}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'table' ? 'bg-white text-neutral-900 shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
+              }`}
+              title="Table view with inline stock editing"
+            >
+              <List className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-semibold hidden sm:inline">Table View</span>
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'grid' ? 'bg-white text-neutral-900 shadow-2xs' : 'text-neutral-500 hover:text-neutral-900'
+              }`}
+              title="Cards Grid view"
+            >
+              <Grid className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-semibold hidden sm:inline">Grid View</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main Content Area */}
       {activeTab === 'inventory' && (
-        <div className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden space-y-4 p-4 sm:p-5">
+        <div className="bg-white rounded-3xl border border-neutral-200/90 shadow-sm overflow-hidden space-y-4 p-4 sm:p-6">
           
           {/* Controls: Search, Category Filter, Stock Status Filter */}
           <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-neutral-100">
             {/* Search Input */}
-            <div className="relative flex-1 min-w-[220px]">
+            <div className="relative flex-1 min-w-[240px]">
               <input
                 type="text"
-                placeholder="Search by title or product ID..."
+                placeholder="Search by title, category, or product ID..."
                 value={adminSearch}
                 onChange={(e) => setAdminSearch(e.target.value)}
-                className="w-full bg-neutral-50 text-xs text-neutral-900 pl-8 pr-3 py-2 rounded-xl border border-neutral-200 focus:border-amber-500 outline-hidden"
+                className="w-full bg-neutral-50 text-xs text-neutral-900 pl-9 pr-3 py-2.5 rounded-xl border border-neutral-200 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all font-medium"
                 id="admin-search-field"
               />
-              <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
 
-            {/* Category Filter */}
+            {/* Category Filter Chips */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
               {(['all', 'earrings', 'tshirts', 'lowers'] as const).map((cat) => (
                 <button
@@ -874,104 +1018,276 @@ export const AdminDashboard: React.FC = () => {
                   onClick={() => setAdminCategory(cat)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                     adminCategory === cat
-                      ? 'bg-neutral-900 text-white'
+                      ? 'bg-neutral-900 text-white shadow-2xs'
                       : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                   }`}
                   id={`admin-filter-cat-${cat}`}
                 >
-                  {cat === 'all' && 'All'}
-                  {cat === 'earrings' && 'Jewellery'}
-                  {cat === 'tshirts' && 'T-Shirts'}
-                  {cat === 'lowers' && 'Lowers'}
+                  {cat === 'all' && 'All Categories'}
+                  {cat === 'earrings' && '💍 Jewellery'}
+                  {cat === 'tshirts' && '👕 T-Shirts'}
+                  {cat === 'lowers' && '👖 Lowers'}
                 </button>
               ))}
             </div>
 
-            {/* Stock status filter */}
+            {/* Stock status filter dropdown */}
             <div className="flex items-center gap-1">
               <select
                 value={adminStockFilter}
                 onChange={(e) => setAdminStockFilter(e.target.value as any)}
-                className="bg-neutral-50 border border-neutral-200 text-neutral-800 rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-hidden cursor-pointer"
+                className="bg-neutral-50 border border-neutral-200 text-neutral-800 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-hidden focus:border-amber-500 cursor-pointer"
                 id="admin-stock-filter-select"
               >
                 <option value="all">All Stock Status</option>
                 <option value="in_stock">In Stock Only</option>
                 <option value="out_of_stock">Out of Stock Only</option>
-                <option value="low_stock">Low Stock (&le; 4)</option>
+                <option value="low_stock">Low Stock (≤ 4)</option>
               </select>
-            </div>
-          </div>
-
-          {/* Real-time Notice */}
-          <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-3 flex items-center justify-between text-xs text-amber-900">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>
-                <strong>Stock Management:</strong> Adjusting stock counters or clicking <strong>"Set Out-of-Stock"</strong> updates the catalog immediately!
-              </span>
             </div>
           </div>
 
           {/* Product Items Table / Cards */}
           {products.length === 0 ? (
-            <div className="py-16 text-center space-y-4 max-w-md mx-auto" id="admin-empty-catalog-state">
-              <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600">
-                <Package className="w-8 h-8" />
+            <div className="py-20 text-center space-y-4 max-w-md mx-auto" id="admin-empty-catalog-state">
+              <div className="w-20 h-20 rounded-3xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600 shadow-inner">
+                <Package className="w-10 h-10" />
               </div>
-              <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-bold text-neutral-900">Add your first product</h3>
-                <p className="text-xs text-neutral-500">
-                  Your store catalog is currently empty. Add your real products with pricing, photos, and stock to start selling across India.
+              <div className="space-y-1.5">
+                <h3 className="text-lg font-black text-neutral-900">Your store catalog is empty</h3>
+                <p className="text-xs text-neutral-500 leading-relaxed">
+                  Add your first handcrafted jewellery piece, streetwear t-shirt, or gym lower with photos and pricing to start selling to customers nationwide.
                 </p>
               </div>
               <div className="pt-2">
                 <button
                   onClick={openAddModal}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-md transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-neutral-950 font-black text-xs shadow-md shadow-amber-500/20 transition-all cursor-pointer active:scale-95"
                   id="admin-add-first-product-btn"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 stroke-[3]" />
                   <span>Add First Product</span>
                 </button>
               </div>
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="py-12 text-center text-neutral-400 space-y-2">
-              <Package className="w-8 h-8 mx-auto text-neutral-300" />
-              <p className="text-xs">No products match your search or filter.</p>
+            <div className="py-16 text-center text-neutral-400 space-y-2">
+              <Package className="w-10 h-10 mx-auto text-neutral-300" />
+              <p className="text-xs font-semibold">No products match your search or filter.</p>
+              <button
+                onClick={() => { setAdminSearch(''); setAdminCategory('all'); setAdminStockFilter('all'); }}
+                className="text-xs font-bold text-amber-600 hover:underline pt-1"
+              >
+                Reset filters
+              </button>
             </div>
-          ) : (
-            <div className="divide-y divide-neutral-100">
+          ) : viewMode === 'grid' ? (
+            /* ========================================================
+               MODERN GRID CARDS VIEW
+               ======================================================== */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredProducts.map((product) => {
                 const isOutOfStock = product.isOutOfStock || product.stock <= 0;
+                const discountPercent = product.originalPrice > product.price 
+                  ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) 
+                  : 0;
+
                 return (
                   <div 
-                    key={product.id} 
-                    className={`py-3.5 sm:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors rounded-xl px-2 ${
-                      isOutOfStock ? 'bg-rose-50/30' : 'hover:bg-neutral-50/60'
+                    key={product.id}
+                    className={`group relative bg-white rounded-2xl border transition-all overflow-hidden flex flex-col justify-between hover:shadow-lg ${
+                      isOutOfStock ? 'border-rose-200 bg-rose-50/20' : 'border-neutral-200/80 hover:border-amber-300'
                     }`}
-                    id={`admin-product-row-${product.id}`}
+                    id={`admin-product-card-${product.id}`}
                   >
-                    {/* Left: Thumbnail & Name & Category */}
-                    <div className="flex items-center gap-3 w-full md:w-auto md:min-w-[260px] max-w-md">
+                    {/* Card Thumbnail Area */}
+                    <div className="relative aspect-4/3 w-full bg-neutral-100 overflow-hidden">
                       <img
                         src={product.image || PRODUCT_FALLBACK_PLACEHOLDER}
                         alt={product.name}
-                        width={56}
-                        height={64}
                         loading="lazy"
                         decoding="async"
-                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           e.currentTarget.onerror = null;
                           e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
                         }}
-                        className="w-14 h-16 rounded-xl object-cover bg-neutral-100 shrink-0 border border-neutral-200 shadow-2xs"
                       />
+                      
+                      {/* Top Left Badges */}
+                      <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+                        <span className="px-2 py-0.5 rounded-md bg-neutral-900/85 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider shadow-sm">
+                          {product.category === 'earrings' ? 'Jewellery' : product.category === 'tshirts' ? 'T-Shirt' : 'Lower'}
+                          {product.subcategory ? ` • ${product.subcategory}` : ''}
+                        </span>
+                        {product.tag && (
+                          <span className="px-1.5 py-0.5 rounded bg-amber-400 text-neutral-950 text-[9px] font-black uppercase tracking-wider shadow-sm">
+                            {product.tag}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Photo Count */}
+                      {product.images && product.images.length > 1 && (
+                        <div className="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-bold">
+                          📷 {product.images.length} photos
+                        </div>
+                      )}
+
+                      {/* Stock status pill top right */}
+                      <div className="absolute top-2.5 right-2.5">
+                        {isOutOfStock ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            Sold Out
+                          </span>
+                        ) : product.stock <= 4 ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-neutral-950 text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            Low ({product.stock})
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold shadow-sm flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            In Stock ({product.stock})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h4 className="font-bold text-xs sm:text-sm text-neutral-900 line-clamp-1 leading-snug">
+                          {product.name}
+                        </h4>
+                        <div className="flex items-baseline gap-2 mt-1.5 flex-wrap">
+                          <span className="text-base font-black text-neutral-950">₹{product.price}</span>
+                          {product.originalPrice > product.price && (
+                            <>
+                              <span className="text-xs text-neutral-400 line-through">₹{product.originalPrice}</span>
+                              <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                                {discountPercent}% OFF
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        {product.sizes && product.sizes.length > 0 && (
+                          <div className="text-[10px] text-neutral-400 font-medium mt-1">
+                            Sizes: {product.sizes.join(', ')}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Quick Stock Controls & Actions */}
+                      <div className="pt-2.5 border-t border-neutral-100 space-y-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-extrabold uppercase text-neutral-400">Warehouse Stock:</span>
+                          <div className="flex items-center border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 shadow-2xs">
+                            <button
+                              onClick={() => updateStockQuantity(product.id, Math.max(0, product.stock - 1))}
+                              className="px-2.5 py-1 hover:bg-neutral-200 text-neutral-700 font-black text-xs cursor-pointer"
+                              title="Decrease 1 unit"
+                            >
+                              -
+                            </button>
+                            <input
+                              type="number"
+                              min="0"
+                              value={product.stock}
+                              onChange={(e) => updateStockQuantity(product.id, parseInt(e.target.value) || 0)}
+                              className="w-10 text-center font-bold text-xs text-neutral-900 bg-transparent py-0.5 outline-hidden"
+                            />
+                            <button
+                              onClick={() => updateStockQuantity(product.id, product.stock + 1)}
+                              className="px-2.5 py-1 hover:bg-neutral-200 text-neutral-700 font-black text-xs cursor-pointer"
+                              title="Increase 1 unit"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 pt-0.5">
+                          <button
+                            onClick={() => toggleStockStatus(product.id)}
+                            className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                              isOutOfStock
+                                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
+                                : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
+                            }`}
+                          >
+                            <Power className="w-3 h-3" />
+                            <span>{isOutOfStock ? 'Make In-Stock' : 'Set Sold Out'}</span>
+                          </button>
+
+                          <button
+                            onClick={() => openEditModal(product)}
+                            className="p-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors cursor-pointer"
+                            title="Edit Product Details"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => setDeleteConfirmId(product.id)}
+                            className="p-1.5 rounded-lg bg-neutral-100 hover:bg-rose-100 text-neutral-500 hover:text-rose-600 transition-colors cursor-pointer"
+                            title="Delete Product"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* ========================================================
+               MODERN TABLE DATA VIEW
+               ======================================================== */
+            <div className="divide-y divide-neutral-100">
+              {filteredProducts.map((product) => {
+                const isOutOfStock = product.isOutOfStock || product.stock <= 0;
+                const discountPercent = product.originalPrice > product.price 
+                  ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) 
+                  : 0;
+
+                return (
+                  <div 
+                    key={product.id} 
+                    className={`py-3.5 sm:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all rounded-2xl px-3 ${
+                      isOutOfStock ? 'bg-rose-50/30 border border-rose-100' : 'hover:bg-neutral-50/80'
+                    }`}
+                    id={`admin-product-row-${product.id}`}
+                  >
+                    {/* Left: Thumbnail & Details */}
+                    <div className="flex items-center gap-3.5 w-full md:w-auto md:min-w-[300px] max-w-md">
+                      <div className="relative shrink-0">
+                        <img
+                          src={product.image || PRODUCT_FALLBACK_PLACEHOLDER}
+                          alt={product.name}
+                          width={60}
+                          height={68}
+                          loading="lazy"
+                          decoding="async"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
+                          }}
+                          className="w-14 h-16 sm:w-16 sm:h-18 rounded-xl object-cover bg-neutral-100 border border-neutral-200/80 shadow-2xs"
+                        />
+                        {product.images && product.images.length > 1 && (
+                          <span className="absolute -bottom-1.5 -right-1.5 px-1.5 py-0.2 rounded-md bg-neutral-900 text-white text-[9px] font-bold">
+                            +{product.images.length - 1}
+                          </span>
+                        )}
+                      </div>
+
                       <div className="space-y-1 flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-700">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-800">
                             {product.category === 'earrings' 
                               ? (product.subcategory ? `Jewellery • ${product.subcategory}` : 'Jewellery')
                               : product.category === 'tshirts'
@@ -979,7 +1295,7 @@ export const AdminDashboard: React.FC = () => {
                               : (product.subcategory ? `Lowers • ${product.subcategory}` : 'Lowers')}
                           </span>
                           {product.tag && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
+                            <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
                               {product.tag}
                             </span>
                           )}
@@ -988,27 +1304,31 @@ export const AdminDashboard: React.FC = () => {
                           {product.name}
                         </h4>
                         <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 flex-wrap">
-                          <span className="text-neutral-900 font-extrabold">₹{product.price}</span>
+                          <span className="text-neutral-950 font-black">₹{product.price}</span>
                           {product.originalPrice > product.price && (
-                            <span className="text-[11px] text-neutral-400 line-through">₹{product.originalPrice}</span>
+                            <>
+                              <span className="text-[11px] text-neutral-400 line-through">₹{product.originalPrice}</span>
+                              <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                                {discountPercent}% OFF
+                              </span>
+                            </>
                           )}
                           <span className="text-[10px] text-neutral-400">Sizes: {product.sizes?.join(', ')}</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Middle: Live Stock Quantity Controller */}
-                    <div className="flex flex-wrap items-center justify-between sm:justify-start gap-3 w-full md:w-auto">
-                      
-                      {/* Quantity Increaser/Decreaser */}
+                    {/* Middle: Live Stock Quantity Stepper & Status Badge */}
+                    <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4 w-full md:w-auto">
+                      {/* Quantity Stepper */}
                       <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                          Stock Quantity:
+                        <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider">
+                          Stock Counter:
                         </span>
                         <div className="flex items-center border border-neutral-200 rounded-xl overflow-hidden bg-white shadow-2xs">
                           <button
                             onClick={() => updateStockQuantity(product.id, Math.max(0, product.stock - 1))}
-                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-extrabold text-sm"
+                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-black text-sm cursor-pointer"
                             title="Decrease 1 unit"
                           >
                             -
@@ -1023,7 +1343,7 @@ export const AdminDashboard: React.FC = () => {
                           />
                           <button
                             onClick={() => updateStockQuantity(product.id, product.stock + 1)}
-                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-extrabold text-sm"
+                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-black text-sm cursor-pointer"
                             title="Increase 1 unit"
                           >
                             +
@@ -1033,35 +1353,33 @@ export const AdminDashboard: React.FC = () => {
 
                       {/* Stock Status Badge */}
                       <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
-                          Status:
+                        <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider">
+                          Live Status:
                         </span>
                         {isOutOfStock ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-100 text-rose-800 text-xs font-extrabold border border-rose-200">
-                            <AlertCircle className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-100 text-rose-900 text-xs font-black border border-rose-200">
+                            <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
                             <span>Out of Stock</span>
                           </span>
                         ) : product.stock <= 4 ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
-                            <AlertTriangle className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 text-amber-900 text-xs font-black border border-amber-300">
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
                             <span>Low ({product.stock})</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-black border border-emerald-200">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                             <span>In Stock ({product.stock})</span>
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {/* Right: Quick 1-Click Out-of-stock toggle & Edit & Delete */}
+                    {/* Right: Actions */}
                     <div className="flex items-center gap-2 w-full md:w-auto justify-end pt-2 md:pt-0 border-t md:border-t-0 border-neutral-100">
-                      
-                      {/* 1-Click Out-of-Stock Toggle Button */}
                       <button
                         onClick={() => toggleStockStatus(product.id)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
+                        className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
                           isOutOfStock
                             ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                             : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
@@ -1069,23 +1387,21 @@ export const AdminDashboard: React.FC = () => {
                         id={`admin-toggle-btn-${product.id}`}
                       >
                         <Power className="w-3.5 h-3.5" />
-                        <span>{isOutOfStock ? 'Set In-Stock' : 'Set Out of Stock'}</span>
+                        <span>{isOutOfStock ? 'Make Available' : 'Set Sold Out'}</span>
                       </button>
 
-                      {/* Edit Details */}
                       <button
                         onClick={() => openEditModal(product)}
-                        className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors"
+                        className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors cursor-pointer"
                         title="Edit Product Details"
                         id={`admin-edit-btn-${product.id}`}
                       >
                         <Edit className="w-4 h-4" />
                       </button>
 
-                      {/* Delete */}
                       <button
                         onClick={() => setDeleteConfirmId(product.id)}
-                        className="p-2 rounded-xl bg-neutral-100 hover:bg-rose-100 text-neutral-500 hover:text-rose-600 transition-colors"
+                        className="p-2 rounded-xl bg-neutral-100 hover:bg-rose-100 text-neutral-500 hover:text-rose-600 transition-colors cursor-pointer"
                         title="Delete Product"
                         id={`admin-delete-btn-${product.id}`}
                       >
@@ -1102,18 +1418,26 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Orders Tab */}
       {activeTab === 'orders' && (
-        <div className="bg-white rounded-3xl border border-neutral-200 shadow-sm p-4 sm:p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-neutral-100 gap-2">
+        <div className="bg-white rounded-3xl border border-neutral-200/90 shadow-sm p-4 sm:p-6 space-y-5">
+          {/* Header Row */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-neutral-100 gap-3">
             <div>
-              <h3 className="font-extrabold text-base text-neutral-900">Customer Orders History</h3>
-              <p className="text-xs text-neutral-500">Real-time orders placed via storefront or customer inquiry</p>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-lg text-neutral-900 tracking-tight">Customer Orders & Fulfillment</h3>
+                <span className="px-2 py-0.5 rounded-full bg-neutral-900 text-white text-[11px] font-black">
+                  {orders.length}
+                </span>
+              </div>
+              <p className="text-xs text-neutral-500 mt-0.5">
+                Real-time orders placed via online storefront or inquiry • Direct WhatsApp contact & Shiprocket dispatch
+              </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => exportShiprocketCSV(orders)}
                 disabled={orders.length === 0}
-                className="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3.5 py-2 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs"
                 title="Download CSV formatted for Shiprocket Bulk Import"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -1123,172 +1447,350 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsClearOrdersModalOpen(true)}
-                  className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   title="Purge all test and dummy orders"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Clear Test Orders</span>
+                  <span className="hidden sm:inline">Clear Test Orders</span>
                 </button>
               )}
-              <span className="text-xs font-bold text-neutral-700 bg-neutral-100 px-3 py-1.5 rounded-full">
-                {orders.length} Total Orders
-              </span>
+            </div>
+          </div>
+
+          {/* Search Bar & Status Filter Pills */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-neutral-50 p-2.5 rounded-2xl border border-neutral-200/80">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[220px]">
+              <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search orders by ID, customer name, phone, or AWB tracking..."
+                value={orderSearch}
+                onChange={(e) => setOrderSearch(e.target.value)}
+                className="w-full pl-9 pr-8 py-2 bg-white text-xs text-neutral-900 rounded-xl border border-neutral-200 focus:outline-hidden focus:border-amber-500 font-medium placeholder:text-neutral-400"
+              />
+              {orderSearch && (
+                <button 
+                  onClick={() => setOrderSearch('')} 
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Status Filter Pills */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 md:pb-0">
+              {[
+                { id: 'all', label: 'All Orders', count: orders.length },
+                { id: 'pending', label: 'Pending', count: orders.filter(o => !o.status || o.status.toLowerCase() === 'pending').length },
+                { id: 'confirmed', label: 'Confirmed', count: orders.filter(o => o.status?.toLowerCase() === 'confirmed').length },
+                { id: 'dispatched', label: 'Dispatched', count: orders.filter(o => o.status?.toLowerCase() === 'dispatched' || o.status?.toLowerCase() === 'shipped').length },
+                { id: 'delivered', label: 'Delivered', count: orders.filter(o => o.status?.toLowerCase() === 'delivered').length },
+                { id: 'cancelled', label: 'Cancelled', count: orders.filter(o => o.status?.toLowerCase() === 'cancelled').length },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setOrderStatusFilter(tab.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    orderStatusFilter === tab.id
+                      ? 'bg-neutral-900 text-white shadow-2xs'
+                      : 'bg-white text-neutral-600 hover:bg-neutral-200/80 border border-neutral-200/70'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                    orderStatusFilter === tab.id ? 'bg-amber-400 text-neutral-950' : 'bg-neutral-100 text-neutral-600'
+                  }`}>
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
           {orders.length === 0 ? (
-            <div className="py-16 text-center text-neutral-400 space-y-2">
-              <ShoppingBag className="w-8 h-8 mx-auto text-neutral-300" />
-              <p className="text-xs font-medium">No customer orders yet.</p>
-              <p className="text-[11px] text-neutral-500">
-                When visitors place an order on the storefront, it will instantly appear here!
+            <div className="py-20 text-center space-y-3 max-w-sm mx-auto">
+              <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600">
+                <ShoppingBag className="w-8 h-8" />
+              </div>
+              <h4 className="font-black text-neutral-900 text-base">No Customer Orders Yet</h4>
+              <p className="text-xs text-neutral-500 leading-relaxed">
+                When customers place an order on your storefront or contact you via WhatsApp, orders will appear here automatically in real time.
               </p>
             </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="py-16 text-center text-neutral-400 space-y-2">
+              <Package className="w-10 h-10 mx-auto text-neutral-300" />
+              <p className="text-xs font-bold text-neutral-700">No orders match "{orderSearch || orderStatusFilter}"</p>
+              <button
+                onClick={() => { setOrderSearch(''); setOrderStatusFilter('all'); }}
+                className="text-xs font-bold text-amber-600 hover:underline cursor-pointer"
+              >
+                Clear search and filters
+              </button>
+            </div>
           ) : (
-            <div className="space-y-3 divide-y divide-neutral-100">
-              {orders.map((order) => (
-                <div key={order.id} className="pt-3 flex flex-col sm:flex-row justify-between gap-3 text-xs">
-                  <div className="space-y-1 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-black text-neutral-900 font-mono">{order.id}</span>
-                      <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] uppercase ${
-                        order.status === 'Delivered' || order.status?.toLowerCase() === 'delivered' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
-                        order.status === 'Dispatched' || order.status?.toLowerCase() === 'shipped' || order.status?.toLowerCase() === 'dispatched' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
-                        order.status === 'Confirmed' || order.status?.toLowerCase() === 'processing' || order.status?.toLowerCase() === 'confirmed' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
-                        order.status === 'Cancelled' || order.status?.toLowerCase() === 'cancelled' ? 'bg-rose-100 text-rose-800 border border-rose-300' :
-                        'bg-neutral-100 text-neutral-800 border border-neutral-200'
-                      }`}>
-                        {order.status || 'Pending'}
-                      </span>
-                      <span className="text-neutral-400 text-[10px]">
-                        {new Date(order.createdAt).toLocaleString()}
-                      </span>
-                    </div>
+            <div className="space-y-4">
+              {filteredOrders.map((order) => {
+                const statusLower = (order.status || 'Pending').toLowerCase();
+                const isCancelled = statusLower === 'cancelled';
+                const isDelivered = statusLower === 'delivered';
+                const isDispatched = statusLower === 'dispatched' || statusLower === 'shipped';
+                const isConfirmed = statusLower === 'confirmed';
 
-                    <div className="font-bold text-neutral-800">
-                      {order.customerName} • <a href={`tel:${order.customerPhone.startsWith('+') ? order.customerPhone : `+91${order.customerPhone}`}`} className="text-amber-700 hover:underline">{order.customerPhone}</a>
-                    </div>
-                    <div className="text-neutral-500 text-[11px] max-w-md">
-                      Address: {order.customerAddress} {order.customerCity ? `(${order.customerCity})` : ''}
-                    </div>
-
-                    <div className="pt-1 text-[11px] text-neutral-700 space-y-0.5">
-                      {order.items.map((it, idx) => (
-                        <div key={`${it.product.id}-${it.selectedSize}-${idx}`} className="flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                          <span>{it.quantity}x <strong>{it.product.name}</strong> ({it.selectedSize}) - ₹{it.quantity * it.product.price}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Shiprocket AWB Badge & Live Track if available */}
-                    {order.awbCode && (
-                      <div className="mt-2 inline-flex flex-wrap items-center gap-2 p-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-[11px]">
-                        <Truck className="w-3.5 h-3.5 text-purple-600" />
-                        <span className="font-semibold">{order.courierName || 'Shiprocket'} AWB:</span>
-                        <span className="font-mono font-bold bg-white px-1.5 py-0.2 rounded border border-purple-200">
-                          {order.awbCode}
+                return (
+                  <div
+                    key={order.id}
+                    className={`bg-white rounded-2xl border transition-all p-4 sm:p-5 space-y-4 hover:shadow-md ${
+                      isCancelled
+                        ? 'border-rose-200 bg-rose-50/20'
+                        : isDelivered
+                        ? 'border-emerald-200 bg-emerald-50/10'
+                        : isDispatched
+                        ? 'border-purple-200 bg-purple-50/10'
+                        : 'border-neutral-200/90'
+                    }`}
+                  >
+                    {/* Top Row: Order ID, Date, Status */}
+                    <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-neutral-100">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-black text-neutral-900 font-mono text-xs px-2.5 py-1 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center gap-1.5">
+                          <Hash className="w-3 h-3 text-neutral-500" />
+                          <span>{order.id}</span>
                         </span>
-                        <a
-                          href={getShiprocketTrackingUrl(order.awbCode)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-700 hover:text-purple-900 font-bold underline ml-1 inline-flex items-center gap-0.5"
+                        
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(order.id, 'Order ID')}
+                          className="p-1 rounded-md text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                          title="Copy Order ID"
                         >
-                          <span>Live Track</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+
+                        <span className="text-neutral-400 text-[11px] flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-neutral-400" />
+                          {new Date(order.createdAt).toLocaleString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
                       </div>
-                    )}
+
+                      {/* Status Badge */}
+                      <div>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${
+                          isDelivered ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                          isDispatched ? 'bg-purple-100 text-purple-800 border border-purple-300' :
+                          isConfirmed ? 'bg-sky-100 text-sky-800 border border-sky-300' :
+                          isCancelled ? 'bg-rose-100 text-rose-800 border border-rose-300' :
+                          'bg-amber-100 text-amber-900 border border-amber-300'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            isDelivered ? 'bg-emerald-600' :
+                            isDispatched ? 'bg-purple-600 animate-pulse' :
+                            isConfirmed ? 'bg-sky-600' :
+                            isCancelled ? 'bg-rose-600' :
+                            'bg-amber-600 animate-pulse'
+                          }`} />
+                          <span>{order.status || 'Pending'}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Middle Grid: Customer & Shipping Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                      {/* Customer Info */}
+                      <div className="space-y-1.5 p-3 rounded-xl bg-neutral-50/80 border border-neutral-100">
+                        <div className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">Customer Details</div>
+                        <div className="font-bold text-neutral-900 text-sm">{order.customerName}</div>
+                        <div className="flex items-center gap-2 pt-0.5">
+                          <a
+                            href={`tel:${order.customerPhone.startsWith('+') ? order.customerPhone : `+91${order.customerPhone}`}`}
+                            className="inline-flex items-center gap-1 text-neutral-700 hover:text-amber-700 font-semibold text-xs"
+                          >
+                            <Phone className="w-3.5 h-3.5 text-amber-600" />
+                            <span>{order.customerPhone}</span>
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(order.customerPhone, 'Phone Number')}
+                            className="text-neutral-400 hover:text-neutral-600 cursor-pointer"
+                            title="Copy Phone"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="text-neutral-500 text-[11px] pt-1 leading-relaxed">
+                          <span className="font-semibold text-neutral-700">Address: </span>
+                          {order.customerAddress}
+                          {order.customerCity && ` (${order.customerCity})`}
+                        </div>
+                      </div>
+
+                      {/* Order Items */}
+                      <div className="space-y-1.5 p-3 rounded-xl bg-neutral-50/80 border border-neutral-100 md:col-span-1">
+                        <div className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
+                          Order Items ({order.items.reduce((s, i) => s + i.quantity, 0)} units)
+                        </div>
+                        <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                          {order.items.map((it, idx) => (
+                            <div key={`${it.product.id}-${it.selectedSize}-${idx}`} className="flex items-center justify-between text-[11px] gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="w-5 h-5 rounded-md bg-neutral-200 text-neutral-800 text-[10px] font-black flex items-center justify-center shrink-0">
+                                  {it.quantity}x
+                                </span>
+                                <span className="font-semibold text-neutral-900 truncate">{it.product.name}</span>
+                              </div>
+                              <div className="shrink-0 flex items-center gap-1.5">
+                                <span className="px-1.5 py-0.2 rounded bg-neutral-200/70 text-neutral-700 font-bold text-[10px]">
+                                  {it.selectedSize}
+                                </span>
+                                <span className="font-bold text-neutral-900">₹{it.quantity * it.product.price}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Payment & Logistics summary */}
+                      <div className="space-y-1.5 p-3 rounded-xl bg-neutral-50/80 border border-neutral-100 flex flex-col justify-between">
+                        <div>
+                          <div className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">Payment & Total</div>
+                          <div className="flex items-baseline gap-2 mt-0.5">
+                            <span className="text-xl font-black text-neutral-950">₹{order.totalAmount}</span>
+                            <span className="px-2 py-0.5 rounded-md bg-neutral-200 text-neutral-800 font-bold text-[10px] uppercase">
+                              {order.paymentMethod || 'Prepaid / UPI'}
+                            </span>
+                          </div>
+                          {order.transactionId && (
+                            <div className="mt-1 flex items-center gap-1 text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                              <span>UTR: {order.transactionId}</span>
+                              <button
+                                type="button"
+                                onClick={() => copyToClipboard(order.transactionId || '', 'UTR')}
+                                className="text-emerald-600 hover:text-emerald-900 ml-auto cursor-pointer"
+                              >
+                                <Copy className="w-3 h-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* AWB info if available */}
+                        {order.awbCode ? (
+                          <div className="pt-2 border-t border-neutral-200/60 flex items-center justify-between gap-1 text-[11px]">
+                            <div className="flex items-center gap-1 text-purple-800 font-bold">
+                              <Truck className="w-3.5 h-3.5 text-purple-600" />
+                              <span>{order.courierName || 'Shiprocket'}:</span>
+                              <span className="font-mono bg-white px-1.5 py-0.2 rounded border border-purple-200">{order.awbCode}</span>
+                            </div>
+                            <a
+                              href={getShiprocketTrackingUrl(order.awbCode)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-purple-700 hover:text-purple-900 font-bold underline inline-flex items-center gap-0.5"
+                            >
+                              <span>Track</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="pt-2 border-t border-neutral-200/60 text-[10px] text-neutral-400 font-medium">
+                            No AWB assigned yet. Click "Dispatch & AWB" to add.
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
                     {/* Cancelled Banner if cancelled */}
-                    {order.status === 'Cancelled' && (
-                      <div className="mt-2 inline-flex items-center gap-1.5 p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-semibold">
-                        <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                    {isCancelled && (
+                      <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2">
+                        <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
                         <span>Order Cancelled: {order.cancellationReason || 'Cancelled by store admin'}</span>
                       </div>
                     )}
-                  </div>
 
-                  <div className="sm:text-right flex sm:flex-col justify-between items-end gap-2 shrink-0">
-                    <div>
-                      <div className="text-xs text-neutral-400">Total Amount:</div>
-                      <div className="text-base font-black text-neutral-950">₹{order.totalAmount}</div>
-                      <div className="text-[10px] text-neutral-500 font-medium">{order.paymentMethod}</div>
-                      {order.transactionId && (
-                        <div className="text-[10px] text-emerald-700 font-mono font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 mt-0.5 inline-block">
-                          UTR: {order.transactionId}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap sm:flex-col items-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => openDispatchModal(order)}
-                        className="px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <Truck className="w-3.5 h-3.5 text-purple-400" />
-                        <span>{order.awbCode ? 'Edit AWB / Status' : 'Dispatch & AWB'}</span>
-                      </button>
-
-                      {order.status === 'Cancelled' ? (
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => updateOrderStatus(order.id, 'Pending')}
-                            className="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
-                            title="Re-open this order"
-                          >
-                            <Undo2 className="w-3.5 h-3.5 text-amber-700" />
-                            <span>Re-open</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setDeletingOrderId(order.id)}
-                            className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
-                            title="Delete order permanently"
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      ) : (
+                    {/* Bottom Row: Action Buttons */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-neutral-100">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* Dispatch & AWB Modal launcher */}
                         <button
                           type="button"
-                          onClick={() => openCancelModal(order)}
-                          className="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors flex items-center gap-1.5 cursor-pointer"
-                          title="Cancel this customer order"
+                          onClick={() => openDispatchModal(order)}
+                          className="px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
                         >
-                          <Ban className="w-3.5 h-3.5 text-rose-600" />
-                          <span>Cancel Order</span>
+                          <Truck className="w-3.5 h-3.5 text-purple-400" />
+                          <span>{order.awbCode ? 'Update AWB / Courier' : 'Dispatch Order (Add AWB)'}</span>
                         </button>
-                      )}
 
-                      <a
-                        href={
-                          order.status === 'Cancelled'
-                            ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                `Hello ${order.customerName}!\nYour order #${order.id} at Leovra Enterprises has been cancelled.\nReason: ${order.cancellationReason || 'Cancelled by store admin'}.\nIf you have any questions or would like to re-order, please reply here.`
-                              )}`
-                            : order.awbCode
-                            ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                `Hello ${order.customerName}!\nYour Leovra Order #${order.id} has been dispatched via Shiprocket (${order.courierName || 'Express Courier'}).\nAWB Tracking No: ${order.awbCode}\nLive Tracking: ${getShiprocketTrackingUrl(order.awbCode)}\nThank you for shopping with Leovra Enterprises!`
-                              )}`
-                            : `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                `Hello ${order.customerName}! We received your order #${order.id} at Leovra Enterprises.`
-                              )}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 hover:bg-emerald-100 transition-colors inline-flex items-center gap-1"
-                      >
-                        <span>{order.status === 'Cancelled' ? 'WhatsApp Cancel Msg' : order.awbCode ? 'WhatsApp Tracking' : 'WhatsApp Customer'}</span>
-                      </a>
+                        {/* WhatsApp Customer Update Button */}
+                        <a
+                          href={
+                            isCancelled
+                              ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                  `Hello ${order.customerName}!\nYour order #${order.id} at Leovra Enterprises has been cancelled.\nReason: ${order.cancellationReason || 'Cancelled by store admin'}.\nIf you have any questions or wish to re-order, please reply here.`
+                                )}`
+                              : order.awbCode
+                              ? `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                  `Hello ${order.customerName}!\nYour Leovra Order #${order.id} has been dispatched via ${order.courierName || 'Shiprocket Express'}.\nAWB Tracking No: ${order.awbCode}\nLive Tracking: ${getShiprocketTrackingUrl(order.awbCode)}\nThank you for shopping with Leovra Enterprises!`
+                                )}`
+                              : `https://wa.me/91${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                  `Hello ${order.customerName}!\nWe received your order #${order.id} for ₹${order.totalAmount} at Leovra Enterprises. We are preparing it for packaging and dispatch soon!`
+                                )}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shadow-2xs"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>{isCancelled ? 'WhatsApp Cancel Msg' : order.awbCode ? 'Send Tracking on WhatsApp' : 'Chat with Customer'}</span>
+                        </a>
+                      </div>
+
+                      {/* Cancel / Re-open / Delete */}
+                      <div className="flex items-center gap-1.5">
+                        {isCancelled ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => updateOrderStatus(order.id, 'Pending')}
+                              className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
+                              title="Re-open this order"
+                            >
+                              <Undo2 className="w-3.5 h-3.5 text-amber-700" />
+                              <span>Re-open</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeletingOrderId(order.id)}
+                              className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
+                              title="Delete permanently"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                              <span>Delete</span>
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openCancelModal(order)}
+                            className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-rose-50 text-neutral-600 hover:text-rose-700 font-bold text-xs transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Cancel this order"
+                          >
+                            <Ban className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Cancel Order</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -1348,7 +1850,17 @@ export const AdminDashboard: React.FC = () => {
                 <span>Account Credentials</span>
               </div>
               <div className="text-xs space-y-1">
-                <div><span className="text-neutral-500">Email:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.accountEmail}</strong></div>
+                <div className="flex items-center justify-between">
+                  <div><span className="text-neutral-500">Email:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.accountEmail}</strong></div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(SHIPROCKET_CONFIG.accountEmail, 'Shiprocket Email')}
+                    className="text-neutral-400 hover:text-neutral-700 p-1"
+                    title="Copy Email"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </button>
+                </div>
                 <div><span className="text-neutral-500">Merchant:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.companyName}</strong></div>
                 <div><span className="text-neutral-500">Account Status:</span> <span className="text-emerald-700 font-bold">Verified & Active</span></div>
               </div>
@@ -1362,8 +1874,28 @@ export const AdminDashboard: React.FC = () => {
               </div>
               <div className="text-xs space-y-1">
                 <div><span className="text-neutral-500">Location Tag:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.pickupLocation}</strong></div>
-                <div><span className="text-neutral-500">Hub Pincode:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.pickupPincode} ({SHIPROCKET_CONFIG.pickupCity})</strong></div>
-                <div><span className="text-neutral-500">Pickup Contact:</span> <strong className="text-neutral-900">Sartaj (7979968347)</strong></div>
+                <div className="flex items-center justify-between">
+                  <div><span className="text-neutral-500">Hub Pincode:</span> <strong className="text-neutral-900">{SHIPROCKET_CONFIG.pickupPincode} ({SHIPROCKET_CONFIG.pickupCity})</strong></div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(SHIPROCKET_CONFIG.pickupPincode, 'Pickup Pincode')}
+                    className="text-neutral-400 hover:text-neutral-700 p-1"
+                    title="Copy Pincode"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div><span className="text-neutral-500">Pickup Contact:</span> <strong className="text-neutral-900">Sartaj (7979968347)</strong></div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard('7979968347', 'Contact Number')}
+                    className="text-neutral-400 hover:text-neutral-700 p-1"
+                    title="Copy Contact Phone"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1811,8 +2343,8 @@ export const AdminDashboard: React.FC = () => {
                       onClick={() => handleCategoryChange(cat.id as ProductCategory)}
                       className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                         formCategory === cat.id
-                          ? 'bg-neutral-950 text-white border-neutral-950 font-bold shadow-xs'
-                          : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
+                          ? 'bg-neutral-950 text-white border-amber-500 ring-2 ring-amber-400/40 font-bold shadow-md'
+                          : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300'
                       }`}
                     >
                       <div className="font-bold text-xs">{cat.label}</div>
@@ -1960,6 +2492,27 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
+              {/* Live Customer Deal Margin Preview */}
+              {Number(formPrice) > 0 && (
+                <div className="p-3 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-500/30 rounded-2xl flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div>
+                      <span className="font-extrabold text-neutral-900">Live Customer Deal: </span>
+                      <span className="text-neutral-700 font-medium">
+                        Selling at <strong className="text-neutral-950 font-black">₹{formPrice}</strong>
+                        {Number(formOriginalPrice) > Number(formPrice) && (
+                          <span> (MRP ₹{formOriginalPrice} • <strong className="text-emerald-700">{Math.round(((Number(formOriginalPrice) - Number(formPrice)) / Number(formOriginalPrice)) * 100)}% OFF</strong> • Customer Saves ₹{Number(formOriginalPrice) - Number(formPrice)})</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider shadow-2xs">
+                    Live Deal Badge
+                  </span>
+                </div>
+              )}
+
               {/* Sizes Available */}
               <div>
                 <label className="block font-bold text-neutral-700 mb-1">
@@ -2018,6 +2571,10 @@ export const AdminDashboard: React.FC = () => {
                       {formImages.length >= 2 
                         ? '✨ 2+ Photos Uploaded — Auto-Slide Carousel Active on Storefront!' 
                         : '💡 Upload 2 or more photos to enable Auto-Slide Carousel on product!'}
+                    </span>
+                    <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                      Auto-compressed to ~60KB for instant multi-phone cloud sync
                     </span>
                   </div>
                   
@@ -2236,11 +2793,11 @@ export const AdminDashboard: React.FC = () => {
                 <button
                   type="submit"
                   aria-label={editingProduct ? 'Save Changes' : 'Publish Product to Shop'}
-                  className="px-5 py-2.5 min-h-[44px] rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white font-bold shadow-md transition-all cursor-pointer flex items-center gap-2 text-xs"
+                  className="px-6 py-2.5 min-h-[44px] rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-neutral-950 font-black shadow-lg shadow-amber-500/25 transition-all cursor-pointer flex items-center gap-2 text-xs active:scale-95"
                   id="admin-submit-save-btn"
                 >
-                  <Save className="w-4 h-4 text-amber-400" />
-                  <span>{editingProduct ? 'Save Changes' : 'Publish Product to Shop'}</span>
+                  <Save className="w-4 h-4 stroke-[2.5]" />
+                  <span>{editingProduct ? 'Save & Sync Product' : 'Publish Product to Shop'}</span>
                 </button>
               </div>
             </div>
