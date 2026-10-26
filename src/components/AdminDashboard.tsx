@@ -1247,7 +1247,7 @@ export const AdminDashboard: React.FC = () => {
             /* ========================================================
                MODERN TABLE DATA VIEW
                ======================================================== */
-            <div className="divide-y divide-neutral-100">
+            <div className="max-w-[1100px] mx-auto w-full flex flex-col gap-[12px]">
               {filteredProducts.map((product) => {
                 const isOutOfStock = product.isOutOfStock || product.stock <= 0;
                 const discountPercent = product.originalPrice > product.price 
@@ -1257,35 +1257,35 @@ export const AdminDashboard: React.FC = () => {
                 return (
                   <div 
                     key={product.id} 
-                    className={`py-3.5 sm:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all rounded-2xl px-3 ${
-                      isOutOfStock ? 'bg-rose-50/30 border border-rose-100' : 'hover:bg-neutral-50/80'
-                    }`}
+                    className="bg-white border border-neutral-200 rounded-[12px] p-[14px_16px] shadow-xs hover:shadow-md transition-shadow grid grid-cols-1 md:grid-cols-[72px_1fr_auto_auto] gap-3 md:gap-[16px] items-center"
                     id={`admin-product-row-${product.id}`}
                   >
-                    {/* Left: Thumbnail & Details */}
-                    <div className="flex items-center gap-3.5 w-full md:w-auto md:min-w-[300px] max-w-md">
-                      <div className="relative shrink-0">
+                    {/* Row 1 on mobile: Image + Product info / Col 1 & 2 on desktop via md:contents */}
+                    <div className="flex items-center gap-3.5 w-full md:contents">
+                      {/* Image: 72x72px, object-fit: cover, 10px radius, aligned left */}
+                      <div className="relative w-[72px] h-[72px] shrink-0">
                         <img
                           src={product.image || PRODUCT_FALLBACK_PLACEHOLDER}
                           alt={product.name}
-                          width={60}
-                          height={68}
+                          width={72}
+                          height={72}
                           loading="lazy"
                           decoding="async"
                           onError={(e) => {
                             e.currentTarget.onerror = null;
                             e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
                           }}
-                          className="w-14 h-16 sm:w-16 sm:h-18 rounded-xl object-cover bg-neutral-100 border border-neutral-200/80 shadow-2xs"
+                          className="w-[72px] h-[72px] rounded-[10px] object-cover bg-neutral-100 border border-neutral-200/80 shadow-2xs"
                         />
                         {product.images && product.images.length > 1 && (
-                          <span className="absolute -bottom-1.5 -right-1.5 px-1.5 py-0.2 rounded-md bg-neutral-900 text-white text-[9px] font-bold">
+                          <span className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-md bg-neutral-900 text-white text-[9px] font-bold shadow-xs">
                             +{product.images.length - 1}
                           </span>
                         )}
                       </div>
 
-                      <div className="space-y-1 flex-1 min-w-0">
+                      {/* Product info (left-aligned): category tag + "New" badge on top, product name below, then price + old price + discount badge + sizes in one line (flex-wrap) */}
+                      <div className="space-y-1 min-w-0 flex-1 text-left">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-800">
                             {product.category === 'earrings' 
@@ -1300,7 +1300,7 @@ export const AdminDashboard: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <h4 className="font-bold text-xs sm:text-sm text-neutral-900 leading-snug line-clamp-1">
+                        <h4 className="font-bold text-sm text-neutral-900 leading-snug truncate">
                           {product.name}
                         </h4>
                         <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 flex-wrap">
@@ -1313,22 +1313,25 @@ export const AdminDashboard: React.FC = () => {
                               </span>
                             </>
                           )}
-                          <span className="text-[10px] text-neutral-400">Sizes: {product.sizes?.join(', ')}</span>
+                          {product.sizes && product.sizes.length > 0 && (
+                            <span className="text-[10px] text-neutral-400">Sizes: {product.sizes.join(', ')}</span>
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Middle: Live Stock Quantity Stepper & Status Badge */}
-                    <div className="flex flex-wrap items-center justify-between sm:justify-start gap-4 w-full md:w-auto">
-                      {/* Quantity Stepper */}
-                      <div className="flex flex-col gap-1">
+                    {/* Row 2 on mobile: Stock counter on left, status + buttons on right / Col 3 & 4 on desktop via md:contents */}
+                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 w-full pt-3 border-t border-neutral-100 md:pt-0 md:border-0 md:contents">
+                      {/* Stock counter: label "STOCK COUNTER" above, the -/+ box below, vertically centered with the other columns */}
+                      <div className="flex flex-col items-start gap-1 shrink-0">
                         <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider">
-                          Stock Counter:
+                          STOCK COUNTER
                         </span>
                         <div className="flex items-center border border-neutral-200 rounded-xl overflow-hidden bg-white shadow-2xs">
                           <button
+                            type="button"
                             onClick={() => updateStockQuantity(product.id, Math.max(0, product.stock - 1))}
-                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-black text-sm cursor-pointer"
+                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-black text-sm cursor-pointer transition-colors"
                             title="Decrease 1 unit"
                           >
                             -
@@ -1338,12 +1341,13 @@ export const AdminDashboard: React.FC = () => {
                             min="0"
                             value={product.stock}
                             onChange={(e) => updateStockQuantity(product.id, parseInt(e.target.value) || 0)}
-                            className="w-14 text-center font-bold text-xs text-neutral-900 py-1 outline-hidden"
+                            className="w-12 text-center font-bold text-xs text-neutral-900 py-1 outline-hidden"
                             id={`stock-input-${product.id}`}
                           />
                           <button
+                            type="button"
                             onClick={() => updateStockQuantity(product.id, product.stock + 1)}
-                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-black text-sm cursor-pointer"
+                            className="px-3 py-1.5 hover:bg-neutral-100 text-neutral-700 font-black text-sm cursor-pointer transition-colors"
                             title="Increase 1 unit"
                           >
                             +
@@ -1351,62 +1355,65 @@ export const AdminDashboard: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Stock Status Badge */}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider">
-                          Live Status:
-                        </span>
-                        {isOutOfStock ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-100 text-rose-900 text-xs font-black border border-rose-200">
-                            <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
-                            <span>Out of Stock</span>
-                          </span>
-                        ) : product.stock <= 4 ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 text-amber-900 text-xs font-black border border-amber-300">
-                            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Low ({product.stock})</span>
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-black border border-emerald-200">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>In Stock ({product.stock})</span>
-                          </span>
-                        )}
+                      {/* Right section: Live Status badge on top, and below it the "Set Sold Out", edit and delete buttons in one row, right-aligned with 8px gap */}
+                      <div className="flex flex-col items-end gap-2 shrink-0 ml-auto md:ml-0">
+                        {/* Live Status badge on top */}
+                        <div>
+                          {isOutOfStock ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-900 text-xs font-black border border-rose-200">
+                              <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                              <span>Out of Stock</span>
+                            </span>
+                          ) : product.stock <= 4 ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black border border-amber-300">
+                              <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                              <span>Low ({product.stock})</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black border border-emerald-200">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>In Stock ({product.stock})</span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Buttons in one row, right-aligned with 8px gap (gap-2) */}
+                        <div className="flex items-center gap-2 justify-end">
+                          <button
+                            type="button"
+                            onClick={() => toggleStockStatus(product.id)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
+                              isOutOfStock
+                                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
+                            }`}
+                            id={`admin-toggle-btn-${product.id}`}
+                          >
+                            <Power className="w-3.5 h-3.5" />
+                            <span>{isOutOfStock ? 'Make Available' : 'Set Sold Out'}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(product)}
+                            className="p-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors cursor-pointer"
+                            title="Edit Product Details"
+                            id={`admin-edit-btn-${product.id}`}
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setDeleteConfirmId(product.id)}
+                            className="p-1.5 rounded-xl bg-neutral-100 hover:bg-rose-100 text-neutral-500 hover:text-rose-600 transition-colors cursor-pointer"
+                            title="Delete Product"
+                            id={`admin-delete-btn-${product.id}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Right: Actions */}
-                    <div className="flex items-center gap-2 w-full md:w-auto justify-end pt-2 md:pt-0 border-t md:border-t-0 border-neutral-100">
-                      <button
-                        onClick={() => toggleStockStatus(product.id)}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
-                          isOutOfStock
-                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                            : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
-                        }`}
-                        id={`admin-toggle-btn-${product.id}`}
-                      >
-                        <Power className="w-3.5 h-3.5" />
-                        <span>{isOutOfStock ? 'Make Available' : 'Set Sold Out'}</span>
-                      </button>
-
-                      <button
-                        onClick={() => openEditModal(product)}
-                        className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors cursor-pointer"
-                        title="Edit Product Details"
-                        id={`admin-edit-btn-${product.id}`}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        onClick={() => setDeleteConfirmId(product.id)}
-                        className="p-2 rounded-xl bg-neutral-100 hover:bg-rose-100 text-neutral-500 hover:text-rose-600 transition-colors cursor-pointer"
-                        title="Delete Product"
-                        id={`admin-delete-btn-${product.id}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
                   </div>
                 );
