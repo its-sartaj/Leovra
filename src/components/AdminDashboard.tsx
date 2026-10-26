@@ -1257,74 +1257,73 @@ export const AdminDashboard: React.FC = () => {
                 return (
                   <div 
                     key={product.id} 
-                    className="bg-white border border-neutral-200 rounded-[12px] p-[14px_16px] shadow-xs hover:shadow-md transition-shadow grid grid-cols-1 md:grid-cols-[72px_1fr_auto_auto] gap-3 md:gap-[16px] items-center"
+                    className="admin-product-card-row"
                     id={`admin-product-row-${product.id}`}
                   >
-                    {/* Row 1 on mobile: Image + Product info / Col 1 & 2 on desktop via md:contents */}
-                    <div className="flex items-center gap-3.5 w-full md:contents">
-                      {/* Image: 72x72px, object-fit: cover, 10px radius, aligned left */}
-                      <div className="relative w-[72px] h-[72px] shrink-0">
-                        <img
-                          src={product.image || PRODUCT_FALLBACK_PLACEHOLDER}
-                          alt={product.name}
-                          width={72}
-                          height={72}
-                          loading="lazy"
-                          decoding="async"
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
-                          }}
-                          className="w-[72px] h-[72px] rounded-[10px] object-cover bg-neutral-100 border border-neutral-200/80 shadow-2xs"
-                        />
-                        {product.images && product.images.length > 1 && (
-                          <span className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-md bg-neutral-900 text-white text-[9px] font-bold shadow-xs">
-                            +{product.images.length - 1}
+                    {/* Image: 72x72px, object-fit: cover, 10px radius, aligned left */}
+                    <div className="relative shrink-0">
+                      <img
+                        src={product.image || PRODUCT_FALLBACK_PLACEHOLDER}
+                        alt={product.name}
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
+                        }}
+                        className="admin-product-thumb"
+                      />
+                      {product.images && product.images.length > 1 && (
+                        <span className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-md bg-neutral-900 text-white text-[9px] font-bold shadow-xs">
+                          +{product.images.length - 1}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Product info (left-aligned): category tag + "New" badge on top, product name below, then price + old price + discount badge + sizes in one line (flex-wrap) */}
+                    <div className="admin-product-info-col">
+                      <div className="admin-product-tags-line">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-800 whitespace-nowrap">
+                          {product.category === 'earrings' 
+                            ? (product.subcategory ? `Jewellery • ${product.subcategory}` : 'Jewellery')
+                            : product.category === 'tshirts'
+                            ? (product.subcategory ? `T-Shirts • ${product.subcategory}` : 'T-Shirts')
+                            : (product.subcategory ? `Lowers • ${product.subcategory}` : 'Lowers')}
+                        </span>
+                        {product.tag && (
+                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 whitespace-nowrap">
+                            {product.tag}
                           </span>
                         )}
                       </div>
 
-                      {/* Product info (left-aligned): category tag + "New" badge on top, product name below, then price + old price + discount badge + sizes in one line (flex-wrap) */}
-                      <div className="space-y-1 min-w-0 flex-1 text-left">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-800">
-                            {product.category === 'earrings' 
-                              ? (product.subcategory ? `Jewellery • ${product.subcategory}` : 'Jewellery')
-                              : product.category === 'tshirts'
-                              ? (product.subcategory ? `T-Shirts • ${product.subcategory}` : 'T-Shirts')
-                              : (product.subcategory ? `Lowers • ${product.subcategory}` : 'Lowers')}
-                          </span>
-                          {product.tag && (
-                            <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
-                              {product.tag}
+                      <h4 className="admin-product-title-line" title={product.name}>
+                        {product.name}
+                      </h4>
+
+                      <div className="admin-product-price-line">
+                        <span className="price-main">₹{product.price}</span>
+                        {product.originalPrice > product.price && (
+                          <>
+                            <span className="price-old">₹{product.originalPrice}</span>
+                            <span className="discount-badge">
+                              {discountPercent}% OFF
                             </span>
-                          )}
-                        </div>
-                        <h4 className="font-bold text-sm text-neutral-900 leading-snug truncate">
-                          {product.name}
-                        </h4>
-                        <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 flex-wrap">
-                          <span className="text-neutral-950 font-black">₹{product.price}</span>
-                          {product.originalPrice > product.price && (
-                            <>
-                              <span className="text-[11px] text-neutral-400 line-through">₹{product.originalPrice}</span>
-                              <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
-                                {discountPercent}% OFF
-                              </span>
-                            </>
-                          )}
-                          {product.sizes && product.sizes.length > 0 && (
-                            <span className="text-[10px] text-neutral-400">Sizes: {product.sizes.join(', ')}</span>
-                          )}
-                        </div>
+                          </>
+                        )}
+                        {product.sizes && product.sizes.length > 0 && (
+                          <span className="sizes-text">Sizes: {product.sizes.join(', ')}</span>
+                        )}
                       </div>
                     </div>
 
-                    {/* Row 2 on mobile: Stock counter on left, status + buttons on right / Col 3 & 4 on desktop via md:contents */}
-                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 w-full pt-3 border-t border-neutral-100 md:pt-0 md:border-0 md:contents">
+                    {/* Controls Group: display: contents on desktop; row 2 on mobile */}
+                    <div className="admin-product-controls-group">
                       {/* Stock counter: label "STOCK COUNTER" above, the -/+ box below, vertically centered with the other columns */}
-                      <div className="flex flex-col items-start gap-1 shrink-0">
-                        <span className="text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider">
+                      <div className="admin-product-stock-col">
+                        <span className="stock-label">
                           STOCK COUNTER
                         </span>
                         <div className="flex items-center border border-neutral-200 rounded-xl overflow-hidden bg-white shadow-2xs">
@@ -1356,33 +1355,31 @@ export const AdminDashboard: React.FC = () => {
                       </div>
 
                       {/* Right section: Live Status badge on top, and below it the "Set Sold Out", edit and delete buttons in one row, right-aligned with 8px gap */}
-                      <div className="flex flex-col items-end gap-2 shrink-0 ml-auto md:ml-0">
-                        {/* Live Status badge on top */}
-                        <div>
+                      <div className="admin-product-right-col">
+                        <div className="admin-product-status-pill">
                           {isOutOfStock ? (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-900 text-xs font-black border border-rose-200">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-900 text-xs font-black border border-rose-200 whitespace-nowrap">
                               <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
                               <span>Out of Stock</span>
                             </span>
                           ) : product.stock <= 4 ? (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black border border-amber-300">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black border border-amber-300 whitespace-nowrap">
                               <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
                               <span>Low ({product.stock})</span>
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black border border-emerald-200">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black border border-emerald-200 whitespace-nowrap">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                               <span>In Stock ({product.stock})</span>
                             </span>
                           )}
                         </div>
 
-                        {/* Buttons in one row, right-aligned with 8px gap (gap-2) */}
-                        <div className="flex items-center gap-2 justify-end">
+                        <div className="admin-product-btns-row">
                           <button
                             type="button"
                             onClick={() => toggleStockStatus(product.id)}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer whitespace-nowrap ${
                               isOutOfStock
                                 ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                                 : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'

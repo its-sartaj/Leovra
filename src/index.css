@@ -76,3 +76,204 @@ body {
   transform-origin: left;
   animation: heroProgress 4s linear forwards;
 }
+
+/* ========================================================
+   Admin Product List Row Card Layout (1100px Centered)
+   ======================================================== */
+.admin-product-card-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 20px;
+  padding: 14px 16px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  width: 100%;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-product-card-row:hover {
+  box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.08);
+  border-color: #e5e5e5;
+}
+
+.admin-product-card-row > * {
+  position: static;
+  min-width: 0;
+  margin: 0;
+}
+
+/* Image */
+.admin-product-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* Product Info Column */
+.admin-product-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  min-width: 0;
+  width: 100%;
+}
+
+.admin-product-tags-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  white-space: nowrap;
+}
+
+.admin-product-tags-line > * {
+  white-space: nowrap;
+}
+
+.admin-product-title-line {
+  font-size: 14px;
+  font-weight: 700;
+  color: #171717;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  max-width: 100%;
+}
+
+.admin-product-price-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #525252;
+}
+
+.admin-product-price-line .price-main {
+  font-weight: 900;
+  color: #0a0a0a;
+  white-space: nowrap;
+}
+
+.admin-product-price-line .price-old {
+  font-size: 11px;
+  color: #a3a3a3;
+  text-decoration: line-through;
+  white-space: nowrap;
+}
+
+.admin-product-price-line .discount-badge {
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 900;
+  color: #047857;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.admin-product-price-line .sizes-text {
+  white-space: nowrap;
+  font-size: 11px;
+  color: #737373;
+}
+
+/* Stock Counter Column */
+.admin-product-stock-col {
+  width: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  position: static;
+  margin: 0;
+}
+
+.admin-product-stock-col .stock-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #a3a3a3;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Right Section Column (Live Status + Action Buttons) */
+.admin-product-right-col {
+  width: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  position: static;
+  margin: 0;
+}
+
+.admin-product-status-pill {
+  white-space: nowrap;
+}
+
+.admin-product-btns-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+/* Desktop controls container wrapper: display: contents */
+@media (min-width: 769px) {
+  .admin-product-controls-group {
+    display: contents;
+  }
+}
+
+/* Mobile responsive (max-width: 768px): 2 rows */
+@media (max-width: 768px) {
+  .admin-product-card-row {
+    grid-template-columns: 64px 1fr;
+    row-gap: 12px;
+    column-gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .admin-product-thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+  }
+
+  .admin-product-controls-group {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding-top: 10px;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  .admin-product-right-col {
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .admin-product-btns-row {
+    gap: 6px;
+  }
+}
