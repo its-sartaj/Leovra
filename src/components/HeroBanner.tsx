@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface HeroBannerProps {
   title?: string;
@@ -25,26 +25,14 @@ const HERO_LOOKS = [
   }
 ];
 
-const ROTATION_INTERVAL_MS = 3500;
+// Auto slide duration: 3.2 seconds
+const ROTATION_INTERVAL_MS = 3200;
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   buttonText = 'Shop all',
   onCtaClick
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Check prefers-reduced-motion
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      setPrefersReducedMotion(mediaQuery.matches);
-      const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
-    }
-  }, []);
 
   // Preload images into browser cache
   useEffect(() => {
@@ -54,17 +42,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     });
   }, []);
 
-  // Auto rotation exact matching video (every 3.5s)
+  // Guaranteed continuous auto-slide (no device settings or reduced-motion blockers)
   useEffect(() => {
-    if (!prefersReducedMotion) {
-      timerRef.current = setInterval(() => {
-        setCurrentIndex(prev => (prev + 1) % HERO_LOOKS.length);
-      }, ROTATION_INTERVAL_MS);
-      return () => {
-        if (timerRef.current) clearInterval(timerRef.current);
-      };
-    }
-  }, [prefersReducedMotion]);
+    const timer = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % HERO_LOOKS.length);
+    }, ROTATION_INTERVAL_MS);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const currentLook = HERO_LOOKS[currentIndex];
 
@@ -73,16 +58,19 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       aria-label="Leovra Clothes Cinematic Fashion Showcase"
       className="relative w-full h-[58vh] sm:h-[64vh] md:h-[68vh] min-h-[420px] max-h-[640px] bg-[#121212] flex items-center justify-center overflow-hidden select-none"
     >
-      {/* Background Slides */}
+      {/* Background Slides with Guaranteed Smooth Auto-Crossfade */}
       {HERO_LOOKS.map((look, idx) => {
         const isCurrent = idx === currentIndex;
         return (
           <div
             key={look.id}
             aria-hidden={!isCurrent}
-            className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 ease-in-out ${
-              isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
+            style={{
+              opacity: isCurrent ? 1 : 0,
+              zIndex: isCurrent ? 10 : 1,
+              transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+            className="absolute inset-0 w-full h-full pointer-events-none"
           >
             {/* Ambient Blurred Fill for Widescreen Consistency */}
             <img
@@ -95,11 +83,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <img
               src={look.imageUrl}
               alt={look.altText}
-              className={`relative z-10 w-full h-full object-contain object-center drop-shadow-xl ${
-                prefersReducedMotion
-                  ? ''
-                  : `transition-transform duration-[3800ms] ease-out ${isCurrent ? 'scale-105' : 'scale-100'}`
-              }`}
+              style={{
+                transform: isCurrent ? 'scale(1.05)' : 'scale(1.00)',
+                transition: 'transform 3800ms ease-out'
+              }}
+              className="relative z-10 w-full h-full object-contain object-center drop-shadow-xl"
               loading={idx === 0 ? 'eager' : 'lazy'}
             />
           </div>
