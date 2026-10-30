@@ -32,7 +32,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onViewInvoice
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loginId, setLoginId] = useState('7762967143');
+  const [loginId, setLoginId] = useState('7979968347');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'coupons' | 'settings'>('dashboard');
@@ -92,8 +92,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       return;
     }
 
-    // Default admin credentials
-    if ((loginId === '7762967143' || loginId === 'admin') && (password === '7762967143' || password === 'admin123' || password === 'leovra2026')) {
+    const cleanId = loginId.trim();
+    if ((cleanId === '7979968347' || cleanId === 'admin') && password === 'Sarzad@!123') {
       setIsAuthenticated(true);
       sessionStorage.setItem('lc_admin_token', 'admin_authorized_session');
       setLoginError('');
@@ -195,7 +195,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 required
                 value={loginId}
                 onChange={e => setLoginId(e.target.value)}
-                placeholder="7762967143"
+                placeholder="7979968347"
                 className="w-full p-2.5 border border-neutral-300 focus:border-black outline-none font-mono"
               />
             </div>

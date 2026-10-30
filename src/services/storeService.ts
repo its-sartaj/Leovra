@@ -13,6 +13,15 @@ const STORAGE_KEYS = {
   SETTINGS: 'lc_settings_v2',
 };
 
+// Permanent blocklist for any dummy demo products
+const DUMMY_PRODUCT_IDS = new Set([
+  'sf-01', 'sf-02', 'sf-03', 'sf-04', 'sf-05', 'sf-06',
+  'sf-07', 'sf-08', 'sf-09', 'sf-10', 'sf-11', 'sf-12',
+  'prod-earring-1', 'prod-earring-2', 'prod-earring-3', 'prod-earring-4', 'prod-earring-5',
+  'prod-tshirt-1', 'prod-tshirt-2', 'prod-tshirt-3', 'prod-tshirt-4', 'prod-tshirt-5',
+  'prod-lower-1', 'prod-lower-2', 'prod-lower-3', 'prod-lower-4', 'prod-lower-5'
+]);
+
 class StoreService {
   private listeners: (() => void)[] = [];
 
@@ -23,15 +32,47 @@ class StoreService {
   private init() {
     if (typeof window === 'undefined') return;
     try {
-      if (!localStorage.getItem(STORAGE_KEYS.PRODUCTS)) {
+      // Clean any existing dummy products from localStorage
+      const existingProdsRaw = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
+      if (existingProdsRaw) {
+        try {
+          const parsed: Product[] = JSON.parse(existingProdsRaw);
+          const cleaned = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id));
+          if (cleaned.length === 0) {
+            localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
+          } else {
+            // Ensure user product is present
+            if (!cleaned.some(p => p.id === 'prod-necklace-gold-99')) {
+              cleaned.unshift(DEFAULT_PRODUCTS[0]);
+            }
+            localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(cleaned));
+          }
+        } catch {
+          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
+        }
+      } else {
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
       }
+
       if (!localStorage.getItem(STORAGE_KEYS.COUPONS)) {
         localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(DEFAULT_COUPONS));
       }
-      if (!localStorage.getItem(STORAGE_KEYS.SETTINGS)) {
+
+      const existingSettingsRaw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+      if (existingSettingsRaw) {
+        try {
+          const s = JSON.parse(existingSettingsRaw);
+          // Ensure UPI ID is updated to user's real UPI ID
+          s.upiId = '7979968347@slc';
+          s.supportPhone = '+91 79799 68347';
+          localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s));
+        } catch {
+          localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
+        }
+      } else {
         localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
       }
+
       if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
         localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(DEFAULT_ORDERS));
       }
@@ -57,7 +98,12 @@ class StoreService {
   public getProducts(): Product[] {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      return data ? JSON.parse(data) : DEFAULT_PRODUCTS;
+      if (data) {
+        const parsed: Product[] = JSON.parse(data);
+        const filtered = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id));
+        return filtered.length > 0 ? filtered : DEFAULT_PRODUCTS;
+      }
+      return DEFAULT_PRODUCTS;
     } catch {
       return DEFAULT_PRODUCTS;
     }
@@ -79,24 +125,26 @@ class StoreService {
       return updated;
     } else {
       const newProd: Product = {
-        id: product.id || `sf-${Date.now()}`,
-        sku: product.sku || `SF-${Math.floor(1000 + Math.random() * 9000)}`,
-        title: product.title || 'Untitled Product',
+        id: product.id || `prod-${Date.now()}`,
+        sku: product.sku || `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
+        title: product.title || product.name || 'Untitled Product',
+        name: product.title || product.name || 'Untitled Product',
         description: product.description || '',
-        details: product.details || ['100% Breathable Cotton', 'Reinforced seams', 'Streetwear standard fit'],
-        price: Number(product.price) || 999,
+        details: product.details || ['Handcrafted luxury quality', 'Durable and long-lasting'],
+        price: Number(product.price) || 99,
         originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
-        category: product.category || 'mens_tshirts',
-        gender: product.gender || 'gents',
-        type: product.type || 'tshirts',
-        isNew: product.isNew ?? true,
-        isBestseller: product.isBestseller ?? false,
+        category: product.category || 'jewellery',
+        subcategory: product.subcategory || 'Necklace',
+        gender: product.gender || 'ladies',
+        type: product.type || 'accessories',
+        isNew: product.isNew ?? false,
+        isBestseller: product.isBestseller ?? true,
         isActive: product.isActive ?? true,
-        stock: Number(product.stock ?? 25),
-        image: product.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80',
+        stock: Number(product.stock ?? 10),
+        image: product.image || 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80',
         additionalImages: product.additionalImages || [],
-        sizes: product.sizes && product.sizes.length > 0 ? product.sizes : ['S', 'M', 'L', 'XL'],
-        colors: product.colors && product.colors.length > 0 ? product.colors : [{ name: 'Navy Charcoal', hex: '#1e293b' }, { name: 'Pure White', hex: '#ffffff' }],
+        sizes: product.sizes && product.sizes.length > 0 ? product.sizes : ['Free Size'],
+        colors: product.colors && product.colors.length > 0 ? product.colors : [{ name: 'Gold', hex: '#d4af37' }],
         createdAt: new Date().toISOString()
       };
       products.unshift(newProd);
@@ -146,16 +194,16 @@ class StoreService {
 
   public getOrderByNumber(orderNumber: string): Order | undefined {
     const clean = orderNumber.trim().toLowerCase();
-    return this.getOrders().find(o => o.orderNumber.toLowerCase() === clean);
+    return this.getOrders().find(o => (o.orderNumber || '').toLowerCase() === clean);
   }
 
   public trackOrder(orderNumber: string, phone?: string): Order | undefined {
     const cleanNum = orderNumber.trim().toLowerCase();
     const cleanPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
     return this.getOrders().find(o => {
-      const matchNum = o.orderNumber.toLowerCase() === cleanNum;
+      const matchNum = (o.orderNumber || '').toLowerCase() === cleanNum;
       if (cleanPhone) {
-        const orderPhone = (o.customer?.phone || '').replace(/\D/g, '').slice(-10);
+        const orderPhone = (o.customer?.phone || o.customerPhone || '').replace(/\D/g, '').slice(-10);
         return matchNum || orderPhone === cleanPhone;
       }
       return matchNum;
@@ -174,10 +222,10 @@ class StoreService {
       orderNumber: orderNum,
       orderDate: date.toISOString(),
       customer: orderData.customer || {
-        fullName: 'Customer',
-        phone: '9870168023',
-        address: 'Delivery address',
-        city: 'Delhi'
+        fullName: orderData.customerName || 'Customer',
+        phone: orderData.customerPhone || '7979968347',
+        address: orderData.customerAddress || 'Delivery address',
+        city: orderData.customerCity || 'India'
       },
       items: orderData.items || [],
       subtotal: Number(orderData.subtotal) || 0,
@@ -194,7 +242,7 @@ class StoreService {
           status: 'order_placed',
           timestamp: date.toISOString(),
           note: orderData.paymentMethod === 'upi' 
-            ? `Order created with UPI Payment (9870168023@ptsbi). UTR Reference: ${orderData.upiUtrNumber || 'Pending verification'}` 
+            ? `Order created with UPI Payment (7979968347@slc). UTR Reference: ${orderData.upiUtrNumber || 'Pending verification'}` 
             : 'Order created with Cash on Delivery (COD). Payment status: Pending collection at delivery.',
           updatedBy: 'Customer'
         }
@@ -238,6 +286,7 @@ class StoreService {
       order.courierTrackingUrl = 'https://www.bluedart.com';
     }
 
+    if (!order.statusHistory) order.statusHistory = [];
     order.statusHistory.push({
       status: newStatus,
       timestamp: new Date().toISOString(),
@@ -256,6 +305,7 @@ class StoreService {
     if (!order) return undefined;
 
     order.status = 'cancelled';
+    if (!order.statusHistory) order.statusHistory = [];
     order.statusHistory.push({
       status: 'cancelled',
       timestamp: new Date().toISOString(),
@@ -279,7 +329,7 @@ class StoreService {
 
   public requestReturn(orderNumber: string, reason: string, notes?: string): { success: boolean; message: string } {
     const orders = this.getOrders();
-    const order = orders.find(o => o.orderNumber.toLowerCase() === orderNumber.trim().toLowerCase());
+    const order = orders.find(o => (o.orderNumber || '').toLowerCase() === orderNumber.trim().toLowerCase());
     if (!order) {
       return { success: false, message: 'Order reference not found.' };
     }
@@ -289,6 +339,7 @@ class StoreService {
     }
 
     order.status = 'return_requested';
+    if (!order.statusHistory) order.statusHistory = [];
     order.statusHistory.push({
       status: 'return_requested',
       timestamp: new Date().toISOString(),
@@ -365,7 +416,16 @@ class StoreService {
   public getSettings(): StoreSettings {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-      return data ? JSON.parse(data) : DEFAULT_SETTINGS;
+      if (data) {
+        const s = JSON.parse(data);
+        if (s.upiId === '9870168023@ptsbi') {
+          s.upiId = '7979968347@slc';
+          s.supportPhone = '+91 79799 68347';
+          localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s));
+        }
+        return s;
+      }
+      return DEFAULT_SETTINGS;
     } catch {
       return DEFAULT_SETTINGS;
     }

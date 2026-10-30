@@ -287,11 +287,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <p className="text-xs font-bold text-black mb-1">Scan QR Code to Pay via any UPI App</p>
                 <p className="text-[11px] text-gray-500 mb-3">GPay, PhonePe, Paytm, BHIM or Mobile Banking</p>
 
-                {qrCodeDataUrl && (
-                  <div className="inline-block p-2 bg-white border border-gray-200 shadow-xs mb-3">
-                    <img src={qrCodeDataUrl} alt="UPI QR Code" className="w-44 h-44 object-contain mx-auto" />
-                  </div>
-                )}
+                <div className="inline-block p-2 bg-white border border-gray-200 shadow-xs mb-3">
+                  <img
+                    src={qrCodeDataUrl || `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(`upi://pay?pa=${upiId}&pn=Leovra%20Enterprises&am=${totalAmount.toFixed(2)}&cu=INR&tn=Order%20Payment%20Leovra`)}`}
+                    alt="UPI QR Code"
+                    className="w-44 h-44 object-contain mx-auto"
+                  />
+                </div>
 
                 <div className="flex items-center justify-center space-x-2 text-xs mb-4">
                   <span className="text-gray-600">UPI ID:</span>

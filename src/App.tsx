@@ -426,7 +426,7 @@ export default function App() {
         </button>
 
         <a
-          href={`https://wa.me/91${settings.supportPhone.replace(/\D/g, '') || '9870168023'}?text=${encodeURIComponent('Hello LEOVRA CLOTHES! I have an inquiry about your products.')}`}
+          href={`https://wa.me/91${settings.supportPhone.replace(/\D/g, '') || '7979968347'}?text=${encodeURIComponent('Hello LEOVRA CLOTHES! I have an inquiry about your products.')}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
