@@ -8,6 +8,7 @@ import {
 
 const STORAGE_KEYS = {
   PRODUCTS: 'lc_products_v2',
+  DELETED_PRODUCTS: 'lc_deleted_product_ids_v2',
   ORDERS: 'lc_orders_v2',
   COUPONS: 'lc_coupons_v2',
   SETTINGS: 'lc_settings_v2',
@@ -24,34 +25,91 @@ const DUMMY_PRODUCT_IDS = new Set([
 
 class StoreService {
   private listeners: (() => void)[] = [];
+  private syncChannel: BroadcastChannel | null = null;
 
   constructor() {
     this.init();
   }
 
+  private getDeletedIds(): Set<string> {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.DELETED_PRODUCTS);
+      return data ? new Set(JSON.parse(data)) : new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  private addDeletedId(id: string) {
+    if (typeof window === 'undefined') return;
+    try {
+      const s = this.getDeletedIds();
+      s.add(id);
+      localStorage.setItem(STORAGE_KEYS.DELETED_PRODUCTS, JSON.stringify(Array.from(s)));
+    } catch {}
+  }
+
+  private removeDeletedId(id: string) {
+    if (typeof window === 'undefined') return;
+    try {
+      const s = this.getDeletedIds();
+      if (s.has(id)) {
+        s.delete(id);
+        localStorage.setItem(STORAGE_KEYS.DELETED_PRODUCTS, JSON.stringify(Array.from(s)));
+      }
+    } catch {}
+  }
+
+  private setupSync() {
+    if (typeof window === 'undefined') return;
+    try {
+      if ('BroadcastChannel' in window) {
+        this.syncChannel = new BroadcastChannel('leovra_store_realtime_sync');
+        this.syncChannel.onmessage = (evt) => {
+          if (evt?.data?.type === 'STORE_MUTATION') {
+            this.dispatchLocalListeners();
+          }
+        };
+      }
+    } catch (e) {
+      console.warn('BroadcastChannel sync init:', e);
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key && Object.values(STORAGE_KEYS).includes(e.key)) {
+        this.dispatchLocalListeners();
+      }
+    });
+
+    window.addEventListener('leovra_store_event', () => {
+      this.dispatchLocalListeners();
+    });
+  }
+
+  private dispatchLocalListeners() {
+    this.listeners.forEach(fn => {
+      try { fn(); } catch (err) { console.error('Store notification error:', err); }
+    });
+  }
+
   private init() {
     if (typeof window === 'undefined') return;
     try {
-      // Clean any existing dummy products from localStorage
+      const deletedIds = this.getDeletedIds();
       const existingProdsRaw = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      if (existingProdsRaw) {
+      if (existingProdsRaw !== null) {
         try {
           const parsed: Product[] = JSON.parse(existingProdsRaw);
-          const cleaned = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id));
-          if (cleaned.length === 0) {
-            localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
-          } else {
-            // Ensure user product is present
-            if (!cleaned.some(p => p.id === 'prod-necklace-gold-99')) {
-              cleaned.unshift(DEFAULT_PRODUCTS[0]);
-            }
-            localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(cleaned));
-          }
+          const cleaned = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(cleaned));
         } catch {
-          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
+          const initial = DEFAULT_PRODUCTS.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(initial));
         }
       } else {
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
+        const initial = DEFAULT_PRODUCTS.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(initial));
       }
 
       if (!localStorage.getItem(STORAGE_KEYS.COUPONS)) {
@@ -62,7 +120,6 @@ class StoreService {
       if (existingSettingsRaw) {
         try {
           const s = JSON.parse(existingSettingsRaw);
-          // Ensure UPI ID is updated to user's real UPI ID
           s.upiId = '7979968347@slc';
           s.supportPhone = '+91 79799 68347';
           localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s));
@@ -76,6 +133,8 @@ class StoreService {
       if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
         localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(DEFAULT_ORDERS));
       }
+
+      this.setupSync();
     } catch (e) {
       console.warn('LocalStorage initialization warning:', e);
     }
@@ -89,23 +148,33 @@ class StoreService {
   }
 
   public notify() {
-    this.listeners.forEach(fn => {
-      try { fn(); } catch (err) { console.error('Store notification error:', err); }
-    });
+    this.dispatchLocalListeners();
+
+    try {
+      if (this.syncChannel) {
+        this.syncChannel.postMessage({ type: 'STORE_MUTATION', timestamp: Date.now() });
+      }
+    } catch {}
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.dispatchEvent(new CustomEvent('leovra_store_event'));
+      } catch {}
+    }
   }
 
   // ---------------- PRODUCTS ----------------
   public getProducts(): Product[] {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      if (data) {
+      const deletedIds = this.getDeletedIds();
+      if (data !== null) {
         const parsed: Product[] = JSON.parse(data);
-        const filtered = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id));
-        return filtered.length > 0 ? filtered : DEFAULT_PRODUCTS;
+        return parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
       }
-      return DEFAULT_PRODUCTS;
+      return DEFAULT_PRODUCTS.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
     } catch {
-      return DEFAULT_PRODUCTS;
+      return [];
     }
   }
 
@@ -114,6 +183,9 @@ class StoreService {
   }
 
   public saveProduct(product: Partial<Product> & { id?: string }): Product {
+    if (product.id) {
+      this.removeDeletedId(product.id);
+    }
     const products = this.getProducts();
     const index = product.id ? products.findIndex(p => p.id === product.id) : -1;
 
@@ -155,15 +227,12 @@ class StoreService {
   }
 
   public deleteProduct(id: string): boolean {
+    this.addDeletedId(id);
     const products = this.getProducts();
-    const len = products.length;
     const filtered = products.filter(p => p.id !== id);
-    if (filtered.length !== len) {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(filtered));
-      this.notify();
-      return true;
-    }
-    return false;
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(filtered));
+    this.notify();
+    return true;
   }
 
   public toggleProductStatus(id: string): Product | undefined {
@@ -449,6 +518,7 @@ class StoreService {
   }
 
   public resetToDefault() {
+    localStorage.removeItem(STORAGE_KEYS.DELETED_PRODUCTS);
     localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
     localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(DEFAULT_COUPONS));
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));

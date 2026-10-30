@@ -7,6 +7,7 @@ interface FooterProps {
   onSelectCategory: (category: string) => void;
   onOpenPolicy: (title: string, content: string) => void;
   onOpenTracking: () => void;
+  onOpenAdmin?: () => void;
   settings: StoreSettings;
 }
 
@@ -14,6 +15,7 @@ export const Footer: React.FC<FooterProps> = ({
   onSelectCategory,
   onOpenPolicy,
   onOpenTracking,
+  onOpenAdmin,
   settings
 }) => {
   const [emailInput, setEmailInput] = useState('');
@@ -220,6 +222,16 @@ export const Footer: React.FC<FooterProps> = ({
                     Refund Policy
                   </button>
                 </li>
+                {onOpenAdmin && (
+                  <li>
+                    <button
+                      onClick={onOpenAdmin}
+                      className="hover:text-black transition-colors cursor-pointer text-left text-neutral-400 hover:text-black"
+                    >
+                      Owner Portal
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
 
@@ -246,12 +258,9 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           {/* Bottom Copyright */}
-          <div className="pt-8 border-t border-[#f0f0f0] text-center space-y-1.5">
+          <div className="pt-8 border-t border-[#f0f0f0] text-center">
             <p className="text-gray-600 text-xs font-normal">
-              Copyright © 2026 Leovra Clothes
-            </p>
-            <p className="text-[11px] text-gray-400 font-medium tracking-wider">
-              Designed, Developed by Sajid Web Solutions
+              Copyright © 2026 Leovra Clothes. All rights reserved.
             </p>
           </div>
         </div>

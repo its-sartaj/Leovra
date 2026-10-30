@@ -69,12 +69,20 @@ export default function App() {
     setTimeout(() => setToastMessage(''), 3500);
   };
 
-  // Subscribe to real-time store changes
+  // Subscribe to real-time store changes across tabs & window focus
   useEffect(() => {
-    return storeService.subscribe(() => {
+    const handleSync = () => {
       setProducts(storeService.getProducts());
       setSettings(storeService.getSettings());
-    });
+    };
+    const unsubscribe = storeService.subscribe(handleSync);
+    window.addEventListener('focus', handleSync);
+    window.addEventListener('visibilitychange', handleSync);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('focus', handleSync);
+      window.removeEventListener('visibilitychange', handleSync);
+    };
   }, []);
 
   // Save cart to local storage
@@ -93,6 +101,8 @@ export default function App() {
         setCurrentView('admin');
       } else {
         setCurrentView('store');
+        setProducts(storeService.getProducts());
+        setSettings(storeService.getSettings());
       }
     };
     window.addEventListener('popstate', handlePopState);
@@ -105,6 +115,8 @@ export default function App() {
       window.history.pushState(null, '', '#admin');
     } else {
       window.history.pushState(null, '', '/');
+      setProducts(storeService.getProducts());
+      setSettings(storeService.getSettings());
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -453,6 +465,7 @@ export default function App() {
           setTrackingOrderNumber('');
           setIsTrackingOpen(true);
         }}
+        onOpenAdmin={() => navigateView('admin')}
         settings={settings}
       />
 
@@ -540,6 +553,7 @@ export default function App() {
           setTrackingOrderNumber('');
           setIsTrackingOpen(true);
         }}
+        onOpenAdmin={() => navigateView('admin')}
         settings={settings}
       />
 

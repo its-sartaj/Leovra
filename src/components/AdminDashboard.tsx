@@ -120,6 +120,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       trackingAwb.trim() || undefined,
       courierName
     );
+    setOrders(storeService.getOrders());
     showToast(`Order #${selectedOrder.orderNumber} updated to ${newStatus}`);
     setSelectedOrder(null);
     setStatusNote('');
@@ -131,6 +132,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     e.preventDefault();
     if (!editingProduct?.title || !editingProduct?.price) return;
     storeService.saveProduct(editingProduct);
+    setProducts(storeService.getProducts());
     showToast(editingProduct.id ? 'Product updated.' : 'Product created.');
     setIsProductModalOpen(false);
     setEditingProduct(null);
@@ -139,7 +141,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDeleteProduct = (id: string) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       storeService.deleteProduct(id);
+      setProducts(prev => prev.filter(p => p.id !== id));
       showToast('Product removed from catalog.');
+    }
+  };
+
+  const handleToggleProductStatus = (id: string) => {
+    const updated = storeService.toggleProductStatus(id);
+    if (updated) {
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, isActive: updated.isActive } : p));
+      showToast(`Product ${updated.isActive ? 'activated' : 'disabled'}.`);
     }
   };
 
@@ -148,6 +159,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     e.preventDefault();
     if (!editingCoupon?.code || !editingCoupon?.discountValue) return;
     storeService.saveCoupon(editingCoupon as Coupon);
+    setCoupons(storeService.getCoupons());
     showToast('Coupon saved successfully.');
     setIsCouponModalOpen(false);
     setEditingCoupon(null);
@@ -156,6 +168,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDeleteCoupon = (id: string) => {
     if (window.confirm('Delete coupon code?')) {
       storeService.deleteCoupon(id);
+      setCoupons(prev => prev.filter(c => c.id !== id));
       showToast('Coupon deleted.');
     }
   };
@@ -163,7 +176,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Settings action
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    storeService.saveSettings(settings);
+    const updated = storeService.saveSettings(settings);
+    setSettings({ ...updated });
     showToast('Store settings saved successfully.');
   };
 
@@ -630,57 +644,89 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map(prod => (
-                <div key={prod.id} className="border border-neutral-200 p-3 flex flex-col justify-between text-xs space-y-2">
-                  <div className="relative aspect-[1/1.12] bg-neutral-100 overflow-hidden">
-                    <img src={prod.image} alt="" className="w-full h-full object-cover" />
-                    <span
-                      className={`absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5 uppercase ${
-                        prod.isActive ? 'bg-black text-white' : 'bg-red-600 text-white'
-                      }`}
-                    >
-                      {prod.isActive ? 'Active' : 'Disabled'}
-                    </span>
-                  </div>
+            {products.length === 0 ? (
+              <div className="text-center py-16 border border-dashed border-neutral-300 p-8 space-y-3">
+                <Package className="w-10 h-10 text-neutral-300 mx-auto" />
+                <p className="text-sm font-bold text-neutral-800">No products in catalog</p>
+                <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+                  All previous demo items have been removed. Click &quot;Add New Product&quot; to list your inventory.
+                </p>
+                <button
+                  onClick={() => {
+                    setEditingProduct({
+                      title: '',
+                      price: 99,
+                      category: 'jewellery',
+                      gender: 'ladies',
+                      type: 'accessories',
+                      stock: 10,
+                      image: '',
+                      sizes: ['Free Size'],
+                      colors: [{ name: 'Gold', hex: '#d4af37' }],
+                      isActive: true,
+                      isNew: true
+                    });
+                    setIsProductModalOpen(true);
+                  }}
+                  className="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider inline-flex items-center space-x-1.5 hover:opacity-90 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add First Product</span>
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {products.map(prod => (
+                  <div key={prod.id} className="border border-neutral-200 p-3 flex flex-col justify-between text-xs space-y-2">
+                    <div className="relative aspect-[1/1.12] bg-neutral-100 overflow-hidden">
+                      <img src={prod.image} alt="" className="w-full h-full object-cover" />
+                      <span
+                        className={`absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5 uppercase ${
+                          prod.isActive ? 'bg-black text-white' : 'bg-red-600 text-white'
+                        }`}
+                      >
+                        {prod.isActive ? 'Active' : 'Disabled'}
+                      </span>
+                    </div>
 
-                  <div>
-                    <p className="text-[10px] text-neutral-400 uppercase font-mono">{prod.sku}</p>
-                    <h4 className="font-bold text-black line-clamp-1">{prod.title}</h4>
-                    <div className="flex justify-between items-center mt-1">
-                      <span className="font-bold">Rs. {prod.price.toLocaleString()}</span>
-                      <span className="text-[11px] text-neutral-500">Stock: {prod.stock}</span>
+                    <div>
+                      <p className="text-[10px] text-neutral-400 uppercase font-mono">{prod.sku}</p>
+                      <h4 className="font-bold text-black line-clamp-1">{prod.title}</h4>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="font-bold">Rs. {prod.price.toLocaleString()}</span>
+                        <span className="text-[11px] text-neutral-500">Stock: {prod.stock}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-1 pt-2 border-t border-neutral-100">
+                      <button
+                        onClick={() => {
+                          setEditingProduct(prod);
+                          setIsProductModalOpen(true);
+                        }}
+                        className="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 font-semibold text-center cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleToggleProductStatus(prod.id)}
+                        className="px-2 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 cursor-pointer"
+                        title="Toggle active"
+                      >
+                        {prod.isActive ? 'Disable' : 'Enable'}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(prod.id)}
+                        className="p-1.5 text-neutral-400 hover:text-red-600 cursor-pointer"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
-
-                  <div className="flex space-x-1 pt-2 border-t border-neutral-100">
-                    <button
-                      onClick={() => {
-                        setEditingProduct(prod);
-                        setIsProductModalOpen(true);
-                      }}
-                      className="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 font-semibold text-center cursor-pointer"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => storeService.toggleProductStatus(prod.id)}
-                      className="px-2 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 cursor-pointer"
-                      title="Toggle active"
-                    >
-                      {prod.isActive ? 'Disable' : 'Enable'}
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProduct(prod.id)}
-                      className="p-1.5 text-neutral-400 hover:text-red-600 cursor-pointer"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Product Edit / Add Modal */}
             {isProductModalOpen && editingProduct && (
@@ -823,38 +869,46 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </button>
             </div>
 
-            <div className="divide-y divide-neutral-100 text-xs">
-              {coupons.map(cpn => (
-                <div key={cpn.id} className="py-3 flex justify-between items-center">
-                  <div>
-                    <span className="font-mono font-bold text-black text-sm bg-neutral-100 px-2 py-0.5 mr-2">
-                      {cpn.code}
-                    </span>
-                    <span className="text-neutral-600">{cpn.description}</span>
-                    <p className="text-[11px] text-neutral-400 mt-0.5">
-                      Min Purchase: Rs. {cpn.minPurchaseAmount.toLocaleString()} • Discount:{' '}
-                      {cpn.discountType === 'percentage' ? `${cpn.discountValue}%` : `Rs. ${cpn.discountValue}`}
-                    </p>
-                  </div>
+            {coupons.length === 0 ? (
+              <div className="text-center py-12 border border-dashed border-neutral-300 p-6 space-y-2">
+                <Tag className="w-8 h-8 text-neutral-300 mx-auto" />
+                <p className="text-xs font-bold text-neutral-800">No active coupons configured</p>
+                <p className="text-[11px] text-neutral-400">Click &quot;Create Coupon&quot; to provide promotional discounts for your shoppers.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-neutral-100 text-xs">
+                {coupons.map(cpn => (
+                  <div key={cpn.id} className="py-3 flex justify-between items-center">
+                    <div>
+                      <span className="font-mono font-bold text-black text-sm bg-neutral-100 px-2 py-0.5 mr-2">
+                        {cpn.code}
+                      </span>
+                      <span className="text-neutral-600">{cpn.description}</span>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">
+                        Min Purchase: Rs. {cpn.minPurchaseAmount.toLocaleString()} • Discount:{' '}
+                        {cpn.discountType === 'percentage' ? `${cpn.discountValue}%` : `Rs. ${cpn.discountValue}`}
+                      </p>
+                    </div>
 
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`px-2 py-0.5 text-[10px] font-bold uppercase ${
-                        cpn.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-neutral-200 text-neutral-600'
-                      }`}
-                    >
-                      {cpn.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                    <button
-                      onClick={() => handleDeleteCoupon(cpn.id)}
-                      className="p-1 text-neutral-400 hover:text-red-600 cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`px-2 py-0.5 text-[10px] font-bold uppercase ${
+                          cpn.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-neutral-200 text-neutral-600'
+                        }`}
+                      >
+                        {cpn.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteCoupon(cpn.id)}
+                        className="p-1 text-neutral-400 hover:text-red-600 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Coupon Modal */}
             {isCouponModalOpen && editingCoupon && (
