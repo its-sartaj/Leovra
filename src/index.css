@@ -88,29 +88,6 @@
   border-color: #ffffff;
 }
 
-@keyframes heroTextSlideUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-hero-title {
-  animation: heroTextSlideUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-hero-sub {
-  animation: heroTextSlideUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
-}
-
-.animate-hero-cta {
-  animation: heroTextSlideUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
