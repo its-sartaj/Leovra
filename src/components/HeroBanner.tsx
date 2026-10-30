@@ -15,6 +15,7 @@ const HERO_LOOKS = [
     subtitle: 'Soft fabric. Clean look. All day comfort. Relaxed fit pants.',
     imageUrl: '/assets/hero_look_beige_comfort.jpg',
     bgColor: '#ded1bf',
+    bgGradient: 'linear-gradient(to right, #ded1bf 0%, #ded1bf 50%, #d7c8b3 100%)',
     altText: 'Leovra Clothes fashion model in Everyday Comfort relaxed fit pants'
   },
   {
@@ -22,7 +23,8 @@ const HERO_LOOKS = [
     collectionTitle: 'Bold Colours. Bigger Moves.',
     subtitle: 'Wide leg track pants engineered for comfort, style, and everyday movement.',
     imageUrl: '/assets/hero_look_red_moves.jpg',
-    bgColor: '#d4cdc4',
+    bgColor: '#ded8d1',
+    bgGradient: 'linear-gradient(to right, #eae4dd 0%, #ded8d1 50%, #bab1a7 100%)',
     altText: 'Leovra Clothes fashion model in Bold Colours Bigger Moves wide leg track pants'
   }
 ];
@@ -58,10 +60,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   return (
     <section
       aria-label="Leovra Clothes Cinematic Fashion Showcase"
-      style={{ backgroundColor: currentLook.bgColor }}
-      className="relative w-full h-[58vh] sm:h-[64vh] md:h-[68vh] min-h-[420px] max-h-[640px] flex items-center justify-center overflow-hidden select-none transition-colors duration-1000"
+      style={{
+        backgroundColor: currentLook.bgColor,
+        backgroundImage: currentLook.bgGradient
+      }}
+      className="relative w-full h-[64vh] sm:h-[72vh] md:h-[78vh] min-h-[460px] max-h-[700px] flex items-center justify-center overflow-hidden select-none transition-colors duration-1000"
     >
-      {/* Background Slides (Full-Width Widescreen Studio Photos with 100% Matched Background) */}
+      {/* Background Slides: Full Size Uncropped Photo with 100% Matched Studio Gradient */}
       {HERO_LOOKS.map((look, idx) => {
         const isCurrent = idx === currentIndex;
         return (
@@ -71,26 +76,27 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             style={{
               opacity: isCurrent ? 1 : 0,
               zIndex: isCurrent ? 10 : 1,
+              background: look.bgGradient,
               transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
             }}
-            className="absolute inset-0 w-full h-full pointer-events-none"
+            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center"
           >
+            {/* Full-Size Uncropped Photo with Feathered Edges for Zero-Seam Blending */}
             <img
               src={look.imageUrl}
               alt={look.altText}
               style={{
-                transform: isCurrent ? 'scale(1.03)' : 'scale(1.00)',
-                transition: 'transform 3800ms ease-out'
+                transform: isCurrent ? 'scale(1.02)' : 'scale(1.00)',
+                transition: 'transform 3800ms ease-out',
+                maskImage: 'linear-gradient(to right, transparent 0%, black 2.5%, black 97.5%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 2.5%, black 97.5%, transparent 100%)'
               }}
-              className="w-full h-full object-cover object-center"
+              className="h-full w-auto max-h-full object-contain mx-auto"
               loading={idx === 0 ? 'eager' : 'lazy'}
             />
           </div>
         );
       })}
-
-      {/* Subtle Atmospheric Vignette for Clean Contrast */}
-      <div className="absolute inset-0 z-20 pointer-events-none bg-radial-[circle_at_center] from-transparent via-transparent to-black/[0.04]" />
 
       {/* Hero Typography & CTA in Deep Charcoal/Black */}
       <div className="relative z-30 text-center px-4 max-w-xl mx-auto flex flex-col items-center">
