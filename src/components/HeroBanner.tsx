@@ -14,6 +14,7 @@ const HERO_LOOKS = [
     collectionTitle: 'Everyday Comfort',
     subtitle: 'Soft fabric. Clean look. All day comfort. Relaxed fit pants.',
     imageUrl: '/assets/hero_look_beige_comfort.jpg',
+    bgColor: '#ded1bf',
     altText: 'Leovra Clothes fashion model in Everyday Comfort relaxed fit pants'
   },
   {
@@ -21,11 +22,12 @@ const HERO_LOOKS = [
     collectionTitle: 'Bold Colours. Bigger Moves.',
     subtitle: 'Wide leg track pants engineered for comfort, style, and everyday movement.',
     imageUrl: '/assets/hero_look_red_moves.jpg',
+    bgColor: '#d4cdc4',
     altText: 'Leovra Clothes fashion model in Bold Colours Bigger Moves wide leg track pants'
   }
 ];
 
-// Continuous auto slide duration: 3.2 seconds
+// Continuous auto-slide interval: 3.2 seconds
 const ROTATION_INTERVAL_MS = 3200;
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
@@ -56,13 +58,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   return (
     <section
       aria-label="Leovra Clothes Cinematic Fashion Showcase"
-      style={{
-        backgroundColor: '#e6ded3',
-        backgroundImage: 'radial-gradient(ellipse at center, #eee8e0 0%, #e6ded3 55%, #ded3c5 100%)'
-      }}
-      className="relative w-full h-[58vh] sm:h-[64vh] md:h-[68vh] min-h-[420px] max-h-[640px] flex items-center justify-center overflow-hidden select-none"
+      style={{ backgroundColor: currentLook.bgColor }}
+      className="relative w-full h-[58vh] sm:h-[64vh] md:h-[68vh] min-h-[420px] max-h-[640px] flex items-center justify-center overflow-hidden select-none transition-colors duration-1000"
     >
-      {/* Background Slides with Seamless Edge Blending into Cream Canvas */}
+      {/* Background Slides (Full-Width Widescreen Studio Photos with 100% Matched Background) */}
       {HERO_LOOKS.map((look, idx) => {
         const isCurrent = idx === currentIndex;
         return (
@@ -74,29 +73,26 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               zIndex: isCurrent ? 10 : 1,
               transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
             }}
-            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center"
+            className="absolute inset-0 w-full h-full pointer-events-none"
           >
-            {/* Crisp Main Photo with Feathered Edges for 100% Seamless Mixing */}
             <img
               src={look.imageUrl}
               alt={look.altText}
               style={{
                 transform: isCurrent ? 'scale(1.03)' : 'scale(1.00)',
-                transition: 'transform 3800ms ease-out',
-                maskImage: 'radial-gradient(ellipse 90% 92% at 50% 50%, black 65%, transparent 100%)',
-                WebkitMaskImage: 'radial-gradient(ellipse 90% 92% at 50% 50%, black 65%, transparent 100%)'
+                transition: 'transform 3800ms ease-out'
               }}
-              className="w-full h-full object-contain object-center"
+              className="w-full h-full object-cover object-center"
               loading={idx === 0 ? 'eager' : 'lazy'}
             />
           </div>
         );
       })}
 
-      {/* Subtle Warm Atmospheric Vignette */}
-      <div className="absolute inset-0 z-20 pointer-events-none bg-radial-[circle_at_center] from-transparent via-transparent to-black/[0.03]" />
+      {/* Subtle Atmospheric Vignette for Clean Contrast */}
+      <div className="absolute inset-0 z-20 pointer-events-none bg-radial-[circle_at_center] from-transparent via-transparent to-black/[0.04]" />
 
-      {/* Hero Typography & CTA in Deep Charcoal/Black on Cream */}
+      {/* Hero Typography & CTA in Deep Charcoal/Black */}
       <div className="relative z-30 text-center px-4 max-w-xl mx-auto flex flex-col items-center">
         <div key={currentLook.id} className="animate-fade-in flex flex-col items-center">
           <h1 className="text-[#121212] text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-3 drop-shadow-sm">
