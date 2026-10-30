@@ -1,236 +1,90 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  ShoppingBag, 
-  MessageCircle, 
-  Check, 
-  AlertCircle, 
-  Star, 
-  Eye
-} from 'lucide-react';
-import { Product, PRODUCT_FALLBACK_PLACEHOLDER } from '../types';
-import { useStore } from '../context/StoreContext';
+import React from 'react';
+import { Product } from '../types';
 
 interface ProductCardProps {
   product: Product;
-  priority?: boolean;
+  onOpenDetails: (product: Product) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = false }) => {
-  const cardImages = (product.images && product.images.length > 0) ? product.images : [product.image];
-  const [cardImgIndex, setCardImgIndex] = useState(0);
-
-  useEffect(() => {
-    if (cardImages.length <= 1) return;
-    const interval = setInterval(() => {
-      setCardImgIndex((prev) => (prev + 1) % cardImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [cardImages.length]);
-  const { 
-    addToCart, 
-    setSelectedProduct, 
-    businessPhone 
-  } = useStore();
-
-  const selectedSize = product.sizes?.[0] || 'Free Size';
-  const selectedColor = product.colors?.[0] || undefined;
-  const [isAddedRecently, setIsAddedRecently] = useState(false);
-
-  const isOutOfStock = product.isOutOfStock || product.stock <= 0;
-  const isLowStock = !isOutOfStock && product.stock <= 4;
-  const discountPercent = product.originalPrice > product.price 
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isOutOfStock) return;
-    addToCart(product, selectedSize, selectedColor, 1);
-    setIsAddedRecently(true);
-    setTimeout(() => setIsAddedRecently(false), 1500);
-  };
-
-  const handleDirectWhatsApp = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const msg = `Hello Leovra Enterprises! I want to order "${product.name}" (Size: ${selectedSize}, Price: ₹${product.price}). Is it ready for shipping?`;
-    window.open(`https://wa.me/91${businessPhone}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      setSelectedProduct(product);
-    }
-  };
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  onOpenDetails
+}) => {
+  const isSoldOut = product.stock <= 0;
+  const isLowStock = product.stock > 0 && product.stock <= 5;
 
   return (
     <div
-      onClick={() => setSelectedProduct(product)}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-      role="button"
-      aria-label={`View details for ${product.name}`}
-      className={`group relative flex flex-col bg-white rounded-2xl border transition-all duration-200 overflow-hidden cursor-pointer shadow-2xs hover:shadow-md product-card-optimize transform-gpu focus:outline-hidden focus:ring-2 focus:ring-amber-500 ${
-        isOutOfStock 
-          ? 'border-neutral-200 opacity-85 hover:border-neutral-300' 
-          : 'border-neutral-200 hover:border-amber-400/80'
-      }`}
-      id={`product-card-${product.id}`}
+      onClick={() => onOpenDetails(product)}
+      className="product-card group cursor-pointer flex flex-col select-none"
     >
-      {/* Product Image Area - Clean Standard E-Commerce Ratio */}
-      <div className="relative w-full h-44 sm:h-52 md:h-56 lg:h-60 xl:h-64 bg-neutral-100/90 overflow-hidden flex items-center justify-center">
+      {/* Product Image Box */}
+      <div className="product-img-wrapper w-full overflow-hidden relative">
         <img
-          src={cardImages[cardImgIndex] || product.image}
-          alt={`${product.name} - Buy online at Leovra Enterprises`}
-          width={360}
-          height={360}
-          referrerPolicy="no-referrer"
-          decoding="async"
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = PRODUCT_FALLBACK_PLACEHOLDER;
-          }}
-          className={`w-full h-full object-cover object-center transition-transform duration-300 transform-gpu group-hover:scale-105 ${
-            isOutOfStock ? 'grayscale-40 contrast-95' : ''
-          }`}
+          src={product.image}
+          alt={product.title}
+          loading="lazy"
+          className="w-full h-full object-cover object-center img-zoom"
         />
 
-        {/* Multi-Photo Carousel Indicator */}
-        {cardImages.length > 1 && (
-          <div className="absolute bottom-2 right-2 z-10 px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-black/60 backdrop-blur-xs text-white shadow-xs flex items-center gap-1">
-            <span>{cardImgIndex + 1}/{cardImages.length}</span>
-            <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" />
-          </div>
-        )}
-
-        {/* Top Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-          {product.tag && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide bg-neutral-900 text-white shadow-xs">
-              {product.tag}
+        {/* Status Badges */}
+        <div className="absolute top-2 left-2 flex flex-col space-y-1">
+          {product.isNew && (
+            <span className="bg-[#121212] text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+              New
             </span>
           )}
-          {discountPercent > 0 && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-extrabold bg-amber-500 text-neutral-950 shadow-xs">
-              {discountPercent}% OFF
+          {product.isBestseller && !product.isNew && (
+            <span className="bg-[#121212] text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+              Best Seller
             </span>
           )}
-        </div>
-
-        {/* Stock Status Badge */}
-        <div className="absolute top-2 right-2 z-10">
-          {isOutOfStock ? (
-            <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold bg-rose-600 text-white shadow-md flex items-center gap-1">
-              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-              <span>Out of Stock</span>
+          {isSoldOut && (
+            <span className="bg-red-700 text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+              Sold Out
             </span>
-          ) : isLowStock ? (
-            <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
-              <span>{product.stock} Left</span>
-            </span>
-          ) : (
-            <span className="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-medium bg-emerald-100/90 text-emerald-800 border border-emerald-200">
-              In Stock
+          )}
+          {isLowStock && (
+            <span className="bg-amber-600 text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+              Low Stock: {product.stock} left
             </span>
           )}
         </div>
 
-        {/* Quick View Button on Desktop Hover */}
-        <div className="hidden md:flex absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center pointer-events-none">
-          <span className="px-3 py-1.5 rounded-xl bg-white/95 text-neutral-900 text-xs font-bold shadow-md flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5 text-amber-600" />
-            <span>Quick View</span>
-          </span>
-        </div>
-      </div>
-
-      {/* Card Details Area */}
-      <div className="p-2.5 sm:p-3.5 flex flex-col flex-1 justify-between gap-2 sm:gap-2.5">
-        <div>
-          {/* Category & Rating */}
-          <div className="flex items-center justify-between text-[10px] sm:text-xs text-neutral-500 mb-0.5">
-            <span className="font-bold uppercase tracking-wider text-[9px] sm:text-[10px] text-amber-700 truncate max-w-[65%]">
-              {product.category === 'earrings' && (product.subcategory ? `Jewellery • ${product.subcategory}` : 'Jewellery')}
-              {product.category === 'tshirts' && (product.subcategory ? `T-Shirt • ${product.subcategory}` : 'T-Shirt')}
-              {product.category === 'lowers' && (product.subcategory ? `Lower • ${product.subcategory}` : 'Lower')}
-            </span>
-            <div className="flex items-center gap-0.5 font-semibold text-neutral-700">
-              <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />
-              <span className="text-[10px] sm:text-[11px]">{product.rating}</span>
-            </div>
-          </div>
-
-          {/* Product Name */}
-          <h3 className="font-bold text-xs sm:text-sm text-neutral-900 line-clamp-2 leading-snug group-hover:text-amber-800 transition-colors">
-            {product.name}
-          </h3>
-
-          {/* Price */}
-          <div className="flex items-baseline gap-1.5 mt-1.5">
-            <span className="text-sm sm:text-base font-extrabold text-neutral-950">
-              ₹{product.price}
-            </span>
-            {product.originalPrice > product.price && (
-              <span className="text-[10px] sm:text-xs text-neutral-400 line-through">
-                ₹{product.originalPrice}
+        {/* Color Palette Indicator on Hover */}
+        {product.colors && product.colors.length > 0 && (
+          <div className="absolute bottom-2 left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur-xs p-1 rounded-sm">
+            {product.colors.slice(0, 3).map((col, idx) => (
+              <span
+                key={idx}
+                className="w-2.5 h-2.5 rounded-full border border-gray-300"
+                style={{ backgroundColor: col.hex }}
+                title={col.name}
+              />
+            ))}
+            {product.colors.length > 3 && (
+              <span className="text-[8px] font-semibold text-gray-700 pl-0.5">
+                +{product.colors.length - 3}
               </span>
             )}
           </div>
+        )}
+      </div>
 
-          {/* Available Sizes preview */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div className="mt-1 text-[10px] text-neutral-400 truncate">
-              Sizes: <span className="font-semibold text-neutral-600">{product.sizes.join(', ')}</span>
-            </div>
+      {/* Product Details Header */}
+      <div className="pt-2.5 flex flex-col">
+        <h3 className="text-[13px] sm:text-[14px] text-[#121212] font-normal leading-snug line-clamp-1 group-hover:underline">
+          {product.title}
+        </h3>
+        <div className="mt-1 flex items-baseline space-x-2">
+          <span className="text-[13px] sm:text-[14px] font-semibold text-[#121212]">
+            Rs. {product.price.toLocaleString()}
+          </span>
+          {product.originalPrice && product.originalPrice > product.price && (
+            <span className="text-[11px] sm:text-[12px] text-gray-400 line-through">
+              Rs. {product.originalPrice.toLocaleString()}
+            </span>
           )}
-        </div>
-
-        {/* Action Buttons: perfectly sized for 2-column mobile screens */}
-        <div className="flex items-center gap-1.5 pt-1.5 border-t border-neutral-100 mt-auto">
-          {/* Add to Cart button */}
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={isOutOfStock}
-            aria-label={isOutOfStock ? `${product.name} is sold out` : `Add ${product.name} to cart`}
-            className={`flex-1 min-h-[48px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-              isOutOfStock
-                ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200'
-                : isAddedRecently
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-neutral-900 hover:bg-neutral-800 text-white shadow-xs active:scale-95'
-            }`}
-            id={`add-to-cart-btn-${product.id}`}
-          >
-            {isAddedRecently ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-white" />
-                <span>Added!</span>
-              </>
-            ) : isOutOfStock ? (
-              <span>Sold Out</span>
-            ) : (
-              <>
-                <ShoppingBag className="w-3.5 h-3.5 text-amber-400" />
-                <span>Add</span>
-              </>
-            )}
-          </button>
-
-          {/* Quick WhatsApp Buy Button */}
-          <button
-            type="button"
-            onClick={handleDirectWhatsApp}
-            className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors active:scale-95 shrink-0 cursor-pointer"
-            id={`whatsapp-buy-btn-${product.id}`}
-            title={`Order ${product.name} directly on WhatsApp`}
-            aria-label={`Order ${product.name} directly on WhatsApp`}
-          >
-            <MessageCircle className="w-4.5 h-4.5 text-emerald-600 fill-emerald-100" />
-          </button>
         </div>
       </div>
     </div>

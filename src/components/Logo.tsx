@@ -1,76 +1,62 @@
 import React from 'react';
-import { LeovraLogoIcon } from './LeovraLogoIcon';
 
 interface LogoProps {
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  showText?: boolean;
   className?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  showSubtitle?: boolean;
-  theme?: 'light' | 'dark' | 'auto';
+  onClick?: () => void;
+  inverted?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
-  className = '',
   size = 'md',
-  showSubtitle = true,
-  theme = 'auto',
+  showText = false,
+  className = '',
+  onClick,
+  inverted = false
 }) => {
-  // Proportional emblem height that keeps the golden crest and wings sharp and balanced
-  const emblemHeight = {
-    sm: 'h-7 sm:h-8',
-    md: 'h-8 sm:h-9 md:h-10',
-    lg: 'h-11 sm:h-12',
-    xl: 'h-14 sm:h-16',
-  }[size];
+  const sizeClasses: Record<string, string> = {
+    xs: 'h-6',
+    sm: 'h-8 sm:h-9',
+    md: 'h-10 sm:h-12',
+    lg: 'h-14 sm:h-16',
+    xl: 'h-20 sm:h-24'
+  };
 
-  const titleSize = {
-    sm: 'text-xs sm:text-sm font-bold tracking-tight',
-    md: 'text-sm sm:text-base md:text-lg font-extrabold tracking-tight',
-    lg: 'text-lg sm:text-2xl font-black tracking-tight',
-    xl: 'text-2xl sm:text-3xl font-black tracking-tight',
-  }[size];
-
-  const subtitleSize = {
-    sm: 'text-[7.5px] sm:text-[8.5px]',
-    md: 'text-[8px] sm:text-[9.5px]',
-    lg: 'text-[10px] sm:text-xs',
-    xl: 'text-xs sm:text-sm',
-  }[size];
-
-  const isDark = theme === 'dark';
+  const textClasses: Record<string, string> = {
+    xs: 'text-[9px] tracking-widest',
+    sm: 'text-[10px] tracking-[0.2em]',
+    md: 'text-xs sm:text-sm tracking-[0.22em]',
+    lg: 'text-base sm:text-lg tracking-[0.25em]',
+    xl: 'text-xl sm:text-2xl tracking-[0.3em]'
+  };
 
   return (
-    <div className={`inline-flex items-center gap-2 sm:gap-2.5 select-none shrink-0 ${className}`} id="brand-logo-container">
-      {/* Official Royal Crest Emblem (Golden L with wings, ring and stars on luxury dark midnight background) */}
-      <div className="shrink-0 flex items-center justify-center">
-        <LeovraLogoIcon 
-          className={`${emblemHeight} w-auto rounded-lg sm:rounded-xl shadow-md border border-amber-400/40 transition-transform duration-200 hover:scale-105`} 
-          includeBackground={true} 
+    <div
+      onClick={onClick}
+      className={`inline-flex flex-col items-center justify-center select-none ${
+        onClick ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''
+      } ${className}`}
+    >
+      <div className="relative flex items-center justify-center overflow-hidden">
+        <img
+          src="/assets/aistudio/IMG-20261025-WA0014_40903815.jpg"
+          alt="LEOVRA CLOTHES Logo"
+          className={`${sizeClasses[size] || sizeClasses.md} w-auto object-contain ${
+            inverted ? 'filter invert brightness-125' : 'mix-blend-multiply'
+          }`}
+          loading="eager"
         />
       </div>
-
-      {/* Brand Typography */}
-      <div className="flex flex-col leading-tight min-w-0 justify-center">
-        <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap">
-          <span className={`${titleSize} font-serif uppercase tracking-wider font-extrabold whitespace-nowrap ${
-            isDark ? 'text-white' : 'text-neutral-900'
-          }`}>
-            Leovra
-          </span>
-          <span className={`hidden sm:inline ${titleSize} bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent font-sans uppercase font-bold tracking-normal whitespace-nowrap`}>
-            Enterprises
-          </span>
-        </div>
-        {showSubtitle && (
-          <div className="flex items-center gap-1 font-medium truncate">
-            <span className={`${subtitleSize} uppercase tracking-wider sm:tracking-[0.16em] font-semibold whitespace-nowrap truncate ${
-              isDark ? 'text-neutral-400' : 'text-neutral-500'
-            }`}>
-              <span className="hidden sm:inline">Jewellery • T-Shirts • Lowers</span>
-              <span className="sm:hidden">Fashion & Lifestyle</span>
-            </span>
-          </div>
-        )}
-      </div>
+      {showText && (
+        <span
+          className={`font-black uppercase text-[#121212] font-['Montserrat'] mt-1 leading-none ${
+            textClasses[size] || textClasses.md
+          }`}
+        >
+          LEOVRA CLOTHES
+        </span>
+      )}
     </div>
   );
 };

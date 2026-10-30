@@ -1,258 +1,96 @@
-import React, { useState } from 'react';
-import { 
-  ShoppingBag, 
-  Search, 
-  X, 
-  Menu, 
-  MessageCircle,
-  User
-} from 'lucide-react';
+import React from 'react';
+import { Menu, Search, User, ShoppingBag, Truck } from 'lucide-react';
 import { Logo } from './Logo';
-import { useStore } from '../context/StoreContext';
-import { ProductCategory } from '../types';
 
-export const Header: React.FC = () => {
-  const { 
-    currentView, 
-    setCurrentView, 
-    cartCount, 
-    setIsCartOpen, 
-    setIsSideNavOpen,
-    currentCustomer,
-    setIsAccountModalOpen,
-    setAccountModalTab,
-    filters, 
-    setFilters,
-    businessPhone
-  } = useStore();
+interface HeaderProps {
+  cartCount: number;
+  onOpenCart: () => void;
+  onOpenMobileMenu: () => void;
+  onOpenSearch: () => void;
+  onOpenAccount: () => void;
+  onOpenTracking: () => void;
+  onResetToHome: () => void;
+  announcementText: string;
+}
 
-  const [showSearchInput, setShowSearchInput] = useState(false);
-
-  const handleCategoryClick = (cat: 'all' | ProductCategory) => {
-    setFilters(prev => ({ ...prev, category: cat }));
-    if (currentView !== 'store') {
-      setCurrentView('store');
-    }
-  };
-
-  const navCategories: { id: 'all' | ProductCategory; label: string; sub: string }[] = [
-    { id: 'all', label: 'All Items', sub: 'सभी प्रोडक्ट्स' },
-    { id: 'earrings', label: 'Jewellery', sub: 'शाही ज्वेलरी' },
-    { id: 'tshirts', label: 'T-Shirts', sub: 'टी-शर्ट्स' },
-    { id: 'lowers', label: 'Lowers & Joggers', sub: 'लोअर व ट्रैक पैंट' },
-  ];
-
+export const Header: React.FC<HeaderProps> = ({
+  cartCount,
+  onOpenCart,
+  onOpenMobileMenu,
+  onOpenSearch,
+  onOpenAccount,
+  onOpenTracking,
+  onResetToHome,
+  announcementText
+}) => {
   return (
-    <header className="sticky top-0 z-50 w-full max-w-full bg-white/95 backdrop-blur-md border-b border-neutral-200/90 shadow-xs transform-gpu will-change-transform" id="main-header">
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3 w-full">
-        <div className="flex items-center justify-between gap-1.5 sm:gap-4 md:gap-6">
-          
-          {/* Brand Logo - shrink-0 ensures it NEVER gets compressed or overlapped */}
-          <button 
-            type="button"
-            onClick={() => {
-              setCurrentView('store');
-              setFilters(prev => ({ ...prev, category: 'all', searchQuery: '' }));
-            }} 
-            className="text-left focus:outline-hidden cursor-pointer shrink-0 z-10"
-            id="header-logo-btn"
-            aria-label="Leovra Enterprises Home"
-          >
-            <Logo size="md" />
-          </button>
+    <>
+      {/* Top Black Minimal Announcement Bar */}
+      <div className="w-full bg-[#121212] text-white text-[11px] font-medium py-2 px-4 text-center tracking-wider uppercase flex items-center justify-center space-x-2 select-none">
+        <span>{announcementText}</span>
+        <button
+          onClick={onOpenTracking}
+          className="hidden sm:inline-flex items-center text-gray-300 hover:text-white underline text-[10px] ml-4 transition-colors cursor-pointer"
+        >
+          <Truck className="w-3 h-3 mr-1" /> Track Order
+        </button>
+      </div>
 
-          {/* Desktop Search Bar (Clean, spacious, modern luxury e-commerce style, zero overlap) */}
-          <div className="hidden md:flex flex-1 max-w-md lg:max-w-xl mx-3 lg:mx-6 min-w-0 relative">
-            <div className="relative w-full flex items-center">
-              <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search jewellery, oversized tees, gym track pants..."
-                value={filters.searchQuery}
-                onChange={(e) => {
-                  setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
-                  if (currentView !== 'store') setCurrentView('store');
-                }}
-                className="w-full bg-neutral-100/80 hover:bg-neutral-100 focus:bg-white text-xs sm:text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-9 py-2 h-11 rounded-xl border border-neutral-200/90 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 transition-all outline-hidden shadow-2xs"
-                id="desktop-search-input"
-                aria-label="Search catalog"
-              />
-              
-              {filters.searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-neutral-200/60 cursor-pointer transition-colors"
-                  title="Clear search"
-                  aria-label="Clear search"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+      {/* Main Sticky Navbar */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#f0f0f0] transition-shadow duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+          {/* Left Actions: Hamburger Menu & Search */}
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <button
+              onClick={onOpenMobileMenu}
+              aria-label="Open Navigation Menu"
+              className="p-1.5 -ml-1 text-[#121212] hover:opacity-75 focus:outline-none transition-opacity cursor-pointer"
+            >
+              <Menu className="w-6 h-6 stroke-[1.75]" />
+            </button>
+            <button
+              onClick={onOpenSearch}
+              aria-label="Search Catalog"
+              className="p-1.5 text-[#121212] hover:opacity-75 focus:outline-none transition-opacity cursor-pointer"
+            >
+              <Search className="w-5 h-5 stroke-[1.75]" />
+            </button>
           </div>
 
-          {/* Right Action Icons - Consistent Professional E-Commerce Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            
-            {/* Mobile Search Toggle */}
+          {/* Center Brand Logo */}
+          <div className="flex-1 flex justify-center py-1">
+            <Logo
+              size="md"
+              showText={true}
+              onClick={onResetToHome}
+              className="cursor-pointer"
+            />
+          </div>
+
+          {/* Right Actions: Account & Cart Bag */}
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <button
-              type="button"
-              onClick={() => setShowSearchInput(!showSearchInput)}
-              className={`md:hidden flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95 border ${
-                showSearchInput 
-                  ? 'bg-amber-50 text-amber-700 border-amber-400 ring-2 ring-amber-400/20' 
-                  : 'bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border-neutral-200/90'
-              }`}
-              aria-label="Search Products"
-              id="mobile-search-toggle"
-              title="Search products"
+              onClick={onOpenAccount}
+              aria-label="Customer Account & Orders"
+              className="p-1.5 text-[#121212] hover:opacity-75 focus:outline-none transition-opacity cursor-pointer"
             >
-              <Search className="w-5 h-5 stroke-[1.8]" />
+              <User className="w-5 h-5 stroke-[1.75]" />
             </button>
-
-            {/* Direct WhatsApp Call / Inquire Button (Desktop & Tablet) */}
-            <a
-              href={`https://wa.me/91${businessPhone}?text=${encodeURIComponent('Hello Leovra Enterprises! I have an inquiry regarding your products.')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-2 px-3.5 h-12 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 font-semibold text-xs border border-neutral-200/90 transition-all shadow-2xs hover:border-neutral-300 active:scale-95"
-              id="header-whatsapp-chat-btn"
-              title="Chat with Leovra Enterprises on WhatsApp"
-            >
-              <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>WhatsApp</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            </a>
-
-            {/* Customer Account Button */}
             <button
-              type="button"
-              onClick={() => {
-                if (currentCustomer) {
-                  setAccountModalTab('orders');
-                } else {
-                  setAccountModalTab('register');
-                }
-                setIsAccountModalOpen(true);
-              }}
-              className="relative flex items-center justify-center gap-2 w-12 h-12 min-w-[48px] min-h-[48px] lg:w-auto lg:h-12 lg:px-3.5 rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-950 border border-neutral-200/90 hover:border-neutral-300 transition-all shadow-2xs cursor-pointer active:scale-95"
-              id="header-account-btn"
-              aria-label={currentCustomer ? `Account: ${currentCustomer.name}` : "Customer Account"}
-              title={currentCustomer ? `Logged in: ${currentCustomer.name} - View Orders` : "Customer Account / Login"}
+              onClick={onOpenCart}
+              aria-label="View Shopping Bag"
+              className="p-1.5 -mr-1 text-[#121212] hover:opacity-75 relative focus:outline-none transition-opacity cursor-pointer"
             >
-              {currentCustomer ? (
-                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-amber-400 text-neutral-950 font-bold text-[11px] flex items-center justify-center shadow-2xs shrink-0">
-                  {currentCustomer.name ? currentCustomer.name.charAt(0).toUpperCase() : 'U'}
-                </div>
-              ) : (
-                <User className="w-5 h-5 text-neutral-700 stroke-[1.8] shrink-0" />
-              )}
-              <span className="hidden lg:inline text-xs font-semibold text-neutral-800 truncate max-w-[85px]">
-                {currentCustomer ? currentCustomer.name.split(' ')[0] : 'Account'}
-              </span>
-              {currentCustomer && (
-                <span className="lg:hidden absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
-              )}
-            </button>
-
-            {/* Desktop Quick Shopping Bag */}
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(true)}
-              className="relative hidden sm:flex items-center justify-center gap-2 w-12 h-12 min-w-[48px] min-h-[48px] lg:w-auto lg:h-12 lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all font-semibold text-xs border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
-              id="header-cart-btn"
-              aria-label="View Cart"
-              title="Shopping Cart"
-            >
-              <ShoppingBag className="w-5 h-5 text-neutral-700 stroke-[1.8] shrink-0" />
-              <span className="hidden lg:inline">Cart</span>
+              <ShoppingBag className="w-6 h-6 stroke-[1.75]" />
               {cartCount > 0 && (
-                <span className="inline-flex items-center justify-center min-w-[20px] h-4.5 px-1 rounded-full bg-amber-500 text-neutral-950 font-extrabold text-[10px] leading-none shrink-0">
+                <span className="absolute -top-1 -right-1 bg-[#121212] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center transition-transform animate-scale-in">
                   {cartCount}
                 </span>
               )}
             </button>
-
-            {/* 3-Row Menu Button - Opens Full Services & Store Drawer */}
-            <button
-              type="button"
-              onClick={() => setIsSideNavOpen(true)}
-              className="flex items-center justify-center gap-2 w-12 h-12 min-w-[48px] min-h-[48px] lg:w-auto lg:h-12 lg:px-3.5 rounded-xl text-neutral-700 hover:text-neutral-950 bg-white hover:bg-neutral-50 transition-all border border-neutral-200/90 hover:border-neutral-300 cursor-pointer shadow-2xs active:scale-95"
-              aria-label="Open Services and Navigation Menu"
-              id="header-menu-btn"
-              title="View all services, categories, and customer support"
-            >
-              <Menu className="w-5 h-5 stroke-[1.8] shrink-0" />
-              <span className="hidden lg:inline text-xs font-semibold text-neutral-800">Services</span>
-            </button>
           </div>
         </div>
-
-        {/* Mobile Search Expandable Bar (Clean, full-width, modern touch input) */}
-        {showSearchInput && (
-          <div className="md:hidden pt-2 pb-1 animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="relative flex items-center">
-              <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search jewellery, t-shirts, lowers..."
-                value={filters.searchQuery}
-                onChange={(e) => {
-                  setFilters(prev => ({ ...prev, searchQuery: e.target.value }));
-                  if (currentView !== 'store') setCurrentView('store');
-                }}
-                className="w-full bg-neutral-100/90 hover:bg-neutral-100 focus:bg-white text-sm font-medium text-neutral-900 placeholder:text-neutral-400 pl-10 pr-10 py-2.5 h-12 rounded-xl border border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 outline-hidden shadow-2xs"
-                id="mobile-search-input-field"
-                aria-label="Search jewellery, t-shirts, lowers"
-                autoFocus
-              />
-              {filters.searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-neutral-200/60 cursor-pointer transition-colors"
-                  title="Clear search"
-                  aria-label="Clear search"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Desktop Category Navigation */}
-        <nav className="hidden lg:flex items-center gap-1 pt-2.5 border-t border-neutral-100 mt-2">
-          {/* Amazon-style ☰ All Services Button */}
-          <button
-            onClick={() => setIsSideNavOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/15 text-amber-950 hover:bg-amber-500/25 border border-amber-500/30 transition-all mr-1.5 cursor-pointer shadow-2xs"
-            id="desktop-nav-all-services-btn"
-          >
-            <Menu className="w-3.5 h-3.5 text-amber-700" />
-            <span>All Services & Features</span>
-          </button>
-          {navCategories.map((cat) => {
-            const isActive = currentView === 'store' && filters.category === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => handleCategoryClick(cat.id)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-neutral-900 text-white shadow-xs'
-                    : 'text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100'
-                }`}
-                id={`desktop-nav-cat-${cat.id}`}
-              >
-                <span>{cat.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };

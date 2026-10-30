@@ -1,334 +1,146 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Sparkles, 
-  ShieldCheck, 
-  Truck, 
-  ArrowRight, 
-  ChevronLeft, 
-  ChevronRight
-} from 'lucide-react';
-import { useStore } from '../context/StoreContext';
-import { ProductCategory } from '../types';
-const BASE_URL = import.meta.env.BASE_URL;
-const heroEarringImg = `${BASE_URL}hero-earring.webp`;
-const heroEarringMobile = `${BASE_URL}hero-earring-mobile.webp`;
-const heroTshirtImg = `${BASE_URL}hero-tshirt.webp`;
-const heroTshirtMobile = `${BASE_URL}hero-tshirt-mobile.webp`;
-const heroLowersImg = `${BASE_URL}hero-lowers.webp`;
-const heroLowersMobile = `${BASE_URL}hero-lowers-mobile.webp`;
-const heroEarringFallback = `${BASE_URL}hero-earring.webp`;
+import React, { useState, useEffect, useRef } from 'react';
 
-const BACKGROUND_SLIDES = [
+interface HeroBannerProps {
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
+  imageUrl?: string;
+  onCtaClick: () => void;
+}
+
+const HERO_LOOKS = [
   {
-    id: 'earrings' as ProductCategory,
-    label: 'Artisanal Jewellery',
-    hindiTag: 'शाही ज्वेलरी संग्रह',
-    image: heroEarringImg,
-    mobileImage: heroEarringMobile,
-    glowColor: 'from-amber-500/35 via-orange-500/20 to-transparent',
+    id: 1,
+    collectionTitle: 'Classic Black',
+    subtitle: '240 GSM organic combed black tee paired with dark utility cargo lowers.',
+    imageUrl: '/assets/hero_teal_black_tee_1792954954454-G9frm-7N.jpg',
+    altText: 'Leovra Clothes fashion model in black graphic t-shirt with dark cargo lowers'
   },
   {
-    id: 'tshirts' as ProductCategory,
-    label: 'Streetwear Apparel',
-    hindiTag: 'क्लासिक टी-शर्ट्स',
-    image: heroTshirtImg,
-    mobileImage: heroTshirtMobile,
-    glowColor: 'from-amber-600/35 via-orange-500/20 to-transparent',
+    id: 2,
+    collectionTitle: 'Oversized Streetwear',
+    subtitle: 'Drop-shoulder relaxed white silhouette with tailored charcoal casual lowers.',
+    imageUrl: '/assets/hero_look_2_white_1792955003839-DuF9mD7F.jpg',
+    altText: 'Leovra Clothes fashion model in oversized white t-shirt with contrasting casual lowers'
   },
   {
-    id: 'lowers' as ProductCategory,
-    label: 'Comfort Lowers & Joggers',
-    hindiTag: 'फ्लेक्सिबल लोअर',
-    image: heroLowersImg,
-    mobileImage: heroLowersMobile,
-    glowColor: 'from-emerald-500/35 via-teal-500/20 to-transparent',
+    id: 3,
+    collectionTitle: 'Everyday Essentials',
+    subtitle: 'Pigment-dyed crimson statement tee styled with tapered black streetwear lowers.',
+    imageUrl: '/assets/hero_look_3_red_1792955018082-DeIGYVMO.jpg',
+    altText: 'Leovra Clothes fashion model in red streetwear t-shirt with black lowers'
   },
+  {
+    id: 4,
+    collectionTitle: 'Fresh Neutrals',
+    subtitle: 'Effortless earth-tone sand oversized tee paired with relaxed lounge lowers.',
+    imageUrl: '/assets/hero_look_4_neutral_1792955032271-B-A41n1s.jpg',
+    altText: 'Leovra Clothes fashion model in neutral sand t-shirt with grey casual lowers'
+  },
+  {
+    id: 5,
+    collectionTitle: 'Urban Cargo',
+    subtitle: 'Signature typography print on heavy cotton tee with relaxed everyday lowers.',
+    imageUrl: '/assets/hero_look_5_single_1792955088357-CxK3QTHd.jpg',
+    altText: 'Leovra Clothes fashion model in premium graphic t-shirt with relaxed-fit lowers'
+  }
 ];
 
-export const HeroBanner: React.FC = () => {
-  const { products, filters, setFilters, businessPhone } = useStore();
-  const [activeSlide, setActiveSlide] = useState(0);
+const ROTATION_INTERVAL_MS = 3500;
 
-  // Smooth auto-slide transition every 4 seconds, smoothly resetting on any slide change
+export const HeroBanner: React.FC<HeroBannerProps> = ({
+  buttonText = 'Shop all',
+  onCtaClick
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Check prefers-reduced-motion
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [activeSlide]);
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      setPrefersReducedMotion(mediaQuery.matches);
+      const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+      mediaQuery.addEventListener('change', listener);
+      return () => mediaQuery.removeEventListener('change', listener);
+    }
+  }, []);
 
-  const currentBg = BACKGROUND_SLIDES[activeSlide];
+  // Preload images into browser cache
+  useEffect(() => {
+    HERO_LOOKS.forEach(look => {
+      const img = new Image();
+      img.src = look.imageUrl;
+    });
+  }, []);
 
-  const getCategoryInStock = (cat: ProductCategory) => {
-    return products.filter((p) => p.category === cat && !p.isOutOfStock && p.stock > 0).length;
-  };
+  // Auto rotation
+  useEffect(() => {
+    if (!prefersReducedMotion) {
+      timerRef.current = setInterval(() => {
+        setCurrentIndex(prev => (prev + 1) % HERO_LOOKS.length);
+      }, ROTATION_INTERVAL_MS);
+      return () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+      };
+    }
+  }, [prefersReducedMotion]);
 
-  const CATEGORY_SHOWCASE = [
-    {
-      id: 'earrings' as ProductCategory,
-      title: 'Artisanal Jewellery',
-      shortTitle: 'Jewellery',
-      hindiTitle: 'शाही ज्वेलरी',
-      subtitle: 'Oxidized, Kundan & Studs',
-      priceTag: 'From ₹249',
-      image: heroEarringMobile,
-      icon: '💎',
-    },
-    {
-      id: 'tshirts' as ProductCategory,
-      title: 'Streetwear T-Shirts',
-      shortTitle: 'T-Shirts',
-      hindiTitle: 'टी-शर्ट्स',
-      subtitle: 'Oversized & Supima Cotton',
-      priceTag: 'From ₹449',
-      image: heroTshirtMobile,
-      icon: '👕',
-    },
-    {
-      id: 'lowers' as ProductCategory,
-      title: 'Comfort Lowers',
-      shortTitle: 'Lowers & Joggers',
-      hindiTitle: 'फ्लेक्सिबल लोअर',
-      subtitle: 'Cargo Joggers & Stretch',
-      priceTag: 'From ₹549',
-      image: heroLowersMobile,
-      icon: '👖',
-    },
-  ];
+  const currentLook = HERO_LOOKS[currentIndex];
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6 overflow-hidden" id="hero-banner-section">
-      {/* Top Banner Hero Card with Background Slider */}
-      <div className="relative rounded-2xl md:rounded-3xl bg-neutral-950 text-white overflow-hidden shadow-2xl border border-neutral-800 w-full transform-gpu min-h-[480px] sm:min-h-[360px] md:min-h-[340px] flex items-center">
-        
-        {/* Top Progress Bar (Stable gold on initial paint, animated on slide rotation) */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-neutral-900/80 z-30 overflow-hidden">
-          <div 
-            key={activeSlide} 
-            className={`h-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 w-full ${activeSlide === 0 ? 'opacity-80' : 'animate-hero-progress'}`} 
-          />
-        </div>
-
-        {/* Background Slider Images with Smooth Crossfade */}
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          {BACKGROUND_SLIDES.map((slide, index) => (
-            <div
-              key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                activeSlide === index
-                  ? 'opacity-65'
-                  : 'opacity-0 pointer-events-none'
+    <section
+      aria-label="Leovra Clothes Cinematic Fashion Showcase"
+      className="relative w-full h-[58vh] sm:h-[64vh] md:h-[68vh] min-h-[420px] max-h-[640px] bg-[#1a383b] flex items-center justify-center overflow-hidden select-none"
+    >
+      {/* Background Slides */}
+      {HERO_LOOKS.map((look, idx) => {
+        const isCurrent = idx === currentIndex;
+        return (
+          <div
+            key={look.id}
+            aria-hidden={!isCurrent}
+            className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 ease-in-out ${
+              isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+          >
+            <img
+              src={look.imageUrl}
+              alt={look.altText}
+              className={`w-full h-full object-cover object-[center_28%] filter brightness-[0.84] ${
+                prefersReducedMotion
+                  ? ''
+                  : `transition-transform duration-[3800ms] ease-out ${isCurrent ? 'scale-105' : 'scale-100'}`
               }`}
-            >
-              <picture className="w-full h-full">
-                <source media="(max-width: 640px)" srcSet={slide.mobileImage} type="image/webp" />
-                <img
-                  src={slide.image}
-                  alt={slide.label}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "low"}
-                  decoding="async"
-                  width={800}
-                  height={400}
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = heroEarringFallback;
-                  }}
-                  className="w-full h-full object-cover object-right md:object-center"
-                />
-              </picture>
-            </div>
-          ))}
-
-          {/* Luxury Multi-layer Gradient Dark Overlays: Darker on left for text, semi-transparent on right for image */}
-          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/40" />
-
-          {/* Dynamic Background Ambient Glow (Static opacity eliminates continuous GPU layer invalidation) */}
-          <div className={`absolute -right-20 -top-20 w-96 h-96 bg-gradient-to-br ${currentBg.glowColor} rounded-full blur-2xl pointer-events-none opacity-45`} />
-          <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-600/10 rounded-full blur-2xl pointer-events-none" />
-        </div>
-
-        {/* Foreground Content */}
-        <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 w-full">
-          {/* Left Column: Heading, Pitch & CTAs */}
-          <div className="max-w-xl space-y-3 sm:space-y-4 w-full min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[11px] sm:text-xs font-semibold backdrop-blur-xs transition-all max-w-full overflow-hidden">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="truncate">
-                Express Dispatch • <span className="text-white font-bold">{currentBg.hindiTag}</span> ({currentBg.label})
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-serif break-words">
-              Elevate Your Style with <span className="text-amber-400">Leovra Enterprises</span>
-            </h1>
-
-            <p className="text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed max-w-lg">
-              Curated artisanal jewellery, heavyweight streetwear t-shirts, and ultra-flexible comfort lowers with instant dispatch to your doorstep.
-            </p>
-
-
+              loading={idx === 0 ? 'eager' : 'lazy'}
+            />
           </div>
+        );
+      })}
 
-          {/* Right Column: Quick Value Points (Restored from user's screenshot) */}
-          <div className="w-full md:w-auto grid grid-cols-2 md:grid-cols-1 gap-2.5 shrink-0 pt-2 sm:pt-0 border-t border-neutral-800/80 md:border-t-0">
-            <div className="flex items-center gap-2.5 bg-neutral-900/90 border border-neutral-800/90 p-2.5 sm:px-4 sm:py-2.5 rounded-xl text-left min-w-0 shadow-lg backdrop-blur-md">
-              <div className="p-2 rounded-lg bg-amber-500/15 text-amber-400 shrink-0">
-                <Truck className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-bold text-white truncate">Fast Delivery</div>
-                <div className="text-[10px] sm:text-xs text-neutral-400 truncate">Doorstep shipping</div>
-              </div>
-            </div>
+      {/* Cinematic Gradient Overlays */}
+      <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-t from-black/75 via-black/25 to-black/35" />
+      <div className="absolute inset-0 z-20 pointer-events-none bg-radial-[circle_at_center] from-transparent via-transparent to-black/30" />
 
-            <div className="flex items-center gap-2.5 bg-neutral-900/90 border border-neutral-800/90 p-2.5 sm:px-4 sm:py-2.5 rounded-xl text-left min-w-0 shadow-lg backdrop-blur-md">
-              <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-400 shrink-0">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-bold text-white truncate">Quality Checked</div>
-                <div className="text-[10px] sm:text-xs text-neutral-400 truncate">Inspected items</div>
-              </div>
-            </div>
-          </div>
+      {/* Hero Typography & CTA */}
+      <div className="relative z-30 text-center px-4 max-w-xl mx-auto flex flex-col items-center">
+        <div key={currentLook.id} className="animate-fade-in flex flex-col items-center">
+          <h1 className="text-white text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-3 drop-shadow-md">
+            {currentLook.collectionTitle}
+          </h1>
+          <p className="text-white/90 text-xs sm:text-sm md:text-base max-w-md mb-6 font-normal drop-shadow-sm leading-relaxed">
+            {currentLook.subtitle}
+          </p>
         </div>
-
-        {/* Side Arrows for Manual Navigation */}
-        <button
-          type="button"
-          onClick={() => setActiveSlide((prev) => (prev - 1 + BACKGROUND_SLIDES.length) % BACKGROUND_SLIDES.length)}
-          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 min-w-[48px] min-h-[48px] items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
-          aria-label="Previous Slide"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
 
         <button
-          type="button"
-          onClick={() => setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length)}
-          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 min-w-[48px] min-h-[48px] items-center justify-center rounded-full bg-neutral-900/70 hover:bg-neutral-800 border border-neutral-700/60 text-neutral-300 hover:text-white transition-all cursor-pointer backdrop-blur-xs active:scale-95"
-          aria-label="Next Slide"
+          onClick={onCtaClick}
+          className="hero-btn text-white text-sm sm:text-base font-medium px-9 py-3 rounded-full inline-flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer"
         >
-          <ChevronRight className="w-5 h-5" />
+          {buttonText}
         </button>
-
-        {/* Background Slide Indicators (Bottom Right Pills) */}
-        <div className="absolute bottom-2.5 right-3 sm:bottom-3 sm:right-6 z-20 flex items-center gap-1 bg-neutral-950/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-neutral-800/80 text-[10px]">
-          <span className="text-[10px] text-neutral-400 hidden sm:inline font-medium mr-1 select-none">
-            {currentBg.label}
-          </span>
-          {BACKGROUND_SLIDES.map((slide, idx) => (
-            <button
-              key={slide.id}
-              type="button"
-              onClick={() => setActiveSlide(idx)}
-              aria-label={`Show slide ${idx + 1}: ${slide.label}`}
-              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer transition-transform active:scale-95"
-            >
-              <span 
-                className={`transition-all rounded-full block ${
-                  activeSlide === idx 
-                    ? 'w-5 h-1.5 bg-amber-400 shadow-xs' 
-                    : 'w-1.5 h-1.5 bg-neutral-500 hover:bg-neutral-400'
-                }`}
-              />
-            </button>
-          ))}
-        </div>
       </div>
-
-      {/* 3 Categories Showcase: Luxury visual cards with rich imagery & gold accents */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-3.5 sm:mt-5 w-full">
-        {CATEGORY_SHOWCASE.map((card) => {
-          const isSelected = filters.category === card.id;
-          const count = getCategoryInStock(card.id);
-
-          return (
-            <button
-              key={card.id}
-              type="button"
-              onClick={() => {
-                setFilters((prev) => ({ 
-                  ...prev, 
-                  category: prev.category === card.id ? 'all' : card.id 
-                }));
-                const catalogEl = document.getElementById('products-catalog-section');
-                if (catalogEl) {
-                  catalogEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-              className={`group relative overflow-hidden rounded-xl sm:rounded-2xl text-left transition-all duration-300 cursor-pointer h-[135px] sm:h-[165px] md:h-[180px] p-2.5 sm:p-4 flex flex-col justify-between border ${
-                isSelected
-                  ? 'border-amber-500 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/10'
-                  : 'border-neutral-800 hover:border-amber-500/60 shadow-md hover:shadow-xl'
-              }`}
-              id={`hero-category-card-${card.id}`}
-            >
-              {/* Background Image with Zoom on Hover */}
-              <div className="absolute inset-0 z-0 overflow-hidden">
-                <img
-                  src={card.image}
-                  alt={`${card.title} (${card.hindiTitle}) - Leovra Enterprises`}
-                  loading="lazy"
-                  fetchPriority="low"
-                  decoding="async"
-                  width={300}
-                  height={180}
-                  style={{ aspectRatio: '5/3' }}
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = heroEarringFallback;
-                  }}
-                  className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700"
-                />
-                {/* Multi-layer Dark Gradient for 100% Readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/75 to-neutral-950/45" />
-                <div className={`absolute inset-0 bg-gradient-to-r from-neutral-950/80 to-transparent transition-opacity duration-300 ${isSelected ? 'opacity-100' : 'opacity-70 group-hover:opacity-90'}`} />
-              </div>
-
-              {/* Top Row: Hindi Tag & Active / Price Badge */}
-              <div className="relative z-10 flex items-center justify-between gap-1 w-full">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-neutral-950/80 backdrop-blur-md border border-neutral-700/80 text-[10px] sm:text-xs font-bold text-amber-400">
-                  <span>{card.icon}</span>
-                  <span className="truncate">{card.hindiTitle}</span>
-                </span>
-
-                {isSelected ? (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500 text-neutral-950 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-xs">
-                    Active
-                  </span>
-                ) : (
-                  <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-neutral-900/80 text-neutral-300 text-[10px] font-semibold border border-neutral-700/60">
-                    {card.priceTag}
-                  </span>
-                )}
-              </div>
-
-              {/* Bottom Content: Title, Subtitle, & Explore CTA */}
-              <div className="relative z-10 w-full space-y-0.5 sm:space-y-1">
-                <span className="block text-xs sm:text-base md:text-lg font-extrabold text-white leading-tight truncate group-hover:text-amber-400 transition-colors">
-                  {card.shortTitle}
-                </span>
-                
-                <p className="hidden sm:block text-[11px] text-neutral-300 truncate font-normal">
-                  {card.subtitle}
-                </p>
-
-                <div className="flex items-center justify-between pt-1 border-t border-white/10 w-full">
-                  <span className="text-[10px] sm:text-xs font-semibold text-amber-400/90 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                    <span>{isSelected ? 'Clear Filter' : 'Explore'}</span>
-                    <ArrowRight className="w-3 h-3 text-amber-400" />
-                  </span>
-
-                  <span className="text-[9px] sm:text-[10px] text-neutral-400 font-medium">
-                    {count > 0 ? `${count} In Stock` : 'In Stock'}
-                  </span>
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    </section>
   );
 };
