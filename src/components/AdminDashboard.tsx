@@ -127,6 +127,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setTrackingAwb('');
   };
 
+  const handleCancelOrder = (order: Order) => {
+    if (window.confirm(`Are you sure you want to cancel Order #${order.orderNumber}?`)) {
+      const updated = storeService.cancelOrder(order.id, 'Cancelled by Admin from Dashboard', 'Admin');
+      if (updated) {
+        setOrders(storeService.getOrders());
+        showToast(`Order #${order.orderNumber} has been cancelled.`);
+      }
+    }
+  };
+
   // Product actions
   const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
@@ -515,6 +525,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           >
                             Manage
                           </button>
+                          {order.status !== 'cancelled' && (
+                            <button
+                              onClick={() => handleCancelOrder(order)}
+                              className="px-2 py-1 bg-red-50 text-red-600 border border-red-200 text-[11px] font-semibold hover:bg-red-100 transition-colors cursor-pointer"
+                              title="Cancel this order"
+                            >
+                              Cancel
+                            </button>
+                          )}
                           <button
                             onClick={() => onViewInvoice(order)}
                             className="p-1 text-neutral-600 hover:text-black cursor-pointer inline-block"
@@ -600,11 +619,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     >
                       Save Status
                     </button>
+                    {selectedOrder.status !== 'cancelled' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleCancelOrder(selectedOrder);
+                          setSelectedOrder(null);
+                        }}
+                        className="px-3 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wider cursor-pointer"
+                        title="Cancel this order immediately"
+                      >
+                        Cancel Order
+                      </button>
+                    )}
                     <button
                       onClick={() => setSelectedOrder(null)}
                       className="px-4 py-2.5 bg-neutral-200 text-neutral-800 font-semibold cursor-pointer"
                     >
-                      Cancel
+                      Close
                     </button>
                   </div>
                 </div>

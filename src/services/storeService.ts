@@ -5,6 +5,13 @@ import {
   DEFAULT_SETTINGS, 
   DEFAULT_ORDERS 
 } from '../data/defaultCatalog';
+import { 
+  fetchRemoteProducts, 
+  saveRemoteProducts, 
+  fetchRemoteOrders, 
+  saveRemoteOrders,
+  subscribeRemoteChanges 
+} from './firebaseService';
 
 const STORAGE_KEYS = {
   PRODUCTS: 'lc_products_v2',
@@ -26,6 +33,7 @@ const DUMMY_PRODUCT_IDS = new Set([
 class StoreService {
   private listeners: (() => void)[] = [];
   private syncChannel: BroadcastChannel | null = null;
+  private unsubscribeFirebase: (() => void) | null = null;
 
   constructor() {
     this.init();
@@ -93,6 +101,46 @@ class StoreService {
     });
   }
 
+  private async initFirebaseSync() {
+    if (typeof window === 'undefined') return;
+    try {
+      // 1. Fetch remote products from Firebase Cloud Database
+      const remoteProds = await fetchRemoteProducts();
+      if (remoteProds !== null) {
+        const deletedIds = this.getDeletedIds();
+        const clean = remoteProds.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(clean));
+        this.notify();
+      }
+
+      // 2. Fetch remote orders from Firebase Cloud Database
+      const remoteOrders = await fetchRemoteOrders();
+      if (remoteOrders !== null && remoteOrders.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(remoteOrders));
+        this.notify();
+      }
+
+      // 3. Connect real-time Firebase SSE across all devices worldwide
+      if (this.unsubscribeFirebase) {
+        this.unsubscribeFirebase();
+      }
+      this.unsubscribeFirebase = subscribeRemoteChanges(
+        (updatedProds) => {
+          const deletedIds = this.getDeletedIds();
+          const clean = updatedProds.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(clean));
+          this.notify();
+        },
+        (updatedOrders) => {
+          localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(updatedOrders));
+          this.notify();
+        }
+      );
+    } catch (e) {
+      console.warn('Firebase cloud synchronization warning:', e);
+    }
+  }
+
   private init() {
     if (typeof window === 'undefined') return;
     try {
@@ -135,6 +183,7 @@ class StoreService {
       }
 
       this.setupSync();
+      this.initFirebaseSync();
     } catch (e) {
       console.warn('LocalStorage initialization warning:', e);
     }
@@ -194,6 +243,7 @@ class StoreService {
       products[index] = updated;
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
       this.notify();
+      saveRemoteProducts(products).catch(err => console.warn('Failed to sync product to Firebase:', err));
       return updated;
     } else {
       const newProd: Product = {
@@ -222,6 +272,7 @@ class StoreService {
       products.unshift(newProd);
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
       this.notify();
+      saveRemoteProducts(products).catch(err => console.warn('Failed to sync new product to Firebase:', err));
       return newProd;
     }
   }
@@ -232,6 +283,7 @@ class StoreService {
     const filtered = products.filter(p => p.id !== id);
     localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(filtered));
     this.notify();
+    saveRemoteProducts(filtered).catch(err => console.warn('Failed to delete on Firebase:', err));
     return true;
   }
 
@@ -242,6 +294,7 @@ class StoreService {
       prod.isActive = !prod.isActive;
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
       this.notify();
+      saveRemoteProducts(products).catch(() => {});
       return prod;
     }
     return undefined;
@@ -333,6 +386,9 @@ class StoreService {
     orders.unshift(newOrder);
     localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
     this.notify();
+
+    saveRemoteProducts(products).catch(() => {});
+    saveRemoteOrders(orders).catch(() => {});
     return newOrder;
   }
 
@@ -365,6 +421,7 @@ class StoreService {
 
     localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
     this.notify();
+    saveRemoteOrders(orders).catch(() => {});
     return order;
   }
 
@@ -393,6 +450,9 @@ class StoreService {
     localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
     localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
     this.notify();
+
+    saveRemoteProducts(products).catch(() => {});
+    saveRemoteOrders(orders).catch(() => {});
     return order;
   }
 
@@ -418,6 +478,7 @@ class StoreService {
 
     localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
     this.notify();
+    saveRemoteOrders(orders).catch(() => {});
     return { success: true, message: 'Return request submitted. Our team will verify and arrange reverse pickup.' };
   }
 
