@@ -11,21 +11,21 @@ interface HeroBannerProps {
 const HERO_LOOKS = [
   {
     id: 1,
-    collectionTitle: 'Everyday Comfort',
-    subtitle: 'Soft fabric. Clean look. All day comfort. Relaxed fit pants.',
-    imageUrl: '/assets/hero_look_beige_comfort.jpg',
-    bgColor: '#ded1bf',
-    bgGradient: 'linear-gradient(to right, #ded1bf 0%, #ded1bf 50%, #d7c8b3 100%)',
-    altText: 'Leovra Clothes fashion model in Everyday Comfort relaxed fit pants'
+    collectionTitle: 'Step Out',
+    subtitle: 'Not your basic track pants. Made to stand out.',
+    imageUrl: '/assets/hero_look_red_stepout.jpg',
+    bgColor: '#e4dcd3',
+    bgGradient: 'linear-gradient(to right, #e6ded6 0%, #e4dcd3 50%, #dfd7ce 100%)',
+    altText: 'Leovra Clothes Step Out Red Track Pants'
   },
   {
     id: 2,
     collectionTitle: 'Bold Colours. Bigger Moves.',
-    subtitle: 'Wide leg track pants engineered for comfort, style, and everyday movement.',
-    imageUrl: '/assets/hero_look_red_moves.jpg',
-    bgColor: '#ded8d1',
-    bgGradient: 'linear-gradient(to right, #eae4dd 0%, #ded8d1 50%, #bab1a7 100%)',
-    altText: 'Leovra Clothes fashion model in Bold Colours Bigger Moves wide leg track pants'
+    subtitle: 'Lightweight fabric, breathable comfort, and relaxed everyday fit.',
+    imageUrl: '/assets/hero_look_beige_moves.jpg',
+    bgColor: '#e2dad2',
+    bgGradient: 'linear-gradient(to right, #e4dcd5 0%, #e2dad2 50%, #ded6cd 100%)',
+    altText: 'Leovra Clothes Bold Colours Bigger Moves Relaxed Fit Pants'
   }
 ];
 
@@ -64,9 +64,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         backgroundColor: currentLook.bgColor,
         backgroundImage: currentLook.bgGradient
       }}
-      className="relative w-full h-[64vh] sm:h-[72vh] md:h-[78vh] min-h-[460px] max-h-[700px] flex items-center justify-center overflow-hidden select-none transition-colors duration-1000"
+      className="relative w-full h-[66vh] sm:h-[74vh] md:h-[82vh] min-h-[480px] max-h-[740px] flex items-center justify-center overflow-hidden select-none transition-colors duration-1000"
     >
-      {/* Background Slides: Full Size Uncropped Photo with 100% Matched Studio Gradient */}
+      {/* Background Slides: 100% Full-Size Uncropped Photo with Matched Studio Cream Canvas */}
       {HERO_LOOKS.map((look, idx) => {
         const isCurrent = idx === currentIndex;
         return (
@@ -79,19 +79,19 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               background: look.bgGradient,
               transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
             }}
-            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center"
+            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center p-2 sm:p-4"
           >
-            {/* Full-Size Uncropped Photo with Feathered Edges for Zero-Seam Blending */}
+            {/* Full-Size Uncropped Photo with Soft Feathered Edges */}
             <img
               src={look.imageUrl}
               alt={look.altText}
               style={{
-                transform: isCurrent ? 'scale(1.02)' : 'scale(1.00)',
+                transform: isCurrent ? 'scale(1.015)' : 'scale(1.00)',
                 transition: 'transform 3800ms ease-out',
-                maskImage: 'linear-gradient(to right, transparent 0%, black 2.5%, black 97.5%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 2.5%, black 97.5%, transparent 100%)'
+                maskImage: 'linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%)'
               }}
-              className="h-full w-auto max-h-full object-contain mx-auto"
+              className="h-full w-auto max-h-full max-w-full object-contain mx-auto drop-shadow-xl"
               loading={idx === 0 ? 'eager' : 'lazy'}
             />
           </div>
@@ -101,7 +101,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       {/* Hero Typography & CTA in Deep Charcoal/Black */}
       <div className="relative z-30 text-center px-4 max-w-xl mx-auto flex flex-col items-center">
         <div key={currentLook.id} className="animate-fade-in flex flex-col items-center">
-          <h1 className="text-[#121212] text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-3 drop-shadow-sm">
+          <h1 className="text-[#121212] text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-2 drop-shadow-sm">
             {currentLook.collectionTitle}
           </h1>
           <p className="text-[#2b2b2b] text-xs sm:text-sm md:text-base max-w-md mb-6 font-medium drop-shadow-xs leading-relaxed">
