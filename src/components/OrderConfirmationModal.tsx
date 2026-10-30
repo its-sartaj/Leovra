@@ -57,7 +57,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
           {order.items.map((item, idx) => (
             <div key={idx} className="py-2 flex items-center justify-between text-xs">
               <div className="flex items-center space-x-2.5">
-                <img src={item.image} alt="" className="w-9 h-10 object-cover bg-gray-100 shrink-0" />
+                <img src={item.image} alt={item.title} className="w-9 h-10 object-cover bg-gray-100 shrink-0" />
                 <div>
                   <p className="font-semibold text-black line-clamp-1">{item.title}</p>
                   <p className="text-[10px] text-gray-500">

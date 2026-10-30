@@ -76,11 +76,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 <button
                   key={i}
                   onClick={() => setActiveImage(imgUrl)}
+                  aria-label={`View photo ${i + 1} of ${product.title}`}
                   className={`w-12 h-14 sm:w-14 sm:h-16 shrink-0 border-2 overflow-hidden bg-white transition-colors cursor-pointer ${
                     activeImage === imgUrl ? 'border-black' : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <img src={imgUrl} alt="" className="w-full h-full object-cover" />
+                  <img src={imgUrl} alt={`${product.title} angle ${i + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -156,6 +157,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                       key={idx}
                       onClick={() => setSelectedColorIndex(idx)}
                       title={c.name}
+                      aria-label={`Select color ${c.name}`}
                       className={`w-6 h-6 rounded-full p-0.5 border transition-all cursor-pointer ${
                         selectedColorIndex === idx ? 'border-black ring-1 ring-black' : 'border-gray-300'
                       }`}
@@ -173,6 +175,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               <div className="flex items-center border border-gray-300 w-fit">
                 <button
                   onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                  aria-label="Decrease quantity"
                   className="px-3 py-1 hover:bg-gray-100 text-gray-600 font-bold text-sm cursor-pointer"
                 >
                   -
@@ -180,6 +183,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 <span className="px-4 font-semibold text-xs">{quantity}</span>
                 <button
                   onClick={() => setQuantity(prev => Math.min(product.stock || 10, prev + 1))}
+                  aria-label="Increase quantity"
                   className="px-3 py-1 hover:bg-gray-100 text-gray-600 font-bold text-sm cursor-pointer"
                 >
                   +

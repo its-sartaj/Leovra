@@ -21,6 +21,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({
       <div className="bg-white max-w-lg w-full my-auto rounded-none shadow-2xl p-6 sm:p-8 relative">
         <button
           onClick={onClose}
+          aria-label="Close policy modal"
           className="absolute top-4 right-4 text-gray-400 hover:text-black transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />

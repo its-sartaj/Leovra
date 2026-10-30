@@ -49,6 +49,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
             <Logo size="xs" showText={true} />
             <button
               onClick={onClose}
+              aria-label="Close navigation menu"
               className="p-1 text-gray-500 hover:text-black transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />

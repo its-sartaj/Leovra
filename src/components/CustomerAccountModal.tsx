@@ -29,6 +29,7 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
       <div className="bg-white max-w-sm w-full p-6 shadow-xl relative rounded-none">
         <button
           onClick={onClose}
+          aria-label="Close modal"
           className="absolute top-4 right-4 text-gray-400 hover:text-black cursor-pointer"
         >
           <X className="w-5 h-5" />
@@ -46,6 +47,7 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
           <input
             type="text"
             required
+            aria-label="Email address or phone number"
             value={inputVal}
             onChange={e => setInputVal(e.target.value)}
             placeholder="name@example.com or phone"

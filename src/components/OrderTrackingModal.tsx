@@ -104,6 +104,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Close order tracking"
             className="p-1 text-gray-400 hover:text-black transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -115,8 +116,9 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
           <form onSubmit={handleSearch} className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div>
-                <label className="block text-gray-600 font-semibold mb-1">Order Reference Number *</label>
+                <label htmlFor="order-ref-input" className="block text-gray-600 font-semibold mb-1">Order Reference Number *</label>
                 <input
+                  id="order-ref-input"
                   type="text"
                   required
                   value={orderQuery}
@@ -126,8 +128,9 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-gray-600 font-semibold mb-1">Customer Phone (Optional)</label>
+                <label htmlFor="order-phone-input" className="block text-gray-600 font-semibold mb-1">Customer Phone (Optional)</label>
                 <input
+                  id="order-phone-input"
                   type="tel"
                   value={phoneQuery}
                   onChange={e => setPhoneQuery(e.target.value)}

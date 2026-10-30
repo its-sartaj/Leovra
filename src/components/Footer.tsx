@@ -41,7 +41,13 @@ export const Footer: React.FC<FooterProps> = ({
         </p>
 
         <form onSubmit={handleSubscribe} className="relative max-w-md mx-auto">
+          <label htmlFor="newsletter-email" className="sr-only">
+            Email address for newsletter
+          </label>
           <input
+            id="newsletter-email"
+            name="email"
+            aria-label="Email address for newsletter"
             type="email"
             required
             value={emailInput}
@@ -51,7 +57,7 @@ export const Footer: React.FC<FooterProps> = ({
           />
           <button
             type="submit"
-            aria-label="Subscribe"
+            aria-label="Subscribe to email newsletter"
             className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-gray-800 hover:text-black hover:scale-105 active:scale-95 transition-transform cursor-pointer"
           >
             <ArrowRight className="w-5 h-5 stroke-[2]" />
@@ -226,7 +232,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <li>
                     <button
                       onClick={onOpenAdmin}
-                      className="hover:text-black transition-colors cursor-pointer text-left text-neutral-400 hover:text-black"
+                      className="hover:text-black transition-colors cursor-pointer text-left text-neutral-600 hover:text-black"
                     >
                       Owner Portal
                     </button>

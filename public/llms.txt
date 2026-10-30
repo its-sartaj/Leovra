@@ -1,0 +1,37 @@
+# LEOVRA CLOTHES
+
+> Modern minimalist streetwear, heavyweight combed cotton oversized tees, wide-leg track pants, and everyday casual essentials engineered for comfort, style, and movement.
+
+Leovra Clothes (Leovra Enterprises) is an Indian direct-to-consumer apparel brand offering premium heavyweight cotton t-shirts, wide-leg track pants, relaxed bottom-wear, and casual fashion with nationwide express delivery across India.
+
+## Store Information
+- Website: https://loevraenterprises.publicvm.com/
+- Currency: Indian Rupee (INR / ₹)
+- Payment Methods: Instant UPI QR (PhonePe, Google Pay, Paytm, BHIM), Credit/Debit Cards, Net Banking, and Cash on Delivery (COD)
+- Shipping: Free delivery on all prepaid/UPI orders; flat ₹99 for Cash on Delivery
+- Return Policy: 7-day hassle-free return and exchange guarantee from delivery date
+- Customer Support: care@leovraclothes.com / +91 79799 68347
+- Support Hours: Mon - Sat: 9:00 AM - 8:00 PM IST
+
+## Primary Collections
+- [All Products](https://loevraenterprises.publicvm.com/#catalog): Complete apparel and accessories catalog
+- [New Arrivals](https://loevraenterprises.publicvm.com/?category=new): Fresh streetwear drops, seasonal colorways, and new cuts
+- [Best Sellers](https://loevraenterprises.publicvm.com/?category=bestsellers): Customer-favorite track pants and signature oversized tees
+- [Men's T-Shirts](https://loevraenterprises.publicvm.com/?category=mens_tshirts): Heavyweight combed cotton, minimal graphics, relaxed drop-shoulder fits
+- [Women's T-Shirts](https://loevraenterprises.publicvm.com/?category=womens_tshirts): Cropped and relaxed streetwear tees
+- [Men's Lowers](https://loevraenterprises.publicvm.com/?category=mens_lowers): Wide-leg track pants, cargo joggers, and comfort bottom-wear
+- [Women's Lowers](https://loevraenterprises.publicvm.com/?category=womens_lowers): Parachute pants, wide-leg sweatpants, and everyday trousers
+
+## Featured Products
+- [Step Out Red Wide-Leg Track Pants](https://loevraenterprises.publicvm.com/?product=step-out-red): Wide-leg track pants engineered with contrast black vertical side panels, adjustable drawstring waist, breathable lightweight nylon blend fabric, and relaxed streetwear drape.
+- [Everyday Comfort Beige Track Pants](https://loevraenterprises.publicvm.com/?product=comfort-beige): Neutral beige relaxed-fit bottom-wear featuring clean white side piping, ultra-soft feel, and all-day comfort.
+- [Heavyweight Oversized Streetwear Tee](https://loevraenterprises.publicvm.com/?product=heavyweight-tee): 240 GSM pre-shrunk combed cotton t-shirt with reinforced ribbed collar and dropped shoulder silhouette.
+
+## Customer Care & Services
+- [Order Tracking](https://loevraenterprises.publicvm.com/?action=track): Real-time shipment status lookup by order reference number
+- [Seven-Day Return Policy](https://loevraenterprises.publicvm.com/?policy=returns): Unworn, unwashed items with tags can be returned or exchanged within 7 calendar days of courier delivery
+- [Shipping & Delivery Policy](https://loevraenterprises.publicvm.com/?policy=shipping): Standard dispatch within 24-48 hours; delivery within 3-5 business days across Indian postal codes
+- [Privacy Policy](https://loevraenterprises.publicvm.com/?policy=privacy): Customer personal information handling and payment security
+
+## Optional
+- [Full Agent Specification](https://loevraenterprises.publicvm.com/llms-full.txt): Comprehensive machine-readable product catalog, sizing matrix, and enterprise details for LLM agents.

@@ -99,6 +99,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <h4 className="font-semibold text-black pr-2 text-xs line-clamp-1">{item.title}</h4>
                       <button
                         onClick={() => onRemoveItem(idx)}
+                        aria-label={`Remove ${item.title} from shopping bag`}
                         className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
                         title="Remove item"
                       >
@@ -123,6 +124,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <div className="flex items-center border border-gray-200 w-fit mt-2">
                     <button
                       onClick={() => onUpdateQuantity(idx, -1)}
+                      aria-label="Decrease quantity"
                       className="px-2.5 py-0.5 hover:bg-gray-100 text-xs text-gray-600 font-bold cursor-pointer"
                     >
                       -
@@ -130,6 +132,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     <span className="px-3 font-semibold text-[11px]">{item.quantity}</span>
                     <button
                       onClick={() => onUpdateQuantity(idx, 1)}
+                      aria-label="Increase quantity"
                       className="px-2.5 py-0.5 hover:bg-gray-100 text-xs text-gray-600 font-bold cursor-pointer"
                     >
                       +

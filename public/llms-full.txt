@@ -1,0 +1,44 @@
+# LEOVRA CLOTHES (LEOVRA ENTERPRISES) - COMPREHENSIVE LLM AGENT SPECIFICATION
+
+> Complete machine-readable catalog, sizing specifications, store policies, and interaction API guide for AI search agents, web crawlers, and LLM-assisted shopping assistants.
+
+## 1. Brand Identity & Overview
+- Brand: LEOVRA CLOTHES
+- Legal Entity: Leovra Enterprises
+- Canonical Production URL: https://loevraenterprises.publicvm.com/
+- Industry: Fashion, Modern Streetwear, Everyday Casual Essentials
+- Target Audience: Men and women seeking relaxed silhouettes, durable fabrics, and minimal modern styling.
+- Geographies Served: Nationwide delivery across all PIN codes in India.
+- Helpline / Inquiries: care@leovraclothes.com / +91 79799 68347
+
+## 2. Product Categories & Taxonomy
+1. **Men's T-Shirts (`mens_tshirts`)**: Heavyweight 240 GSM combed cotton, drop-shoulder silhouettes, minimal branding, pre-shrunk fabric.
+2. **Women's T-Shirts (`womens_tshirts`)**: Premium cotton streetwear crops, boxy oversized cuts, breathable daily wear.
+3. **Men's Lowers (`mens_lowers`)**: Wide-leg track pants, cargo pants, lightweight technical joggers with elastic waistbands and deep pockets.
+4. **Women's Lowers (`womens_lowers`)**: Relaxed straight-leg and wide-leg track pants, parachute pants, versatile neutrals.
+5. **Casual Wear (`mens_casual`)**: Layering essentials, lightweight shirts, and coordinated streetwear sets.
+6. **Jewellery (`jewellery`)**: Minimalist stainless steel chains, rings, and streetwear lifestyle accessories.
+
+## 3. Sizing Matrix (Inches)
+- **S (Small)**: Chest 38", Length 28", Waist 28-30", Inseam 30"
+- **M (Medium)**: Chest 40", Length 29", Waist 30-32", Inseam 31"
+- **L (Large)**: Chest 42", Length 30", Waist 32-34", Inseam 31.5"
+- **XL (Extra Large)**: Chest 44", Length 31", Waist 34-36", Inseam 32"
+- **XXL (Double Extra Large)**: Chest 46", Length 32", Waist 36-38", Inseam 32.5"
+
+Note: All garments are pre-shrunk. For an exaggerated oversized streetwear aesthetic, ordering one size larger is recommended.
+
+## 4. Payment & Checkout Mechanics
+- **UPI QR / Instant Prepaid**: Zero payment gateway surcharge, eligible for 100% FREE express delivery across India. Supported apps include PhonePe, Google Pay, Paytm, BHIM, Cred, and bank UPI apps.
+- **Cash on Delivery (COD)**: Available nationwide with a flat ₹99 handling and verification charge.
+- **Cards & Net Banking**: Major Visa, Mastercard, RuPay, and Indian net banking accounts supported.
+
+## 5. Fulfillment & Shipping
+- **Dispatch**: Orders are verified and dispatched from the central fulfillment hub within 24 to 48 hours.
+- **Delivery Timeline**: 3 to 5 business days for metro cities; 4 to 7 business days for rest of India.
+- **Tracking**: Real-time SMS and web tracking available using the assigned Order Reference (e.g. `LC-2026-10142`).
+
+## 6. Seven-Day Return & Exchange Policy
+- Returns and size exchanges must be requested within 7 calendar days of courier delivery confirmation.
+- Items must remain in unworn, unwashed condition with original tags intact.
+- Reverse pickup is coordinated via authorized courier partners upon request.

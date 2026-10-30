@@ -29,6 +29,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
           <input
             autoFocus
             type="text"
+            aria-label="Search catalog products"
             value={searchQuery}
             onChange={e => onSearchChange(e.target.value)}
             placeholder="Search products, tees, lowers, styles, SKUs..."
@@ -36,6 +37,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
           />
           <button
             onClick={onClose}
+            aria-label="Close search overlay"
             className="p-1 text-gray-400 hover:text-black transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -57,7 +59,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                 >
                   <img
                     src={product.image}
-                    alt=""
+                    alt={product.title}
                     className="w-10 h-10 object-cover bg-gray-100 shrink-0"
                   />
                   <div className="flex-1 text-xs">

@@ -13,7 +13,7 @@ const HERO_LOOKS = [
     id: 1,
     collectionTitle: 'Step Out',
     subtitle: 'Not your basic track pants. Made to stand out.',
-    imageUrl: './assets/hero_look_red_stepout.jpg?v=20261031_03',
+    imageUrl: './assets/hero_look_red_stepout.webp',
     bgColor: '#e5ddd3',
     bgGradient: 'linear-gradient(to right, #e7ded4 0%, #e5ddd3 50%, #e4dbd1 100%)',
     altText: 'Leovra Clothes Step Out Red Track Pants 3D Polaroid'
@@ -22,7 +22,7 @@ const HERO_LOOKS = [
     id: 2,
     collectionTitle: 'Bold Colours. Bigger Moves.',
     subtitle: 'Lightweight fabric, breathable comfort, and relaxed everyday fit.',
-    imageUrl: './assets/hero_look_beige_moves.jpg?v=20261031_03',
+    imageUrl: './assets/hero_look_beige_moves.webp',
     bgColor: '#e4ddd5',
     bgGradient: 'linear-gradient(to right, #e8e3dc 0%, #e4ddd5 50%, #e4ddd5 100%)',
     altText: 'Leovra Clothes Bold Colours Bigger Moves Relaxed Fit Pants 3D Polaroid'
@@ -86,6 +86,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <img
               src={look.imageUrl}
               alt={look.altText}
+              width={682}
+              height={1024}
+              fetchPriority={idx === 0 ? 'high' : 'auto'}
+              decoding={idx === 0 ? 'sync' : 'async'}
               style={{
                 transform: isCurrent ? 'scale(1.018)' : 'scale(1.0)',
                 transition: 'transform 3800ms ease-out',

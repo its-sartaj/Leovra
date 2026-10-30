@@ -329,6 +329,9 @@ export default function App() {
       />
 
       <main className="flex-1">
+        {/* Semantic H1 for SEO, Accessibility & Agentic Crawlers */}
+        <h1 className="sr-only">LEOVRA CLOTHES | Modern Streetwear Basics &amp; Everyday Casual Essentials</h1>
+
         {/* Cinematic Fashion Hero Showcase */}
         <HeroBanner
           title={settings.heroTitle}
@@ -349,14 +352,16 @@ export default function App() {
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#121212] tracking-tight">
                 {getCategoryTitle(selectedCategory)}
               </h2>
-              <p className="text-xs text-gray-400 font-medium tracking-wider mt-0.5">
+              <p className="text-xs text-gray-600 font-medium tracking-wider mt-0.5">
                 {filteredProducts.length} {filteredProducts.length === 1 ? 'Item' : 'Items'} available
               </p>
             </div>
 
             <div className="flex items-center space-x-2 text-xs">
-              <span className="text-gray-500 font-medium">Sort by:</span>
+              <label htmlFor="catalog-sort" className="text-gray-700 font-medium">Sort by:</label>
               <select
+                id="catalog-sort"
+                aria-label="Sort products by"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
                 className="py-1 px-2.5 bg-white border border-gray-300 rounded text-xs font-semibold focus:border-black outline-none cursor-pointer"
@@ -403,7 +408,7 @@ export default function App() {
         {/* Product Grid Showcase */}
         <section className="max-w-7xl mx-auto px-3 sm:px-6 pb-16">
           {filteredProducts.length === 0 ? (
-            <div className="text-center py-20 text-gray-400">
+            <div className="text-center py-20 text-gray-600">
               <p className="text-base font-medium">No items found in this collection.</p>
               <button
                 onClick={() => setSelectedCategory('all')}
