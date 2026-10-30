@@ -13,23 +13,23 @@ const HERO_LOOKS = [
     id: 1,
     collectionTitle: 'Step Out',
     subtitle: 'Not your basic track pants. Made to stand out.',
-    imageUrl: '/assets/hero_look_red_stepout.jpg',
-    bgColor: '#e4dcd3',
-    bgGradient: 'linear-gradient(to right, #e6ded6 0%, #e4dcd3 50%, #dfd7ce 100%)',
-    altText: 'Leovra Clothes Step Out Red Track Pants'
+    imageUrl: './assets/hero_look_red_stepout.jpg?v=20261031_03',
+    bgColor: '#e5ddd3',
+    bgGradient: 'linear-gradient(to right, #e7ded4 0%, #e5ddd3 50%, #e4dbd1 100%)',
+    altText: 'Leovra Clothes Step Out Red Track Pants 3D Polaroid'
   },
   {
     id: 2,
     collectionTitle: 'Bold Colours. Bigger Moves.',
     subtitle: 'Lightweight fabric, breathable comfort, and relaxed everyday fit.',
-    imageUrl: '/assets/hero_look_beige_moves.jpg',
-    bgColor: '#e2dad2',
-    bgGradient: 'linear-gradient(to right, #e4dcd5 0%, #e2dad2 50%, #ded6cd 100%)',
-    altText: 'Leovra Clothes Bold Colours Bigger Moves Relaxed Fit Pants'
+    imageUrl: './assets/hero_look_beige_moves.jpg?v=20261031_03',
+    bgColor: '#e4ddd5',
+    bgGradient: 'linear-gradient(to right, #e8e3dc 0%, #e4ddd5 50%, #e4ddd5 100%)',
+    altText: 'Leovra Clothes Bold Colours Bigger Moves Relaxed Fit Pants 3D Polaroid'
   }
 ];
 
-// Continuous auto-slide interval: 3.2 seconds
+// Auto-slide interval: 3.2 seconds
 const ROTATION_INTERVAL_MS = 3200;
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
@@ -59,12 +59,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   return (
     <section
-      aria-label="Leovra Clothes Cinematic Fashion Showcase"
+      aria-label="Leovra Clothes Fashion Showcase"
+      onClick={onCtaClick}
       style={{
         backgroundColor: currentLook.bgColor,
         backgroundImage: currentLook.bgGradient
       }}
-      className="relative w-full h-[66vh] sm:h-[74vh] md:h-[82vh] min-h-[480px] max-h-[740px] flex items-center justify-center overflow-hidden select-none transition-colors duration-1000"
+      className="relative w-full h-[64vh] sm:h-[74vh] md:h-[82vh] min-h-[480px] max-h-[820px] flex items-center justify-center overflow-hidden select-none cursor-pointer transition-colors duration-1000"
     >
       {/* Background Slides: 100% Full-Size Uncropped Photo with Matched Studio Cream Canvas */}
       {HERO_LOOKS.map((look, idx) => {
@@ -81,40 +82,51 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             }}
             className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center p-2 sm:p-4"
           >
-            {/* Full-Size Uncropped Photo with Soft Feathered Edges */}
+            {/* 100% Full-Size Uncropped Photo with Soft Feathered Edges */}
             <img
               src={look.imageUrl}
               alt={look.altText}
               style={{
-                transform: isCurrent ? 'scale(1.015)' : 'scale(1.00)',
+                transform: isCurrent ? 'scale(1.018)' : 'scale(1.0)',
                 transition: 'transform 3800ms ease-out',
                 maskImage: 'linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%)',
                 WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%)'
               }}
-              className="h-full w-auto max-h-full max-w-full object-contain mx-auto drop-shadow-xl"
+              className="h-full w-auto max-h-full max-w-full object-contain mx-auto drop-shadow-2xl"
               loading={idx === 0 ? 'eager' : 'lazy'}
             />
           </div>
         );
       })}
 
-      {/* Hero Typography & CTA in Deep Charcoal/Black */}
-      <div className="relative z-30 text-center px-4 max-w-xl mx-auto flex flex-col items-center">
-        <div key={currentLook.id} className="animate-fade-in flex flex-col items-center">
-          <h1 className="text-[#121212] text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-2 drop-shadow-sm">
-            {currentLook.collectionTitle}
-          </h1>
-          <p className="text-[#2b2b2b] text-xs sm:text-sm md:text-base max-w-md mb-6 font-medium drop-shadow-xs leading-relaxed">
-            {currentLook.subtitle}
-          </p>
-        </div>
-
+      {/* Floating Pill CTA at the bottom - never obstructs the artwork or model */}
+      <div className="absolute bottom-5 sm:bottom-7 z-30 pointer-events-auto flex flex-col items-center gap-2">
         <button
-          onClick={onCtaClick}
-          className="bg-[#121212] hover:bg-black text-white text-sm sm:text-base font-semibold px-9 py-3 rounded-full inline-flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCtaClick();
+          }}
+          className="bg-[#121212]/90 hover:bg-black text-white text-xs sm:text-sm font-semibold tracking-wide uppercase px-8 py-2.5 rounded-full shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border border-white/10"
         >
           {buttonText}
         </button>
+
+        {/* Carousel indicators showing auto-slide progress */}
+        <div className="flex items-center gap-1.5 mt-0.5">
+          {HERO_LOOKS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentIndex(idx);
+              }}
+              aria-label={`Go to slide ${idx + 1}`}
+              className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
+                idx === currentIndex ? 'w-6 bg-[#121212]' : 'w-1.5 bg-[#121212]/30 hover:bg-[#121212]/60'
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
