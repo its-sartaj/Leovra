@@ -44,7 +44,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     };
   }, []);
 
-  const galleryImages = [product.image, ...(product.additionalImages || [])];
+  const galleryImages = Array.from(new Set([product.image, ...(product.additionalImages || [])])).filter(Boolean);
   const activeColor = product.colors[selectedColorIndex] || { name: 'Standard', hex: '#000000' };
   const isSoldOut = product.stock <= 0;
 

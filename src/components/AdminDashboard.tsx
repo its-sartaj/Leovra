@@ -192,7 +192,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
-  // Product actions & size / image handlers
+  // Product actions & size / image handlers (up to 3 photos)
   const handleAddCustomSize = () => {
     const trimmed = customSizeInput.trim().toUpperCase();
     if (!trimmed || !editingProduct) return;
@@ -203,20 +203,85 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setCustomSizeInput('');
   };
 
-  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !editingProduct) return;
+  // Helper to extract up to 3 photos from product object
+  const getProductImages = (prod: Partial<Product> | null): string[] => {
+    if (!prod) return [];
+    const list: string[] = [];
+    if (prod.image) list.push(prod.image);
+    if (Array.isArray(prod.additionalImages)) {
+      prod.additionalImages.forEach(img => {
+        if (img && !list.includes(img) && list.length < 3) {
+          list.push(img);
+        }
+      });
+    }
+    return list;
+  };
+
+  // Helper to update product images state
+  const updateProductImages = (images: string[]) => {
+    if (!editingProduct) return;
+    const cleanList = images.filter(Boolean).slice(0, 3);
+    const primary = cleanList[0] || '';
+    const additional = cleanList.slice(1);
+    setEditingProduct(prev => prev ? {
+      ...prev,
+      image: primary,
+      images: cleanList,
+      additionalImages: additional
+    } : null);
+  };
+
+  // Upload handler for single slot or multiple photos (up to 3)
+  const handleImageFilesUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetSlot?: number) => {
+    const files: File[] = e.target.files ? Array.from(e.target.files) : [];
+    if (files.length === 0 || !editingProduct) return;
+
     try {
       setIsUploadingImage(true);
-      const dataUrl = await compressImageFile(file);
-      setEditingProduct(prev => prev ? { ...prev, image: dataUrl } : null);
-      showToast('Photo uploaded & optimized successfully!');
+      const currentImages = getProductImages(editingProduct);
+
+      if (typeof targetSlot === 'number') {
+        const compressed = await compressImageFile(files[0]);
+        const updated = [...currentImages];
+        updated[targetSlot] = compressed;
+        updateProductImages(updated);
+        showToast(`Photo ${targetSlot + 1} uploaded & optimized!`);
+      } else {
+        const availableSlots = 3 - currentImages.length;
+        const toProcess = files.slice(0, availableSlots > 0 ? availableSlots : 1);
+        const newUrls: string[] = [];
+        for (const f of toProcess) {
+          const comp = await compressImageFile(f);
+          newUrls.push(comp);
+        }
+        const updated = [...currentImages, ...newUrls].slice(0, 3);
+        updateProductImages(updated);
+        showToast(`${newUrls.length} photo(s) uploaded successfully!`);
+      }
     } catch (err) {
       console.error('Image compression / upload failed:', err);
       showToast('Failed to process image. Please try another photo.');
     } finally {
       setIsUploadingImage(false);
+      e.target.value = '';
     }
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    const currentImages = getProductImages(editingProduct);
+    const filtered = currentImages.filter((_, idx) => idx !== indexToRemove);
+    updateProductImages(filtered);
+    showToast(`Photo removed.`);
+  };
+
+  const handleSetPrimaryImage = (indexToPromote: number) => {
+    const currentImages = getProductImages(editingProduct);
+    if (indexToPromote <= 0 || indexToPromote >= currentImages.length) return;
+    const item = currentImages[indexToPromote];
+    const rest = currentImages.filter((_, idx) => idx !== indexToPromote);
+    updateProductImages([item, ...rest]);
+    showToast(`Set as Main / Cover photo!`);
   };
 
   const handleSaveProduct = (e: React.FormEvent) => {
@@ -225,12 +290,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       showToast('Please enter product title and price.');
       return;
     }
-    if (!editingProduct.image) {
-      showToast('Please upload a product photo or provide an image URL.');
+    const currentImages = getProductImages(editingProduct);
+    if (currentImages.length === 0 || !currentImages[0]) {
+      showToast('Please upload at least 1 product photo.');
       return;
     }
+    const primary = currentImages[0];
+    const additional = currentImages.slice(1, 3);
     const finalProduct = {
       ...editingProduct,
+      image: primary,
+      images: currentImages,
+      additionalImages: additional,
       sizes: (editingProduct.sizes && editingProduct.sizes.length > 0)
         ? editingProduct.sizes
         : ['M', 'L', 'XL']
@@ -817,6 +888,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       >
                         {prod.isActive ? 'Active' : 'Disabled'}
                       </span>
+                      {prod.additionalImages && prod.additionalImages.length > 0 && (
+                        <span className="absolute bottom-2 right-2 text-[9px] font-bold px-1.5 py-0.5 bg-black/75 text-white rounded">
+                          {1 + prod.additionalImages.length} Photos
+                        </span>
+                      )}
                     </div>
 
                     <div>
@@ -889,84 +965,154 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </button>
                   </div>
 
-                  {/* Photo Upload Section */}
+                  {/* Photo Upload Section (Up to 3 Photos) */}
                   <div>
-                    <label className="block text-neutral-700 font-semibold mb-1">
-                      Product Photo * {isUploadingImage && <span className="text-blue-600 font-normal">(Uploading & optimizing...)</span>}
-                    </label>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <label className="block text-neutral-700 font-semibold">
+                        Product Photos (Up to 3 Photos) *
+                        {isUploadingImage && <span className="text-blue-600 font-normal ml-2">(Uploading & optimizing...)</span>}
+                      </label>
+                      <span className="text-[10px] text-neutral-500 font-medium">
+                        {getProductImages(editingProduct).length} of 3 photos added
+                      </span>
+                    </div>
 
-                    {editingProduct.image ? (
-                      <div className="border border-neutral-200 rounded-lg p-2.5 flex items-center gap-3 bg-neutral-50">
-                        <div className="w-16 h-16 rounded overflow-hidden bg-neutral-200 shrink-0 border border-neutral-300">
-                          <img
-                            src={editingProduct.image}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] font-bold text-neutral-800">Photo Attached</p>
-                          <p className="text-[10px] text-emerald-600 font-medium">✓ Ready for listing</p>
-                          <div className="flex gap-2.5 mt-1.5">
-                            <label className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 cursor-pointer underline">
-                              Change Photo
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleImageFileUpload}
-                              />
-                            </label>
-                            <span className="text-neutral-300">|</span>
-                            <button
-                              type="button"
-                              onClick={() => setEditingProduct({ ...editingProduct, image: '' })}
-                              className="text-[11px] font-semibold text-red-600 hover:text-red-800 cursor-pointer underline"
-                            >
-                              Remove Photo
-                            </button>
+                    {/* 3-Slot Grid */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {[0, 1, 2].map((slotIdx) => {
+                        const currentImages = getProductImages(editingProduct);
+                        const imgUrl = currentImages[slotIdx];
+                        const isPrimary = slotIdx === 0;
+
+                        return (
+                          <div
+                            key={slotIdx}
+                            className="relative border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 flex flex-col justify-between aspect-[3/3.8] p-1.5"
+                          >
+                            {/* Slot Header Badge */}
+                            <div className="flex justify-between items-center mb-1">
+                              <span
+                                className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                                  isPrimary ? 'bg-black text-white' : 'bg-neutral-200 text-neutral-700'
+                                }`}
+                              >
+                                {isPrimary ? '1. Cover' : `Photo ${slotIdx + 1}`}
+                              </span>
+                              {imgUrl && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveImage(slotIdx)}
+                                  className="text-neutral-400 hover:text-red-600 cursor-pointer p-0.5"
+                                  title="Remove this photo"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Slot Image or Upload Box */}
+                            {imgUrl ? (
+                              <div className="relative flex-1 rounded overflow-hidden bg-white flex items-center justify-center group">
+                                <img
+                                  src={imgUrl}
+                                  alt={`Product photo ${slotIdx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 cursor-pointer text-white text-[10px] font-semibold">
+                                  <Upload className="w-3.5 h-3.5" />
+                                  <span>Change</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => handleImageFilesUpload(e, slotIdx)}
+                                  />
+                                </label>
+                              </div>
+                            ) : (
+                              <label className="flex-1 border-2 border-dashed border-neutral-300 hover:border-black rounded flex flex-col items-center justify-center gap-1 cursor-pointer bg-white hover:bg-neutral-100/70 transition-all text-center p-1.5">
+                                <div className="w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-600">
+                                  <Plus className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="text-[10px] font-bold text-neutral-800 leading-tight">
+                                  {isPrimary ? '+ Add Cover' : `+ Photo ${slotIdx + 1}`}
+                                </span>
+                                <span className="text-[8px] text-neutral-400">
+                                  Tap to pick
+                                </span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => handleImageFilesUpload(e, slotIdx)}
+                                />
+                              </label>
+                            )}
+
+                            {/* Bottom Helper Action */}
+                            {imgUrl && !isPrimary && (
+                              <button
+                                type="button"
+                                onClick={() => handleSetPrimaryImage(slotIdx)}
+                                className="mt-1 text-[9px] font-semibold text-neutral-600 hover:text-black hover:underline text-center cursor-pointer"
+                              >
+                                ★ Make Cover
+                              </button>
+                            )}
                           </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <label className="border-2 border-dashed border-neutral-300 hover:border-black rounded-lg p-5 flex flex-col items-center justify-center gap-1.5 cursor-pointer bg-neutral-50 hover:bg-neutral-100/80 transition-all text-center">
-                        <div className="w-10 h-10 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-700">
-                          <Upload className="w-5 h-5" />
-                        </div>
-                        <span className="text-xs font-bold text-neutral-800">
-                          Click / Tap to Upload Photo from Device
-                        </span>
-                        <span className="text-[10px] text-neutral-500">
-                          Select from Gallery, Camera, or Files (JPG, PNG, WEBP)
-                        </span>
+                        );
+                      })}
+                    </div>
+
+                    {/* Multi-upload & URL Toggle */}
+                    <div className="flex items-center justify-between mt-2 pt-1">
+                      <label className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded text-[10px] font-semibold text-neutral-800 cursor-pointer transition-colors">
+                        <Upload className="w-3 h-3 text-neutral-600" />
+                        <span>Upload Multiple Photos (Up to 3)</span>
                         <input
                           type="file"
+                          multiple
                           accept="image/*"
                           className="hidden"
-                          onChange={handleImageFileUpload}
+                          onChange={(e) => handleImageFilesUpload(e)}
                         />
                       </label>
-                    )}
 
-                    {/* Fallback URL input toggle */}
-                    <div className="mt-1.5">
                       <button
                         type="button"
                         onClick={() => setShowUrlInput(!showUrlInput)}
                         className="text-[10px] text-neutral-500 hover:text-neutral-800 underline cursor-pointer"
                       >
-                        {showUrlInput ? 'Hide image URL input' : 'Or paste an Image URL instead'}
+                        {showUrlInput ? 'Hide manual URLs' : 'Or paste URLs manually'}
                       </button>
-                      {showUrlInput && (
-                        <input
-                          type="text"
-                          value={editingProduct.image || ''}
-                          onChange={e => setEditingProduct({ ...editingProduct, image: e.target.value })}
-                          placeholder="https://... or /assets/..."
-                          className="w-full mt-1 p-2 border border-neutral-300 focus:border-black outline-none font-mono text-[11px]"
-                        />
-                      )}
                     </div>
+
+                    {/* Manual URL Inputs (if toggled) */}
+                    {showUrlInput && (
+                      <div className="space-y-1.5 mt-2 p-2 bg-neutral-50 border border-neutral-200 rounded">
+                        {[0, 1, 2].map((slotIdx) => {
+                          const currentImages = getProductImages(editingProduct);
+                          return (
+                            <div key={slotIdx} className="flex items-center gap-2">
+                              <span className="text-[10px] font-semibold text-neutral-600 w-16 shrink-0">
+                                {slotIdx === 0 ? 'Cover URL:' : `Photo ${slotIdx + 1} URL:`}
+                              </span>
+                              <input
+                                type="text"
+                                value={currentImages[slotIdx] || ''}
+                                onChange={(e) => {
+                                  const nextList = [...currentImages];
+                                  nextList[slotIdx] = e.target.value;
+                                  updateProductImages(nextList);
+                                }}
+                                placeholder={`https://... for photo ${slotIdx + 1}`}
+                                className="flex-1 p-1.5 border border-neutral-300 focus:border-black outline-none font-mono text-[10px]"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   <div>

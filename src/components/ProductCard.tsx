@@ -18,14 +18,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       onClick={() => onOpenDetails(product)}
       className="product-card group cursor-pointer flex flex-col select-none"
     >
-      {/* Product Image Box */}
-      <div className="product-img-wrapper w-full overflow-hidden relative">
+      {/* Product Image Box with 2nd photo hover preview */}
+      <div className="product-img-wrapper w-full overflow-hidden relative group">
         <img
           src={product.image}
           alt={product.title}
           loading="lazy"
-          className="w-full h-full object-cover object-center img-zoom"
+          className={`w-full h-full object-cover object-center img-zoom transition-opacity duration-300 ${
+            product.additionalImages && product.additionalImages[0] ? 'group-hover:opacity-0' : ''
+          }`}
         />
+        {product.additionalImages && product.additionalImages[0] && (
+          <img
+            src={product.additionalImages[0]}
+            alt={`${product.title} alternate view`}
+            loading="lazy"
+            className="w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 img-zoom"
+          />
+        )}
 
         {/* Status Badges */}
         <div className="absolute top-2 left-2 flex flex-col space-y-1">
