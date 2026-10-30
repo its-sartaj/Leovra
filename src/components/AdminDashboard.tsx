@@ -16,11 +16,63 @@ import {
   Truck,
   IndianRupee,
   Clock,
-  ExternalLink
+  ExternalLink,
+  Upload,
+  Image as ImageIcon,
+  X
 } from 'lucide-react';
 import { Product, Order, Coupon, StoreSettings } from '../types';
 import { storeService } from '../services/storeService';
 import { Logo } from './Logo';
+
+/**
+ * Compresses an uploaded image file via HTML Canvas so it stays under 150KB
+ * and seamlessly synchronizes across Firebase and localStorage without lag.
+ */
+const compressImageFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const maxWidth = 1000;
+        const maxHeight = 1000;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(img.src);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        // High quality JPEG compression for sharp visuals & minimal payload size
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        resolve(compressedDataUrl);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
 
 interface AdminDashboardProps {
   onBackToStore: () => void;
@@ -56,6 +108,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Product modal (create / edit)
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
+  const [customSizeInput, setCustomSizeInput] = useState('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Coupon modal
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
@@ -137,11 +192,50 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
-  // Product actions
+  // Product actions & size / image handlers
+  const handleAddCustomSize = () => {
+    const trimmed = customSizeInput.trim().toUpperCase();
+    if (!trimmed || !editingProduct) return;
+    const current = editingProduct.sizes || [];
+    if (!current.includes(trimmed)) {
+      setEditingProduct({ ...editingProduct, sizes: [...current, trimmed] });
+    }
+    setCustomSizeInput('');
+  };
+
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+    try {
+      setIsUploadingImage(true);
+      const dataUrl = await compressImageFile(file);
+      setEditingProduct(prev => prev ? { ...prev, image: dataUrl } : null);
+      showToast('Photo uploaded & optimized successfully!');
+    } catch (err) {
+      console.error('Image compression / upload failed:', err);
+      showToast('Failed to process image. Please try another photo.');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct?.title || !editingProduct?.price) return;
-    storeService.saveProduct(editingProduct);
+    if (!editingProduct?.title || !editingProduct?.price) {
+      showToast('Please enter product title and price.');
+      return;
+    }
+    if (!editingProduct.image) {
+      showToast('Please upload a product photo or provide an image URL.');
+      return;
+    }
+    const finalProduct = {
+      ...editingProduct,
+      sizes: (editingProduct.sizes && editingProduct.sizes.length > 0)
+        ? editingProduct.sizes
+        : ['M', 'L', 'XL']
+    };
+    storeService.saveProduct(finalProduct);
     setProducts(storeService.getProducts());
     showToast(editingProduct.id ? 'Product updated.' : 'Product created.');
     setIsProductModalOpen(false);
@@ -656,17 +750,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 onClick={() => {
                   setEditingProduct({
                     title: '',
-                    price: 1499,
+                    price: 999,
                     category: 'mens_tshirts',
                     gender: 'gents',
                     type: 'tshirts',
                     stock: 25,
                     image: '',
-                    sizes: ['S', 'M', 'L', 'XL'],
+                    sizes: ['M', 'L', 'XL'],
                     colors: [{ name: 'Black', hex: '#000000' }],
                     isActive: true,
                     isNew: true
                   });
+                  setCustomSizeInput('');
+                  setShowUrlInput(false);
                   setIsProductModalOpen(true);
                 }}
                 className="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 hover:opacity-90 cursor-pointer"
@@ -681,23 +777,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <Package className="w-10 h-10 text-neutral-300 mx-auto" />
                 <p className="text-sm font-bold text-neutral-800">No products in catalog</p>
                 <p className="text-xs text-neutral-400 max-w-sm mx-auto">
-                  All previous demo items have been removed. Click &quot;Add New Product&quot; to list your inventory.
+                  Click &quot;Add New Product&quot; to list your clothes and apparel.
                 </p>
                 <button
                   onClick={() => {
                     setEditingProduct({
                       title: '',
-                      price: 99,
-                      category: 'jewellery',
-                      gender: 'ladies',
-                      type: 'accessories',
-                      stock: 10,
+                      price: 999,
+                      category: 'mens_lowers',
+                      gender: 'gents',
+                      type: 'lowers',
+                      stock: 20,
                       image: '',
-                      sizes: ['Free Size'],
-                      colors: [{ name: 'Gold', hex: '#d4af37' }],
+                      sizes: ['M', 'L', 'XL'],
+                      colors: [{ name: 'Black', hex: '#000000' }],
                       isActive: true,
                       isNew: true
                     });
+                    setCustomSizeInput('');
+                    setShowUrlInput(false);
                     setIsProductModalOpen(true);
                   }}
                   className="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider inline-flex items-center space-x-1.5 hover:opacity-90 cursor-pointer"
@@ -728,12 +826,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <span className="font-bold">Rs. {prod.price.toLocaleString()}</span>
                         <span className="text-[11px] text-neutral-500">Stock: {prod.stock}</span>
                       </div>
+                      {prod.sizes && prod.sizes.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2 pt-1.5 border-t border-neutral-100">
+                          {prod.sizes.map(sz => (
+                            <span key={sz} className="text-[9px] font-semibold bg-neutral-100 text-neutral-700 px-1.5 py-0.5 rounded border border-neutral-200">
+                              {sz}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex space-x-1 pt-2 border-t border-neutral-100">
                       <button
                         onClick={() => {
                           setEditingProduct(prod);
+                          setCustomSizeInput('');
+                          setShowUrlInput(false);
                           setIsProductModalOpen(true);
                         }}
                         className="flex-1 py-1.5 bg-neutral-100 hover:bg-neutral-200 font-semibold text-center cursor-pointer"
@@ -765,11 +874,100 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
                 <form
                   onSubmit={handleSaveProduct}
-                  className="bg-white max-w-lg w-full p-6 shadow-xl space-y-3 text-xs my-auto"
+                  className="bg-white max-w-xl w-full p-6 shadow-2xl space-y-4 text-xs my-auto max-h-[90vh] overflow-y-auto rounded-lg"
                 >
-                  <h3 className="font-bold text-sm uppercase text-black pb-2 border-b border-neutral-200">
-                    {editingProduct.id ? 'Edit Product' : 'Add New Product'}
-                  </h3>
+                  <div className="flex justify-between items-center pb-2 border-b border-neutral-200">
+                    <h3 className="font-extrabold text-sm uppercase text-black">
+                      {editingProduct.id ? 'Edit Product' : 'Add New Product'}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setIsProductModalOpen(false)}
+                      className="text-neutral-400 hover:text-black cursor-pointer p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Photo Upload Section */}
+                  <div>
+                    <label className="block text-neutral-700 font-semibold mb-1">
+                      Product Photo * {isUploadingImage && <span className="text-blue-600 font-normal">(Uploading & optimizing...)</span>}
+                    </label>
+
+                    {editingProduct.image ? (
+                      <div className="border border-neutral-200 rounded-lg p-2.5 flex items-center gap-3 bg-neutral-50">
+                        <div className="w-16 h-16 rounded overflow-hidden bg-neutral-200 shrink-0 border border-neutral-300">
+                          <img
+                            src={editingProduct.image}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] font-bold text-neutral-800">Photo Attached</p>
+                          <p className="text-[10px] text-emerald-600 font-medium">✓ Ready for listing</p>
+                          <div className="flex gap-2.5 mt-1.5">
+                            <label className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 cursor-pointer underline">
+                              Change Photo
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageFileUpload}
+                              />
+                            </label>
+                            <span className="text-neutral-300">|</span>
+                            <button
+                              type="button"
+                              onClick={() => setEditingProduct({ ...editingProduct, image: '' })}
+                              className="text-[11px] font-semibold text-red-600 hover:text-red-800 cursor-pointer underline"
+                            >
+                              Remove Photo
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="border-2 border-dashed border-neutral-300 hover:border-black rounded-lg p-5 flex flex-col items-center justify-center gap-1.5 cursor-pointer bg-neutral-50 hover:bg-neutral-100/80 transition-all text-center">
+                        <div className="w-10 h-10 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-700">
+                          <Upload className="w-5 h-5" />
+                        </div>
+                        <span className="text-xs font-bold text-neutral-800">
+                          Click / Tap to Upload Photo from Device
+                        </span>
+                        <span className="text-[10px] text-neutral-500">
+                          Select from Gallery, Camera, or Files (JPG, PNG, WEBP)
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageFileUpload}
+                        />
+                      </label>
+                    )}
+
+                    {/* Fallback URL input toggle */}
+                    <div className="mt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setShowUrlInput(!showUrlInput)}
+                        className="text-[10px] text-neutral-500 hover:text-neutral-800 underline cursor-pointer"
+                      >
+                        {showUrlInput ? 'Hide image URL input' : 'Or paste an Image URL instead'}
+                      </button>
+                      {showUrlInput && (
+                        <input
+                          type="text"
+                          value={editingProduct.image || ''}
+                          onChange={e => setEditingProduct({ ...editingProduct, image: e.target.value })}
+                          placeholder="https://... or /assets/..."
+                          className="w-full mt-1 p-2 border border-neutral-300 focus:border-black outline-none font-mono text-[11px]"
+                        />
+                      )}
+                    </div>
+                  </div>
 
                   <div>
                     <label className="block text-neutral-700 font-semibold mb-1">Product Title *</label>
@@ -832,16 +1030,133 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
                   </div>
 
+                  {/* Size Selector Section */}
                   <div>
-                    <label className="block text-neutral-700 font-semibold mb-1">Primary Image URL *</label>
-                    <input
-                      type="text"
-                      required
-                      value={editingProduct.image || ''}
-                      onChange={e => setEditingProduct({ ...editingProduct, image: e.target.value })}
-                      placeholder="https://... or /assets/..."
-                      className="w-full p-2 border border-neutral-300 focus:border-black outline-none font-mono"
-                    />
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-neutral-700 font-semibold">Available Sizes *</label>
+                      <span className="text-[10px] text-neutral-400">Click chips to toggle on/off</span>
+                    </div>
+
+                    {/* Quick Common Presets */}
+                    <div className="flex flex-wrap items-center gap-1 mb-2">
+                      <span className="text-[10px] text-neutral-400 mr-1">Quick:</span>
+                      <button
+                        type="button"
+                        onClick={() => setEditingProduct({ ...editingProduct, sizes: ['M', 'L', 'XL'] })}
+                        className="text-[10px] font-semibold px-2 py-0.5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded cursor-pointer"
+                      >
+                        M, L, XL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingProduct({ ...editingProduct, sizes: ['S', 'M', 'L', 'XL'] })}
+                        className="text-[10px] font-semibold px-2 py-0.5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded cursor-pointer"
+                      >
+                        S, M, L, XL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingProduct({ ...editingProduct, sizes: ['M', 'L', 'XL', 'XXL'] })}
+                        className="text-[10px] font-semibold px-2 py-0.5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded cursor-pointer"
+                      >
+                        M to XXL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingProduct({ ...editingProduct, sizes: ['28', '30', '32', '34', '36'] })}
+                        className="text-[10px] font-semibold px-2 py-0.5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded cursor-pointer"
+                      >
+                        Waist (28-36)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingProduct({ ...editingProduct, sizes: ['Free Size'] })}
+                        className="text-[10px] font-semibold px-2 py-0.5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded cursor-pointer"
+                      >
+                        Free Size
+                      </button>
+                    </div>
+
+                    {/* Toggle chips */}
+                    <div className="flex flex-wrap gap-1.5 p-2.5 bg-neutral-50 border border-neutral-200 rounded-lg">
+                      {['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'Free Size', '28', '30', '32', '34', '36'].map(sz => {
+                        const isSelected = (editingProduct.sizes || []).includes(sz);
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => {
+                              const current = editingProduct.sizes || [];
+                              const next = isSelected
+                                ? current.filter(s => s !== sz)
+                                : [...current, sz];
+                              setEditingProduct({ ...editingProduct, sizes: next });
+                            }}
+                            className={`px-2.5 py-1 text-xs font-bold rounded border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-black text-white border-black shadow-xs'
+                                : 'bg-white text-neutral-700 border-neutral-300 hover:border-black'
+                            }`}
+                          >
+                            {sz} {isSelected && '✓'}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Custom Size Adder */}
+                    <div className="flex gap-1.5 mt-2">
+                      <input
+                        type="text"
+                        value={customSizeInput}
+                        onChange={e => setCustomSizeInput(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCustomSize();
+                          }
+                        }}
+                        placeholder="Add custom size (e.g. 38, 40, Oversized)..."
+                        className="flex-1 p-2 border border-neutral-300 focus:border-black outline-none text-xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomSize}
+                        className="px-3.5 py-2 bg-neutral-800 hover:bg-black text-white text-xs font-bold rounded cursor-pointer"
+                      >
+                        + Add Size
+                      </button>
+                    </div>
+
+                    {/* Selected Sizes Preview */}
+                    <div className="flex items-center flex-wrap gap-1 mt-2">
+                      <span className="text-[10px] text-neutral-500 font-semibold">Active Sizes:</span>
+                      {(editingProduct.sizes || []).length === 0 ? (
+                        <span className="text-[10px] text-amber-600 font-medium">Please select at least one size</span>
+                      ) : (
+                        (editingProduct.sizes || []).map(sz => (
+                          <span
+                            key={sz}
+                            className="inline-flex items-center gap-1 bg-neutral-200 text-neutral-800 text-[11px] font-bold px-2 py-0.5 rounded"
+                          >
+                            {sz}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  sizes: (editingProduct.sizes || []).filter(s => s !== sz)
+                                });
+                              }}
+                              className="hover:text-red-600 cursor-pointer font-bold ml-0.5"
+                              title={`Remove size ${sz}`}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))
+                      )}
+                    </div>
                   </div>
 
                   <div>
@@ -850,6 +1165,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       rows={2}
                       value={editingProduct.description || ''}
                       onChange={e => setEditingProduct({ ...editingProduct, description: e.target.value })}
+                      placeholder="Details about fabric, fit, styling, etc."
                       className="w-full p-2 border border-neutral-300 focus:border-black outline-none resize-none"
                     />
                   </div>
@@ -857,7 +1173,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="flex space-x-2 pt-2">
                     <button
                       type="submit"
-                      className="flex-1 py-2.5 bg-black text-white font-bold uppercase tracking-wider hover:opacity-90 cursor-pointer"
+                      className="flex-1 py-2.5 bg-black text-white font-bold uppercase tracking-wider hover:opacity-90 cursor-pointer shadow-sm"
                     >
                       Save Product
                     </button>
