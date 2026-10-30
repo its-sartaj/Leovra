@@ -14,6 +14,7 @@ const HERO_LOOKS = [
     collectionTitle: 'Everyday Comfort',
     subtitle: 'Soft fabric. Clean look. All day comfort. Relaxed fit pants.',
     imageUrl: '/assets/hero_look_beige_comfort.jpg',
+    bgColor: '#e6ded4',
     altText: 'Leovra Clothes fashion model in Everyday Comfort relaxed fit pants'
   },
   {
@@ -21,6 +22,7 @@ const HERO_LOOKS = [
     collectionTitle: 'Bold Colours. Bigger Moves.',
     subtitle: 'Wide leg track pants engineered for comfort, style, and everyday movement.',
     imageUrl: '/assets/hero_look_red_moves.jpg',
+    bgColor: '#e4dfd8',
     altText: 'Leovra Clothes fashion model in Bold Colours Bigger Moves wide leg track pants'
   }
 ];
@@ -42,7 +44,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     });
   }, []);
 
-  // Guaranteed continuous auto-slide (no device settings or reduced-motion blockers)
+  // Continuous auto-slide timer (every 3.2 seconds)
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % HERO_LOOKS.length);
@@ -56,9 +58,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   return (
     <section
       aria-label="Leovra Clothes Cinematic Fashion Showcase"
-      className="relative w-full h-[58vh] sm:h-[64vh] md:h-[68vh] min-h-[420px] max-h-[640px] bg-[#121212] flex items-center justify-center overflow-hidden select-none"
+      style={{ backgroundColor: currentLook.bgColor }}
+      className="relative w-full h-[58vh] sm:h-[64vh] md:h-[68vh] min-h-[420px] max-h-[640px] flex items-center justify-center overflow-hidden select-none transition-colors duration-1000"
     >
-      {/* Background Slides with Guaranteed Smooth Auto-Crossfade */}
+      {/* Background Slides with Seamless Cream Theme */}
       {HERO_LOOKS.map((look, idx) => {
         const isCurrent = idx === currentIndex;
         return (
@@ -68,50 +71,50 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             style={{
               opacity: isCurrent ? 1 : 0,
               zIndex: isCurrent ? 10 : 1,
+              backgroundColor: look.bgColor,
               transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
             }}
             className="absolute inset-0 w-full h-full pointer-events-none"
           >
-            {/* Ambient Blurred Fill for Widescreen Consistency */}
+            {/* Ambient Blurred Fill in Exact Photo Cream Tones */}
             <img
               src={look.imageUrl}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover filter blur-2xl scale-125 opacity-35 brightness-90"
+              className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-125 opacity-60"
             />
-            {/* Crisp Main Photo (Uncropped on All Screen Sizes) */}
+            {/* Crisp Main Photo (Uncropped, Seamlessly Blended) */}
             <img
               src={look.imageUrl}
               alt={look.altText}
               style={{
-                transform: isCurrent ? 'scale(1.05)' : 'scale(1.00)',
+                transform: isCurrent ? 'scale(1.04)' : 'scale(1.00)',
                 transition: 'transform 3800ms ease-out'
               }}
-              className="relative z-10 w-full h-full object-contain object-center drop-shadow-xl"
+              className="relative z-10 w-full h-full object-contain object-center"
               loading={idx === 0 ? 'eager' : 'lazy'}
             />
           </div>
         );
       })}
 
-      {/* Cinematic Gradient Overlays */}
-      <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-t from-black/75 via-black/25 to-black/35" />
-      <div className="absolute inset-0 z-20 pointer-events-none bg-radial-[circle_at_center] from-transparent via-transparent to-black/30" />
+      {/* Soft Elegant Vignette for Seamless Depth & Contrast */}
+      <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-t from-black/25 via-transparent to-black/10" />
 
-      {/* Hero Typography & CTA (Exact layout and animation from reference video) */}
+      {/* Hero Typography & CTA in Elegant Dark Charcoal/Black on Cream */}
       <div className="relative z-30 text-center px-4 max-w-xl mx-auto flex flex-col items-center">
         <div key={currentLook.id} className="animate-fade-in flex flex-col items-center">
-          <h1 className="text-white text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-3 drop-shadow-md">
+          <h1 className="text-[#121212] text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-3 drop-shadow-sm">
             {currentLook.collectionTitle}
           </h1>
-          <p className="text-white/90 text-xs sm:text-sm md:text-base max-w-md mb-6 font-normal drop-shadow-sm leading-relaxed">
+          <p className="text-[#2b2b2b] text-xs sm:text-sm md:text-base max-w-md mb-6 font-medium drop-shadow-xs leading-relaxed">
             {currentLook.subtitle}
           </p>
         </div>
 
         <button
           onClick={onCtaClick}
-          className="hero-btn text-white text-sm sm:text-base font-medium px-9 py-3 rounded-full inline-flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          className="bg-[#121212] hover:bg-black text-white text-sm sm:text-base font-semibold px-9 py-3 rounded-full inline-flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer"
         >
           {buttonText}
         </button>
