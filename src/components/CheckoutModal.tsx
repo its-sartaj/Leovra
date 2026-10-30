@@ -45,7 +45,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
-  const deliveryCharge = subtotal >= freeShippingThreshold ? 0 : standardShippingFee;
+  // Shipping fee: COD = Rs. 99, Paid (UPI/online) = Rs. 0
+  const deliveryCharge = paymentMethod === 'cod' ? 99 : 0;
   const totalAmount = Math.max(0, subtotal - discountAmount + deliveryCharge);
 
   // Generate real UPI payment QR code
@@ -245,41 +246,62 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <h3 className="text-xs font-bold uppercase tracking-wider text-black mb-3 pb-1 border-b border-gray-100">
               2. Payment Method
             </h3>
-            <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <label
-                className={`p-3 border flex items-center space-x-2.5 cursor-pointer transition-colors ${
+                className={`p-3 border flex items-center justify-between cursor-pointer transition-colors ${
                   paymentMethod === 'cod' ? 'border-black bg-gray-50 font-semibold' : 'border-gray-200'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="cod"
-                  checked={paymentMethod === 'cod'}
-                  onChange={() => setPaymentMethod('cod')}
-                  className="accent-black"
-                />
-                <Banknote className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Cash on Delivery (COD)</span>
+                <div className="flex items-center space-x-2.5">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="cod"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                    className="accent-black"
+                  />
+                  <Banknote className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Cash on Delivery (COD)</span>
+                </div>
+                <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-sm border border-amber-200">
+                  +Rs. 99 Delivery
+                </span>
               </label>
 
               <label
-                className={`p-3 border flex items-center space-x-2.5 cursor-pointer transition-colors ${
+                className={`p-3 border flex items-center justify-between cursor-pointer transition-colors ${
                   paymentMethod === 'upi' ? 'border-black bg-gray-50 font-semibold' : 'border-gray-200'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="upi"
-                  checked={paymentMethod === 'upi'}
-                  onChange={() => setPaymentMethod('upi')}
-                  className="accent-black"
-                />
-                <QrCode className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span>Instant UPI QR</span>
+                <div className="flex items-center space-x-2.5">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="upi"
+                    checked={paymentMethod === 'upi'}
+                    onChange={() => setPaymentMethod('upi')}
+                    className="accent-black"
+                  />
+                  <QrCode className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span>Instant UPI QR</span>
+                </div>
+                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-sm border border-emerald-200">
+                  FREE Delivery
+                </span>
               </label>
             </div>
+
+            {/* Delivery Fee Notice Banner */}
+            {paymentMethod === 'cod' ? (
+              <div className="mt-2 text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-sm flex items-center justify-between">
+                <span>💡 Tip: Choose <strong>Instant UPI QR</strong> to get <strong>100% FREE Delivery</strong> (Save Rs. 99)!</span>
+              </div>
+            ) : (
+              <div className="mt-2 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-sm flex items-center">
+                <span>🎉 <strong>FREE Delivery applied!</strong> You saved Rs. 99 by paying online via UPI.</span>
+              </div>
+            )}
 
             {/* UPI QR Payment Detail Block */}
             {paymentMethod === 'upi' && (

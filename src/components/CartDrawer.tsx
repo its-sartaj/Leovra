@@ -63,25 +63,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         </div>
 
         {/* Free Shipping Milestone Banner */}
-        <div className="bg-gray-50 px-5 py-3 border-b border-gray-100">
-          <p className="text-xs text-gray-700 font-medium mb-1.5">
-            {hasFreeShipping ? (
-              <span className="text-emerald-700 font-bold">
-                🎉 Congratulations! You unlocked Free Delivery nationwide.
-              </span>
-            ) : (
-              <span>
-                Add <strong>Rs. {amountNeeded.toLocaleString()}</strong> more to unlock{' '}
-                <strong className="text-black">Free Delivery!</strong>
-              </span>
-            )}
-          </p>
-          <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
-            <div
-              className={`h-full transition-all duration-300 ${hasFreeShipping ? 'bg-emerald-600' : 'bg-black'}`}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
+        <div className="bg-emerald-50/70 px-5 py-2.5 border-b border-emerald-100 flex items-center justify-between text-xs">
+          <span className="text-emerald-900 font-semibold flex items-center space-x-1.5">
+            <span>⚡</span>
+            <span><strong>FREE Delivery</strong> on Prepaid / UPI</span>
+          </span>
+          <span className="text-[11px] text-gray-500 font-medium">COD: Rs. 99</span>
         </div>
 
         {/* Bag Items List */}
@@ -161,13 +148,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <span className="text-gray-600">Subtotal</span>
               <span className="font-bold text-base text-black">Rs. {subtotal.toLocaleString()}</span>
             </div>
-            <p className="text-[11px] text-gray-500 mb-4">
-              {hasFreeShipping ? (
-                <span className="text-emerald-700 font-medium">Free Shipping included!</span>
-              ) : (
-                'Shipping calculated at checkout.'
-              )}
-            </p>
+            <div className="flex justify-between items-center text-xs text-gray-500 mb-4 pt-1">
+              <span>Nationwide Shipping:</span>
+              <span>
+                <strong className="text-emerald-700">FREE on UPI</strong> • Rs. 99 on COD
+              </span>
+            </div>
             <button
               onClick={onProceedToCheckout}
               className="w-full bg-[#121212] hover:bg-black text-white py-3.5 font-bold text-xs tracking-wider uppercase transition-colors cursor-pointer"
