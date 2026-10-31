@@ -63,11 +63,45 @@ export default function App() {
   });
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3500);
   };
+
+  // Track scroll position for smooth back-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 280);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Lock body scroll smoothly without layout shift when any modal/drawer is active
+  const isAnyModalOpen =
+    isCartOpen ||
+    isMobileMenuOpen ||
+    isSearchOpen ||
+    !!selectedProduct ||
+    isCheckoutOpen ||
+    !!completedOrder ||
+    isTrackingOpen ||
+    !!invoiceOrder ||
+    policyModal.open ||
+    isAccountModalOpen;
+
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isAnyModalOpen]);
 
   // Subscribe to real-time store changes across tabs & window focus
   useEffect(() => {
@@ -374,45 +408,52 @@ export default function App() {
             </div>
           </div>
 
-          {/* Horizontal Scrolling Category Filter Pills */}
-          <div className="flex space-x-2 overflow-x-auto no-scrollbar pb-3 text-xs sm:text-sm">
-            {[
-              { id: 'all', label: 'All Products' },
-              { id: 'new', label: 'New Arrivals' },
-              { id: 'bestsellers', label: 'Best Sellers' },
-              { id: 'mens_tshirts', label: "Men's T-Shirts" },
-              { id: 'womens_tshirts', label: "Women's T-Shirts" },
-              { id: 'mens_lowers', label: "Men's Lowers" },
-              { id: 'womens_lowers', label: "Women's Lowers" },
-              { id: 'mens_casual', label: 'Casual Wear' },
-              { id: 'jewellery', label: 'Jewellery' }
-            ].map(cat => {
-              const isSelected = selectedCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`whitespace-nowrap px-4 py-1.5 rounded-full border transition-all font-medium text-xs sm:text-sm cursor-pointer ${
-                    isSelected
-                      ? 'border-black bg-black text-white font-semibold'
-                      : 'border-gray-200 text-gray-700 hover:border-black'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
+          {/* Horizontal Scrolling Category Filter Pills with Smooth Momentum and Auto-Centering */}
+          <div className="relative">
+            <div className="flex space-x-2 overflow-x-auto no-scrollbar pb-3 text-xs sm:text-sm scroll-smooth touch-pan">
+              {[
+                { id: 'all', label: 'All Products' },
+                { id: 'new', label: 'New Arrivals' },
+                { id: 'bestsellers', label: 'Best Sellers' },
+                { id: 'mens_tshirts', label: "Men's T-Shirts" },
+                { id: 'womens_tshirts', label: "Women's T-Shirts" },
+                { id: 'mens_lowers', label: "Men's Lowers" },
+                { id: 'womens_lowers', label: "Women's Lowers" },
+                { id: 'mens_casual', label: 'Casual Wear' },
+                { id: 'jewellery', label: 'Jewellery' }
+              ].map(cat => {
+                const isSelected = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={e => {
+                      setSelectedCategory(cat.id);
+                      e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    }}
+                    className={`whitespace-nowrap px-4 py-1.5 rounded-full border transition-all duration-200 font-medium text-xs sm:text-sm cursor-pointer active:scale-95 ${
+                      isSelected
+                        ? 'border-black bg-black text-white font-semibold shadow-xs'
+                        : 'border-gray-200 text-gray-700 hover:border-black active:bg-gray-100'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Soft edge gradient indicator on mobile */}
+            <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-8 bg-gradient-to-l from-white to-transparent sm:hidden" />
           </div>
         </section>
 
         {/* Product Grid Showcase */}
         <section className="max-w-7xl mx-auto px-3 sm:px-6 pb-16">
           {filteredProducts.length === 0 ? (
-            <div className="text-center py-20 text-gray-600">
+            <div className="text-center py-20 text-gray-600 animate-fade-in">
               <p className="text-base font-medium">No items found in this collection.</p>
               <button
                 onClick={() => setSelectedCategory('all')}
-                className="mt-3 text-xs underline font-bold text-black cursor-pointer"
+                className="mt-3 text-xs underline font-bold text-black cursor-pointer active:scale-95 transition-transform"
               >
                 View all products
               </button>
@@ -435,7 +476,11 @@ export default function App() {
       <div className="fixed bottom-6 right-5 z-40 flex flex-col items-end gap-2.5">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="w-10 h-10 rounded-full bg-white text-neutral-700 shadow-md border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition-colors cursor-pointer"
+          className={`w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm text-neutral-800 shadow-lg border border-neutral-200/90 flex items-center justify-center hover:bg-neutral-100 active:scale-90 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
+            showBackToTop
+              ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
+              : 'opacity-0 translate-y-3 scale-75 pointer-events-none'
+          }`}
           title="Back to top"
           aria-label="Back to top"
         >

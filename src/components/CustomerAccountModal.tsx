@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, User } from 'lucide-react';
 
 interface CustomerAccountModalProps {
@@ -12,9 +12,17 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
   onClose,
   onSendPasscode
 }) => {
-  if (!isOpen) return null;
-
   const [inputVal, setInputVal] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +33,18 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white max-w-sm w-full p-6 shadow-xl relative rounded-none">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in touch-pan"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="bg-white max-w-sm w-full p-6 shadow-2xl relative rounded-none animate-scale-in gpu-smooth"
+      >
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute top-4 right-4 text-gray-400 hover:text-black cursor-pointer"
+          className="absolute top-4 right-4 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer p-1"
         >
           <X className="w-5 h-5" />
         </button>
@@ -47,15 +61,16 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
           <input
             type="text"
             required
+            autoFocus
             aria-label="Email address or phone number"
             value={inputVal}
             onChange={e => setInputVal(e.target.value)}
             placeholder="name@example.com or phone"
-            className="w-full p-2.5 border border-gray-300 text-xs mb-3 outline-none focus:border-black"
+            className="w-full p-2.5 border border-gray-300 text-xs mb-3 outline-none focus:border-black transition-colors"
           />
           <button
             type="submit"
-            className="w-full bg-black text-white py-2.5 text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer"
+            className="w-full bg-black text-white py-2.5 text-xs font-bold uppercase tracking-wider hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer"
           >
             Send Login Link
           </button>

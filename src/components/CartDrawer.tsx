@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { X, Trash2, ShoppingBag } from 'lucide-react';
 import { CartItem } from '../types';
 
@@ -21,27 +21,52 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onProceedToCheckout,
   freeShippingThreshold
 }) => {
+  const touchStartX = useRef<number | null>(null);
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const totalCount = items.reduce((acc, item) => acc + item.quantity, 0);
-  const hasFreeShipping = subtotal >= freeShippingThreshold;
-  const amountNeeded = Math.max(0, freeShippingThreshold - subtotal);
-  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
+
+  // Close with Esc key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Touch swipe right to dismiss drawer on phone
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diffX = e.changedTouches[0].clientX - touchStartX.current;
+    if (diffX > 50) {
+      onClose();
+    }
+    touchStartX.current = null;
+  };
 
   return (
     <div
-      className={`fixed inset-0 z-50 transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}
     >
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity cursor-pointer"
+        className={`absolute inset-0 bg-black/45 backdrop-blur-xs transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0'
+        } cursor-pointer`}
       />
 
-      {/* Slide-over Container */}
+      {/* Slide-over Container with Smooth Spring and Swipe to Close */}
       <div
-        className={`absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className={`absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col gpu-smooth ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -56,7 +81,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <button
             onClick={onClose}
             aria-label="Close cart"
-            className="p-1 text-gray-400 hover:text-black transition-colors cursor-pointer"
+            className="p-1.5 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -71,8 +96,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <span className="text-[11px] text-gray-500 font-medium">COD: Rs. 99</span>
         </div>
 
-        {/* Bag Items List */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 divide-y divide-gray-100">
+        {/* Bag Items List with Smooth Momentum Scroll */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 divide-y divide-gray-100 touch-pan">
           {items.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center py-16 text-gray-500">
               <ShoppingBag className="w-12 h-12 text-gray-300 mb-3 stroke-[1.25]" />
@@ -82,7 +107,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </p>
               <button
                 onClick={onClose}
-                className="mt-5 px-6 py-2.5 bg-black text-white text-xs uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+                className="mt-5 px-6 py-2.5 bg-black text-white text-xs uppercase tracking-wider font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
               >
                 Start Shopping
               </button>
@@ -100,7 +125,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <button
                         onClick={() => onRemoveItem(idx)}
                         aria-label={`Remove ${item.title} from shopping bag`}
-                        className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
+                        className="text-gray-400 hover:text-red-600 active:scale-90 transition-all cursor-pointer p-0.5"
                         title="Remove item"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -120,20 +145,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </p>
                   </div>
 
-                  {/* Quantity Controller */}
-                  <div className="flex items-center border border-gray-200 w-fit mt-2">
+                  {/* Quantity Controller with Tactile Press Response */}
+                  <div className="flex items-center border border-gray-200 w-fit mt-2 rounded-xs overflow-hidden">
                     <button
                       onClick={() => onUpdateQuantity(idx, -1)}
                       aria-label="Decrease quantity"
-                      className="px-2.5 py-0.5 hover:bg-gray-100 text-xs text-gray-600 font-bold cursor-pointer"
+                      className="px-2.5 py-1 hover:bg-gray-100 active:bg-gray-200 active:scale-95 text-xs text-gray-600 font-bold transition-all cursor-pointer"
                     >
                       -
                     </button>
-                    <span className="px-3 font-semibold text-[11px]">{item.quantity}</span>
+                    <span className="px-3 font-semibold text-[11px] select-none">{item.quantity}</span>
                     <button
                       onClick={() => onUpdateQuantity(idx, 1)}
                       aria-label="Increase quantity"
-                      className="px-2.5 py-0.5 hover:bg-gray-100 text-xs text-gray-600 font-bold cursor-pointer"
+                      className="px-2.5 py-1 hover:bg-gray-100 active:bg-gray-200 active:scale-95 text-xs text-gray-600 font-bold transition-all cursor-pointer"
                     >
                       +
                     </button>
@@ -159,7 +184,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             </div>
             <button
               onClick={onProceedToCheckout}
-              className="w-full bg-[#121212] hover:bg-black text-white py-3.5 font-bold text-xs tracking-wider uppercase transition-colors cursor-pointer"
+              className="w-full bg-[#121212] hover:bg-black text-white py-3.5 font-bold text-xs tracking-wider uppercase transition-all duration-200 hover:shadow-lg active:scale-[0.99] cursor-pointer"
             >
               Proceed to Checkout • Rs. {subtotal.toLocaleString()}
             </button>

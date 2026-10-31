@@ -1,5 +1,5 @@
-import React from 'react';
-import { CheckCircle2, FileText, Truck, ArrowRight } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { CheckCircle2, FileText, Truck, ArrowRight, X } from 'lucide-react';
 import { Order } from '../types';
 import { Logo } from './Logo';
 
@@ -18,18 +18,40 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
   onTrackOrder,
   onViewInvoice
 }) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !order) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in">
-      <div className="bg-white max-w-xl w-full my-auto rounded-none shadow-2xl p-6 sm:p-8 text-center relative max-h-[92vh] overflow-y-auto">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="bg-white max-w-xl w-full my-auto rounded-none shadow-2xl p-6 sm:p-8 text-center relative max-h-[92vh] overflow-y-auto animate-scale-in gpu-smooth touch-pan"
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close modal"
+          className="absolute top-4 right-4 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer p-1"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         {/* Brand Emblem */}
         <div className="mb-4">
           <Logo size="sm" showText={true} />
         </div>
 
         {/* Success Icon */}
-        <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-600">
+        <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-600 animate-bounce-in">
           <CheckCircle2 className="w-8 h-8" />
         </div>
 
@@ -53,7 +75,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
         </div>
 
         {/* Items Summary */}
-        <div className="text-left mb-6 max-h-40 overflow-y-auto divide-y divide-gray-100 border-t border-b border-gray-100 py-2">
+        <div className="text-left mb-6 max-h-40 overflow-y-auto divide-y divide-gray-100 border-t border-b border-gray-100 py-2 touch-pan">
           {order.items.map((item, idx) => (
             <div key={idx} className="py-2 flex items-center justify-between text-xs">
               <div className="flex items-center space-x-2.5">
@@ -79,7 +101,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
               onClose();
               onTrackOrder(order.orderNumber);
             }}
-            className="w-full py-3 bg-[#121212] hover:bg-black text-white font-bold uppercase tracking-wider flex items-center justify-center space-x-2 transition-colors cursor-pointer"
+            className="w-full py-3 bg-[#121212] hover:bg-black text-white font-bold uppercase tracking-wider flex items-center justify-center space-x-2 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
           >
             <Truck className="w-4 h-4" />
             <span>Track Order Status</span>
@@ -87,7 +109,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
 
           <button
             onClick={() => onViewInvoice(order)}
-            className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-semibold uppercase tracking-wider flex items-center justify-center space-x-2 transition-colors cursor-pointer"
+            className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-semibold uppercase tracking-wider flex items-center justify-center space-x-2 active:scale-[0.98] transition-all cursor-pointer"
           >
             <FileText className="w-4 h-4" />
             <span>View Tax Invoice</span>
@@ -95,7 +117,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-full py-2 text-gray-500 hover:text-black font-medium transition-colors cursor-pointer inline-flex items-center justify-center space-x-1"
+            className="w-full py-2 text-gray-500 hover:text-black font-medium transition-colors cursor-pointer inline-flex items-center justify-center space-x-1 active:scale-95"
           >
             <span>Continue Shopping</span>
             <ArrowRight className="w-3.5 h-3.5" />

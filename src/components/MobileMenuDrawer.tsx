@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { X, Truck } from 'lucide-react';
 import { Logo } from './Logo';
 import { StoreSettings } from '../types';
@@ -20,7 +20,30 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
   onOpenAdmin,
   settings
 }) => {
-  if (!isOpen) return null;
+  const touchStartX = useRef<number | null>(null);
+
+  // Close with Esc key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Touch swipe left to dismiss menu on phone
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diffX = e.changedTouches[0].clientX - touchStartX.current;
+    if (diffX < -45) {
+      onClose();
+    }
+    touchStartX.current = null;
+  };
 
   const categories = [
     { id: 'all', label: 'Home / Shop All' },
@@ -35,22 +58,34 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 animate-fade-in">
+    <div
+      className={`fixed inset-0 z-50 transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+      }`}
+    >
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity cursor-pointer"
+        className={`absolute inset-0 bg-black/45 backdrop-blur-xs transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0'
+        } cursor-pointer`}
       />
 
-      {/* Slide-over Menu Panel */}
-      <div className="absolute left-0 top-0 bottom-0 w-[82%] max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl animate-slide-right">
+      {/* Slide-over Menu Panel with Silky Spring Curve and Touch Swipe */}
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className={`absolute left-0 top-0 bottom-0 w-[84%] max-w-xs bg-white p-6 flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] gpu-smooth touch-pan ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
         <div>
           <div className="flex items-center justify-between pb-5 border-b border-gray-100">
             <Logo size="xs" showText={true} />
             <button
               onClick={onClose}
               aria-label="Close navigation menu"
-              className="p-1 text-gray-500 hover:text-black transition-colors cursor-pointer"
+              className="p-1.5 text-gray-500 hover:text-black active:scale-90 transition-all cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -64,7 +99,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                   onSelectCategory(cat.id);
                   onClose();
                 }}
-                className="text-left text-black hover:translate-x-1 transition-transform cursor-pointer"
+                className="text-left text-black hover:translate-x-1.5 active:translate-x-2 transition-transform duration-150 cursor-pointer py-0.5"
               >
                 {cat.label}
               </button>
@@ -76,7 +111,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                   onClose();
                   onOpenTracking();
                 }}
-                className="text-left text-xs font-bold text-black uppercase tracking-wider flex items-center space-x-2 cursor-pointer"
+                className="text-left text-xs font-bold text-black uppercase tracking-wider flex items-center space-x-2 cursor-pointer hover:translate-x-1 transition-transform"
               >
                 <Truck className="w-3.5 h-3.5" />
                 <span>Track Your Order</span>
@@ -88,7 +123,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                     onClose();
                     onOpenAdmin();
                   }}
-                  className="text-left text-xs font-semibold text-gray-500 hover:text-black uppercase tracking-wider flex items-center space-x-2 cursor-pointer"
+                  className="text-left text-xs font-semibold text-gray-500 hover:text-black uppercase tracking-wider flex items-center space-x-2 cursor-pointer hover:translate-x-1 transition-transform"
                 >
                   <span>Owner Admin Portal</span>
                 </button>

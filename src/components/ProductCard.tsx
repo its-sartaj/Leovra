@@ -16,7 +16,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div
       onClick={() => onOpenDetails(product)}
-      className="product-card group cursor-pointer flex flex-col select-none"
+      className="product-card group cursor-pointer flex flex-col select-none transition-transform duration-200 ease-out active:scale-[0.98] gpu-smooth"
     >
       {/* Product Image Box with 2nd photo hover preview */}
       <div className="product-img-wrapper w-full overflow-hidden relative group">
@@ -38,24 +38,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Status Badges */}
-        <div className="absolute top-2 left-2 flex flex-col space-y-1">
+        <div className="absolute top-2 left-2 flex flex-col space-y-1 z-10 pointer-events-none">
           {product.isNew && (
-            <span className="bg-[#121212] text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+            <span className="bg-[#121212] text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 shadow-xs">
               New
             </span>
           )}
           {product.isBestseller && !product.isNew && (
-            <span className="bg-[#121212] text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+            <span className="bg-[#121212] text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 shadow-xs">
               Best Seller
             </span>
           )}
           {isSoldOut && (
-            <span className="bg-red-700 text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+            <span className="bg-red-700 text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 shadow-xs">
               Sold Out
             </span>
           )}
           {isLowStock && (
-            <span className="bg-amber-600 text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5">
+            <span className="bg-amber-600 text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 shadow-xs">
               Low Stock: {product.stock} left
             </span>
           )}
@@ -63,7 +63,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Color Palette Indicator on Hover */}
         {product.colors && product.colors.length > 0 && (
-          <div className="absolute bottom-2 left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur-xs p-1 rounded-sm">
+          <div className="absolute bottom-2 left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/85 backdrop-blur-xs p-1 rounded-sm shadow-xs">
             {product.colors.slice(0, 3).map((col, idx) => (
               <span
                 key={idx}
@@ -83,7 +83,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Details Header */}
       <div className="pt-2.5 flex flex-col">
-        <h3 className="text-[13px] sm:text-[14px] text-[#121212] font-normal leading-snug line-clamp-1 group-hover:underline">
+        <h3 className="text-[13px] sm:text-[14px] text-[#121212] font-normal leading-snug line-clamp-1 group-hover:underline transition-colors">
           {product.title}
         </h3>
         <div className="mt-1 flex items-baseline space-x-2">

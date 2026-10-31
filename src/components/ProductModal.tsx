@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, RotateCcw, Truck, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, RotateCcw, Truck, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductModalProps {
@@ -25,6 +25,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const touchStartX = useRef<number | null>(null);
+
+  const galleryImages = Array.from(new Set([product.image, ...(product.additionalImages || [])])).filter(Boolean);
 
   useEffect(() => {
     if (product) {
@@ -35,50 +38,111 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     }
   }, [product]);
 
-  // Lock body scroll
+  // Handle Esc key to close smoothly
   useEffect(() => {
-    const originalOverflow = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = originalOverflow;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
     };
-  }, []);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
-  const galleryImages = Array.from(new Set([product.image, ...(product.additionalImages || [])])).filter(Boolean);
+  // Mobile Gallery Touch Swiping
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || galleryImages.length <= 1) return;
+    const diffX = e.changedTouches[0].clientX - touchStartX.current;
+    const currentIndex = galleryImages.indexOf(activeImage);
+
+    if (diffX < -40) {
+      // Next image
+      const nextIdx = (currentIndex + 1) % galleryImages.length;
+      setActiveImage(galleryImages[nextIdx]);
+    } else if (diffX > 40) {
+      // Prev image
+      const prevIdx = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+      setActiveImage(galleryImages[prevIdx]);
+    }
+    touchStartX.current = null;
+  };
+
   const activeColor = product.colors[selectedColorIndex] || { name: 'Standard', hex: '#000000' };
   const isSoldOut = product.stock <= 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in">
-      <div className="bg-white max-w-4xl w-full my-auto rounded-none overflow-hidden relative shadow-2xl flex flex-col md:flex-row max-h-[92vh] md:max-h-[88vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="bg-white max-w-4xl w-full my-auto rounded-none overflow-hidden relative shadow-2xl flex flex-col md:flex-row max-h-[92vh] md:max-h-[88vh] animate-scale-in gpu-smooth"
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute top-3 right-3 z-30 bg-white/95 rounded-full w-8 h-8 flex items-center justify-center text-black text-sm hover:bg-black hover:text-white transition-colors shadow-sm cursor-pointer"
+          className="absolute top-3 right-3 z-30 bg-white/95 rounded-full w-8 h-8 flex items-center justify-center text-black text-sm hover:bg-black hover:text-white active:scale-90 transition-all shadow-sm cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
-        {/* Left Column: Image Preview Gallery */}
-        <div className="md:w-1/2 bg-[#f3f3f3] flex flex-col justify-between p-3 sm:p-6 border-b md:border-b-0 md:border-r border-gray-100 shrink-0">
+        {/* Left Column: Image Preview Gallery with Mobile Swipe */}
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="md:w-1/2 bg-[#f3f3f3] flex flex-col justify-between p-3 sm:p-6 border-b md:border-b-0 md:border-r border-gray-100 shrink-0 relative select-none"
+        >
           <div className="w-full flex-1 flex items-center justify-center overflow-hidden h-48 sm:h-64 md:h-full min-h-[200px] sm:min-h-[260px] md:min-h-[340px] max-h-[260px] sm:max-h-[320px] md:max-h-[460px]">
             <img
               src={activeImage}
               alt={product.title}
-              className="w-full h-full object-contain transition-all duration-300"
+              className="w-full h-full object-contain transition-all duration-300 gpu-smooth"
             />
           </div>
 
+          {/* Desktop Subtle Image Nav Arrows */}
           {galleryImages.length > 1 && (
-            <div className="flex space-x-2 mt-3 overflow-x-auto no-scrollbar justify-center">
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const currentIndex = galleryImages.indexOf(activeImage);
+                  const prevIdx = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+                  setActiveImage(galleryImages[prevIdx]);
+                }}
+                className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-black shadow-md items-center justify-center active:scale-90 transition-all cursor-pointer"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const currentIndex = galleryImages.indexOf(activeImage);
+                  const nextIdx = (currentIndex + 1) % galleryImages.length;
+                  setActiveImage(galleryImages[nextIdx]);
+                }}
+                className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-black shadow-md items-center justify-center active:scale-90 transition-all cursor-pointer"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
+
+          {galleryImages.length > 1 && (
+            <div className="flex space-x-2 mt-3 overflow-x-auto no-scrollbar justify-center touch-pan">
               {galleryImages.map((imgUrl, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveImage(imgUrl)}
                   aria-label={`View photo ${i + 1} of ${product.title}`}
-                  className={`w-12 h-14 sm:w-14 sm:h-16 shrink-0 border-2 overflow-hidden bg-white transition-colors cursor-pointer ${
-                    activeImage === imgUrl ? 'border-black' : 'border-transparent opacity-60 hover:opacity-100'
+                  className={`w-12 h-14 sm:w-14 sm:h-16 shrink-0 border-2 overflow-hidden bg-white transition-all cursor-pointer active:scale-95 ${
+                    activeImage === imgUrl ? 'border-black ring-1 ring-black' : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                 >
                   <img src={imgUrl} alt={`${product.title} angle ${i + 1}`} className="w-full h-full object-cover" />
@@ -89,7 +153,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         </div>
 
         {/* Right Column: Information, Options, & Checkout Actions */}
-        <div className="md:w-1/2 p-4 sm:p-7 overflow-y-auto flex flex-col justify-between">
+        <div className="md:w-1/2 p-4 sm:p-7 overflow-y-auto flex flex-col justify-between touch-pan">
           <div className="space-y-4">
             <div>
               <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold mb-1">
@@ -122,7 +186,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   <span className="text-xs font-semibold text-gray-800">Select Size:</span>
                   <button
                     onClick={() => onOpenPolicy('Size Guide & Tailoring', 'All LEOVRA CLOTHES apparel is cut true to size with pre-shrunk combed cotton. If you prefer a loose relaxed streetwear drape, we recommend ordering one size above your usual fit.')}
-                    className="text-[11px] text-gray-500 underline hover:text-black cursor-pointer"
+                    className="text-[11px] text-gray-500 underline hover:text-black cursor-pointer active:scale-95 transition-transform"
                   >
                     Size Guide
                   </button>
@@ -132,9 +196,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     <button
                       key={sz}
                       onClick={() => setSelectedSize(sz)}
-                      className={`min-w-[42px] px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer ${
+                      className={`min-w-[42px] px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer active:scale-95 ${
                         selectedSize === sz
-                          ? 'border-black bg-black text-white'
+                          ? 'border-black bg-black text-white shadow-xs'
                           : 'border-gray-200 text-gray-800 hover:border-black'
                       }`}
                     >
@@ -158,7 +222,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                       onClick={() => setSelectedColorIndex(idx)}
                       title={c.name}
                       aria-label={`Select color ${c.name}`}
-                      className={`w-6 h-6 rounded-full p-0.5 border transition-all cursor-pointer ${
+                      className={`w-6 h-6 rounded-full p-0.5 border transition-all cursor-pointer active:scale-90 ${
                         selectedColorIndex === idx ? 'border-black ring-1 ring-black' : 'border-gray-300'
                       }`}
                     >
@@ -172,19 +236,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             {/* Quantity Stepper */}
             <div>
               <div className="text-xs font-semibold text-gray-800 mb-1.5">Quantity:</div>
-              <div className="flex items-center border border-gray-300 w-fit">
+              <div className="flex items-center border border-gray-300 w-fit rounded-xs overflow-hidden">
                 <button
                   onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
                   aria-label="Decrease quantity"
-                  className="px-3 py-1 hover:bg-gray-100 text-gray-600 font-bold text-sm cursor-pointer"
+                  className="px-3 py-1 hover:bg-gray-100 active:bg-gray-200 active:scale-95 text-gray-600 font-bold text-sm cursor-pointer transition-all"
                 >
                   -
                 </button>
-                <span className="px-4 font-semibold text-xs">{quantity}</span>
+                <span className="px-4 font-semibold text-xs select-none">{quantity}</span>
                 <button
                   onClick={() => setQuantity(prev => Math.min(product.stock || 10, prev + 1))}
                   aria-label="Increase quantity"
-                  className="px-3 py-1 hover:bg-gray-100 text-gray-600 font-bold text-sm cursor-pointer"
+                  className="px-3 py-1 hover:bg-gray-100 active:bg-gray-200 active:scale-95 text-gray-600 font-bold text-sm cursor-pointer transition-all"
                 >
                   +
                 </button>
@@ -231,10 +295,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 if (!isSoldOut) onAddToCart(product, selectedSize, activeColor.name, quantity);
               }}
               disabled={isSoldOut}
-              className={`w-full py-3 text-xs uppercase font-bold tracking-wider transition-all border border-[#121212] cursor-pointer ${
+              className={`w-full py-3 text-xs uppercase font-bold tracking-wider transition-all border border-[#121212] cursor-pointer active:scale-[0.98] ${
                 isSoldOut
                   ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                  : 'bg-white text-[#121212] hover:bg-gray-50 active:scale-[0.99]'
+                  : 'bg-white text-[#121212] hover:bg-gray-50'
               }`}
             >
               {isSoldOut ? 'Sold Out' : 'Add to cart'}
@@ -244,10 +308,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 if (!isSoldOut) onBuyNow(product, selectedSize, activeColor.name, quantity);
               }}
               disabled={isSoldOut}
-              className={`w-full py-3 text-xs uppercase font-bold tracking-wider transition-all cursor-pointer ${
+              className={`w-full py-3 text-xs uppercase font-bold tracking-wider transition-all cursor-pointer active:scale-[0.98] ${
                 isSoldOut
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-[#121212] text-white hover:bg-black active:scale-[0.99]'
+                  : 'bg-[#121212] text-white hover:bg-black shadow-md'
               }`}
             >
               {isSoldOut ? 'Item Unavailable' : 'Buy it now'}

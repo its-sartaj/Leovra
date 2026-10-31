@@ -30,6 +30,14 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   const [returnMessage, setReturnMessage] = useState('');
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
     if (initialOrderNumber) {
       setOrderQuery(initialOrderNumber);
       const o = storeService.getOrderByNumber(initialOrderNumber);
@@ -92,8 +100,14 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   const currentStep = foundOrder ? getStepStatus(foundOrder) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in">
-      <div className="bg-white max-w-xl w-full my-auto rounded-none shadow-2xl relative overflow-hidden flex flex-col max-h-[92vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="bg-white max-w-xl w-full my-auto rounded-none shadow-2xl relative overflow-hidden flex flex-col max-h-[92vh] animate-scale-in gpu-smooth"
+      >
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
@@ -105,14 +119,14 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
           <button
             onClick={onClose}
             aria-label="Close order tracking"
-            className="p-1 text-gray-400 hover:text-black transition-colors cursor-pointer"
+            className="p-1.5 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search Form */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 touch-pan">
           <form onSubmit={handleSearch} className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div>

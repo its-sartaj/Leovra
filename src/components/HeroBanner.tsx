@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HeroBannerProps {
   title?: string;
@@ -29,14 +30,17 @@ const HERO_LOOKS = [
   }
 ];
 
-// Auto-slide interval: 3.2 seconds
-const ROTATION_INTERVAL_MS = 3200;
+// Auto-slide interval: 3.6 seconds for relaxed, buttery pacing
+const ROTATION_INTERVAL_MS = 3600;
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   buttonText = 'Shop all',
   onCtaClick
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   // Preload images into browser cache
   useEffect(() => {
@@ -46,14 +50,53 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     });
   }, []);
 
-  // Continuous auto-slide timer
+  // Continuous auto-slide timer with smooth pause-on-hover / pause-on-touch
   useEffect(() => {
+    if (isPaused) return;
+
     const timer = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % HERO_LOOKS.length);
     }, ROTATION_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [isPaused]);
+
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentIndex(prev => (prev + 1) % HERO_LOOKS.length);
+  };
+
+  const handlePrev = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentIndex(prev => (prev - 1 + HERO_LOOKS.length) % HERO_LOOKS.length);
+  };
+
+  // Mobile Touch Swipe Handling
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsPaused(true);
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    setIsPaused(false);
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const diffX = e.changedTouches[0].clientX - touchStartX.current;
+    const diffY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Detect horizontal swipe if delta X > 45px and dominant over vertical scroll
+    if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   const currentLook = HERO_LOOKS[currentIndex];
 
@@ -61,11 +104,15 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     <section
       aria-label="Leovra Clothes Fashion Showcase"
       onClick={onCtaClick}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       style={{
         backgroundColor: currentLook.bgColor,
         backgroundImage: currentLook.bgGradient
       }}
-      className="relative w-full h-[64vh] sm:h-[74vh] md:h-[82vh] min-h-[480px] max-h-[820px] flex items-center justify-center overflow-hidden select-none cursor-pointer transition-colors duration-1000"
+      className="relative w-full h-[64vh] sm:h-[74vh] md:h-[82vh] min-h-[480px] max-h-[820px] flex items-center justify-center overflow-hidden select-none cursor-pointer transition-colors duration-1000 group touch-pan"
     >
       {/* Background Slides: 100% Full-Size Uncropped Photo with Matched Studio Cream Canvas */}
       {HERO_LOOKS.map((look, idx) => {
@@ -78,32 +125,50 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               opacity: isCurrent ? 1 : 0,
               zIndex: isCurrent ? 10 : 1,
               background: look.bgGradient,
-              transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)'
+              transition: 'opacity 900ms cubic-bezier(0.16, 1, 0.3, 1)'
             }}
-            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center p-2 sm:p-4"
+            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center p-2 sm:p-4 gpu-smooth"
           >
-            {/* 100% Full-Size Uncropped Photo with Soft Feathered Edges */}
-            <img
-              src={look.imageUrl}
-              alt={look.altText}
-              width={682}
-              height={1024}
-              fetchPriority={idx === 0 ? 'high' : 'auto'}
-              decoding={idx === 0 ? 'sync' : 'async'}
-              style={{
-                transform: isCurrent ? 'scale(1.018)' : 'scale(1.0)',
-                transition: 'transform 3800ms ease-out',
-                maskImage: 'linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%)'
-              }}
-              className="h-full w-auto max-h-full max-w-full object-contain mx-auto drop-shadow-2xl"
-              loading={idx === 0 ? 'eager' : 'lazy'}
-            />
+            {/* 100% Full-Size Uncropped Photo with Hardware GPU Acceleration */}
+            <div className="relative h-full w-auto max-h-full max-w-full flex items-center justify-center">
+              <img
+                src={look.imageUrl}
+                alt={look.altText}
+                width={682}
+                height={1024}
+                fetchPriority={idx === 0 ? 'high' : 'auto'}
+                decoding={idx === 0 ? 'sync' : 'async'}
+                style={{
+                  transform: isCurrent ? 'scale(1.02)' : 'scale(1.0)',
+                  transition: 'transform 3600ms cubic-bezier(0.25, 1, 0.5, 1)',
+                  willChange: 'transform'
+                }}
+                className="h-full w-auto max-h-full max-w-full object-contain mx-auto drop-shadow-2xl gpu-smooth"
+                loading={idx === 0 ? 'eager' : 'lazy'}
+              />
+            </div>
           </div>
         );
       })}
 
-      {/* Floating Pill CTA at the bottom - never obstructs the artwork or model */}
+      {/* Sleek Laptop / Desktop Navigation Arrows (Smoothly fade in on hover) */}
+      <button
+        onClick={handlePrev}
+        aria-label="Previous look"
+        className="hidden md:flex absolute left-4 z-30 w-10 h-10 items-center justify-center rounded-full bg-white/70 hover:bg-white text-black shadow-lg backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+
+      <button
+        onClick={handleNext}
+        aria-label="Next look"
+        className="hidden md:flex absolute right-4 z-30 w-10 h-10 items-center justify-center rounded-full bg-white/70 hover:bg-white text-black shadow-lg backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
+
+      {/* Floating Pill CTA at the bottom - never obstructs artwork */}
       <div className="absolute bottom-5 sm:bottom-7 z-30 pointer-events-auto flex flex-col items-center gap-2">
         <button
           onClick={(e) => {
@@ -125,7 +190,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 setCurrentIndex(idx);
               }}
               aria-label={`Go to slide ${idx + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
+              className={`h-1.5 rounded-full transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
                 idx === currentIndex ? 'w-6 bg-[#121212]' : 'w-1.5 bg-[#121212]/30 hover:bg-[#121212]/60'
               }`}
             />

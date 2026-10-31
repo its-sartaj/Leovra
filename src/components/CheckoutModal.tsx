@@ -24,6 +24,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   standardShippingFee,
   upiId
 }) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const [fullName, setFullName] = useState('');
@@ -139,8 +147,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in">
-      <div className="bg-white max-w-2xl w-full my-auto rounded-none shadow-2xl relative overflow-hidden flex flex-col max-h-[92vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="bg-white max-w-2xl w-full my-auto rounded-none shadow-2xl relative overflow-hidden flex flex-col max-h-[92vh] animate-scale-in gpu-smooth"
+      >
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center space-x-3">
@@ -154,14 +168,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-black transition-colors cursor-pointer"
+            aria-label="Close checkout"
+            className="p-1.5 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body / Form */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 touch-pan">
           {errorMessage && (
             <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
               {errorMessage}

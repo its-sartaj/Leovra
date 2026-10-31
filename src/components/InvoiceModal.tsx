@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Printer } from 'lucide-react';
 import { Order } from '../types';
 
@@ -15,11 +15,25 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
   onClose,
   brandName = 'LEOVRA CLOTHES'
 }) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !order) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-print-bg animate-fade-in">
-      <div className="bg-white max-w-3xl w-full my-auto rounded-none shadow-2xl relative overflow-hidden flex flex-col max-h-[94vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-print-bg animate-fade-in touch-pan"
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        className="bg-white max-w-3xl w-full my-auto rounded-none shadow-2xl relative overflow-hidden flex flex-col max-h-[94vh] animate-scale-in gpu-smooth"
+      >
         {/* Top Header Actions (Hidden in Print) */}
         <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-gray-50 no-print shrink-0">
           <div className="flex items-center space-x-2">
@@ -31,7 +45,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={() => window.print()}
-              className="px-3.5 py-1.5 bg-[#121212] text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 hover:bg-black transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 bg-[#121212] text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 hover:bg-black active:scale-95 transition-all cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print Invoice</span>
@@ -39,7 +53,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <button
               onClick={onClose}
               aria-label="Close invoice preview"
-              className="p-1.5 text-gray-400 hover:text-black transition-colors cursor-pointer"
+              className="p-1.5 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -47,7 +61,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
         </div>
 
         {/* Printable Formal Invoice Paper */}
-        <div id="printableInvoice" className="p-6 sm:p-10 overflow-y-auto text-xs text-neutral-800 leading-normal font-sans">
+        <div id="printableInvoice" className="p-6 sm:p-10 overflow-y-auto text-xs text-neutral-800 leading-normal font-sans touch-pan">
           {/* Invoice Header */}
           <div className="flex justify-between items-start pb-6 border-b border-gray-300">
             <div>
