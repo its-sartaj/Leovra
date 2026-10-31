@@ -720,7 +720,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {/* Manage Order Modal */}
             {selectedOrder && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
                 <div className="bg-white max-w-md w-full p-6 shadow-xl space-y-4 text-xs">
                   <div className="flex justify-between items-center pb-2 border-b border-neutral-200">
                     <h3 className="font-bold text-sm uppercase text-black">
@@ -951,7 +951,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {/* Product Edit / Add Modal */}
             {isProductModalOpen && editingProduct && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 overflow-y-auto">
                 <form
                   onSubmit={handleSaveProduct}
                   className="bg-white max-w-xl w-full p-6 shadow-2xl space-y-4 text-xs my-auto max-h-[90vh] overflow-y-auto rounded-lg"
@@ -1410,7 +1410,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {/* Coupon Modal */}
             {isCouponModalOpen && editingCoupon && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
                 <form
                   onSubmit={handleSaveCoupon}
                   className="bg-white max-w-sm w-full p-6 shadow-xl space-y-3 text-xs"

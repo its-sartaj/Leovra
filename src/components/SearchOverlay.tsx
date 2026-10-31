@@ -32,7 +32,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex flex-col justify-start animate-fade-in"
+      className="fixed inset-0 z-50 bg-black/50 flex flex-col justify-start animate-fade-in"
     >
       <div
         onClick={e => e.stopPropagation()}

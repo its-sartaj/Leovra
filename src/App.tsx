@@ -18,6 +18,40 @@ import { Footer } from './components/Footer';
 import { AdminDashboard } from './components/AdminDashboard';
 import { MessageCircle, ArrowUp } from 'lucide-react';
 
+const BackToTopButton: React.FC = React.memo(() => {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setShow(window.scrollY > 280);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className={`w-10 h-10 rounded-full bg-white text-neutral-800 shadow-md border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 active:scale-90 transition-all duration-200 cursor-pointer ${
+        show
+          ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
+          : 'opacity-0 translate-y-3 scale-75 pointer-events-none'
+      }`}
+      title="Back to top"
+      aria-label="Back to top"
+    >
+      <ArrowUp className="w-4 h-4" />
+    </button>
+  );
+});
+
 export default function App() {
   const [currentView, setCurrentView] = useState<'store' | 'admin'>(() => {
     if (typeof window !== 'undefined') {
@@ -63,21 +97,11 @@ export default function App() {
   });
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3500);
   };
-
-  // Track scroll position for smooth back-to-top button
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 280);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Lock body scroll smoothly without layout shift when any modal/drawer is active
   const isAnyModalOpen =
@@ -464,7 +488,7 @@ export default function App() {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onOpenDetails={p => setSelectedProduct(p)}
+                  onOpenDetails={setSelectedProduct}
                 />
               ))}
             </div>
@@ -474,18 +498,7 @@ export default function App() {
 
       {/* Floating Action Buttons: Back to top & WhatsApp Support */}
       <div className="fixed bottom-6 right-5 z-40 flex flex-col items-end gap-2.5">
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className={`w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm text-neutral-800 shadow-lg border border-neutral-200/90 flex items-center justify-center hover:bg-neutral-100 active:scale-90 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
-            showBackToTop
-              ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
-              : 'opacity-0 translate-y-3 scale-75 pointer-events-none'
-          }`}
-          title="Back to top"
-          aria-label="Back to top"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </button>
+        <BackToTopButton />
 
         <a
           href={`https://wa.me/91${settings.supportPhone.replace(/\D/g, '') || '7979968347'}?text=${encodeURIComponent('Hello LEOVRA CLOTHES! I have an inquiry about your products.')}`}

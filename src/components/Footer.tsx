@@ -11,7 +11,7 @@ interface FooterProps {
   settings: StoreSettings;
 }
 
-export const Footer: React.FC<FooterProps> = ({
+export const Footer: React.FC<FooterProps> = React.memo(({
   onSelectCategory,
   onOpenPolicy,
   onOpenTracking,
@@ -273,4 +273,4 @@ export const Footer: React.FC<FooterProps> = ({
       </footer>
     </>
   );
-};
+});

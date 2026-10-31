@@ -31,7 +31,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
+      className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
     >
       <div
         onClick={e => e.stopPropagation()}

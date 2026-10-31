@@ -30,10 +30,10 @@ const HERO_LOOKS = [
   }
 ];
 
-// Auto-slide interval: 3.6 seconds for relaxed, buttery pacing
-const ROTATION_INTERVAL_MS = 3600;
+// Auto-slide interval: 4 seconds for relaxed, buttery pacing
+const ROTATION_INTERVAL_MS = 4000;
 
-export const HeroBanner: React.FC<HeroBannerProps> = ({
+export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
   buttonText = 'Shop all',
   onCtaClick
 }) => {
@@ -125,11 +125,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               opacity: isCurrent ? 1 : 0,
               zIndex: isCurrent ? 10 : 1,
               background: look.bgGradient,
-              transition: 'opacity 900ms cubic-bezier(0.16, 1, 0.3, 1)'
+              transition: 'opacity 500ms ease-out'
             }}
-            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center p-2 sm:p-4 gpu-smooth"
+            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center p-2 sm:p-4"
           >
-            {/* 100% Full-Size Uncropped Photo with Hardware GPU Acceleration */}
+            {/* 100% Full-Size Uncropped Photo */}
             <div className="relative h-full w-auto max-h-full max-w-full flex items-center justify-center">
               <img
                 src={look.imageUrl}
@@ -138,12 +138,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 height={1024}
                 fetchPriority={idx === 0 ? 'high' : 'auto'}
                 decoding={idx === 0 ? 'sync' : 'async'}
-                style={{
-                  transform: isCurrent ? 'scale(1.02)' : 'scale(1.0)',
-                  transition: 'transform 3600ms cubic-bezier(0.25, 1, 0.5, 1)',
-                  willChange: 'transform'
-                }}
-                className="h-full w-auto max-h-full max-w-full object-contain mx-auto drop-shadow-2xl gpu-smooth"
+                className="h-full w-auto max-h-full max-w-full object-contain mx-auto"
                 loading={idx === 0 ? 'eager' : 'lazy'}
               />
             </div>
@@ -155,7 +150,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       <button
         onClick={handlePrev}
         aria-label="Previous look"
-        className="hidden md:flex absolute left-4 z-30 w-10 h-10 items-center justify-center rounded-full bg-white/70 hover:bg-white text-black shadow-lg backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+        className="hidden md:flex absolute left-4 z-30 w-10 h-10 items-center justify-center rounded-full bg-white text-black shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-105 active:scale-95 cursor-pointer"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
@@ -163,7 +158,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       <button
         onClick={handleNext}
         aria-label="Next look"
-        className="hidden md:flex absolute right-4 z-30 w-10 h-10 items-center justify-center rounded-full bg-white/70 hover:bg-white text-black shadow-lg backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+        className="hidden md:flex absolute right-4 z-30 w-10 h-10 items-center justify-center rounded-full bg-white text-black shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-105 active:scale-95 cursor-pointer"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
@@ -175,7 +170,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             e.stopPropagation();
             onCtaClick();
           }}
-          className="bg-[#121212]/90 hover:bg-black text-white text-xs sm:text-sm font-semibold tracking-wide uppercase px-8 py-2.5 rounded-full shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border border-white/10"
+          className="bg-[#121212] hover:bg-black text-white text-xs sm:text-sm font-semibold tracking-wide uppercase px-8 py-2.5 rounded-full shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer border border-white/10"
         >
           {buttonText}
         </button>
@@ -199,4 +194,4 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       </div>
     </section>
   );
-};
+});

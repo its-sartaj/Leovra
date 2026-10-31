@@ -34,6 +34,8 @@ class StoreService {
   private listeners: (() => void)[] = [];
   private syncChannel: BroadcastChannel | null = null;
   private unsubscribeFirebase: (() => void) | null = null;
+  private cachedProducts: Product[] | null = null;
+  private cachedSettings: StoreSettings | null = null;
 
   constructor() {
     this.init();
@@ -197,6 +199,8 @@ class StoreService {
   }
 
   public notify() {
+    this.cachedProducts = null;
+    this.cachedSettings = null;
     this.dispatchLocalListeners();
 
     try {
@@ -214,14 +218,17 @@ class StoreService {
 
   // ---------------- PRODUCTS ----------------
   public getProducts(): Product[] {
+    if (this.cachedProducts) return this.cachedProducts;
     try {
       const data = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
       const deletedIds = this.getDeletedIds();
       if (data !== null) {
         const parsed: Product[] = JSON.parse(data);
-        return parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+        this.cachedProducts = parsed.filter(p => p && !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+        return this.cachedProducts;
       }
-      return DEFAULT_PRODUCTS.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+      this.cachedProducts = DEFAULT_PRODUCTS.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
+      return this.cachedProducts;
     } catch {
       return [];
     }
@@ -544,6 +551,7 @@ class StoreService {
 
   // ---------------- SETTINGS ----------------
   public getSettings(): StoreSettings {
+    if (this.cachedSettings) return this.cachedSettings;
     try {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (data) {
@@ -553,9 +561,11 @@ class StoreService {
           s.supportPhone = '+91 79799 68347';
           localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s));
         }
-        return s;
+        this.cachedSettings = s;
+        return this.cachedSettings;
       }
-      return DEFAULT_SETTINGS;
+      this.cachedSettings = DEFAULT_SETTINGS;
+      return this.cachedSettings;
     } catch {
       return DEFAULT_SETTINGS;
     }

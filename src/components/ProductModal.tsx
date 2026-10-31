@@ -75,17 +75,17 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
+      className="fixed inset-0 z-50 bg-black/65 flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in touch-pan"
     >
       <div
         onClick={e => e.stopPropagation()}
-        className="bg-white max-w-4xl w-full my-auto rounded-none overflow-hidden relative shadow-2xl flex flex-col md:flex-row max-h-[92vh] md:max-h-[88vh] animate-scale-in gpu-smooth"
+        className="bg-white max-w-4xl w-full my-auto rounded-none overflow-hidden relative shadow-2xl flex flex-col md:flex-row max-h-[92vh] md:max-h-[88vh] animate-scale-in"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute top-3 right-3 z-30 bg-white/95 rounded-full w-8 h-8 flex items-center justify-center text-black text-sm hover:bg-black hover:text-white active:scale-90 transition-all shadow-sm cursor-pointer"
+          className="absolute top-3 right-3 z-30 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black text-sm hover:bg-black hover:text-white active:scale-90 transition-colors shadow-sm cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -100,7 +100,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             <img
               src={activeImage}
               alt={product.title}
-              className="max-w-full max-h-full w-auto h-auto object-contain object-center transition-all duration-300 gpu-smooth drop-shadow-xs"
+              className="max-w-full max-h-full w-auto h-auto object-contain object-center transition-opacity duration-200"
             />
           </div>
 

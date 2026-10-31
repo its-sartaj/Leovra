@@ -13,7 +13,7 @@ interface HeaderProps {
   announcementText: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+export const Header: React.FC<HeaderProps> = React.memo(({
   cartCount,
   onOpenCart,
   onOpenMobileMenu,
@@ -26,8 +26,15 @@ export const Header: React.FC<HeaderProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 12);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 12);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -46,11 +53,11 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* Main Sticky Navbar with Smooth Backdrop Blur and Elevation on Scroll */}
+      {/* Main Sticky Navbar with Smooth Elevation on Scroll */}
       <header
-        className={`sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b transition-all duration-300 ${
+        className={`sticky top-0 z-40 bg-white/98 border-b transition-[box-shadow,border-color] duration-150 ${
           isScrolled
-            ? 'border-gray-200/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.06)]'
+            ? 'border-gray-200 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06)]'
             : 'border-[#f0f0f0]'
         }`}
       >
@@ -109,4 +116,4 @@ export const Header: React.FC<HeaderProps> = ({
       </header>
     </>
   );
-};
+});

@@ -6,7 +6,7 @@ interface ProductCardProps {
   onOpenDetails: (product: Product) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+export const ProductCard: React.FC<ProductCardProps> = React.memo(({
   product,
   onOpenDetails
 }) => {
@@ -16,7 +16,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div
       onClick={() => onOpenDetails(product)}
-      className="product-card group cursor-pointer flex flex-col select-none transition-transform duration-200 ease-out active:scale-[0.98] gpu-smooth"
+      className="product-card group cursor-pointer flex flex-col select-none transition-transform duration-150 ease-out active:scale-[0.98]"
     >
       {/* Product Image Box with 2nd photo hover preview - 100% Uncropped Full Photo */}
       <div className="product-img-wrapper w-full overflow-hidden relative group bg-[#f5f5f5] flex items-center justify-center">
@@ -63,7 +63,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Color Palette Indicator on Hover */}
         {product.colors && product.colors.length > 0 && (
-          <div className="absolute bottom-2 left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/85 backdrop-blur-xs p-1 rounded-sm shadow-xs">
+          <div className="absolute bottom-2 left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 p-1 rounded-sm shadow-xs">
             {product.colors.slice(0, 3).map((col, idx) => (
               <span
                 key={idx}
@@ -99,4 +99,4 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
     </div>
   );
-};
+});

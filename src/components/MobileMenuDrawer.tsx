@@ -66,7 +66,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className={`absolute inset-0 bg-black/45 backdrop-blur-xs transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0'
         } cursor-pointer`}
       />
