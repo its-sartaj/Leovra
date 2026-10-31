@@ -63,6 +63,10 @@ const compressImageFile = (file: File): Promise<string> => {
           return;
         }
 
+        // Fill pure white background first so transparent PNGs don't turn black
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+
         ctx.drawImage(img, 0, 0, width, height);
         // High quality JPEG compression for sharp visuals & minimal payload size
         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);

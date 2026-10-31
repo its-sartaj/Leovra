@@ -24,7 +24,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           src={product.image}
           alt={product.title}
           loading="lazy"
-          className={`w-full h-full object-contain object-center img-zoom transition-opacity duration-300 ${
+          className={`max-w-full max-h-full w-auto h-auto object-contain object-center img-zoom transition-opacity duration-300 ${
             product.additionalImages && product.additionalImages[0] ? 'group-hover:opacity-0' : ''
           }`}
         />
@@ -33,7 +33,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             src={product.additionalImages[0]}
             alt={`${product.title} alternate view`}
             loading="lazy"
-            className="w-full h-full object-contain object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 img-zoom"
+            className="max-w-full max-h-full w-auto h-auto object-contain object-center absolute inset-0 m-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300 img-zoom"
           />
         )}
 

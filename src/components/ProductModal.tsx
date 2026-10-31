@@ -96,11 +96,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           onTouchEnd={handleTouchEnd}
           className="md:w-1/2 bg-[#f6f6f6] flex flex-col justify-between p-3 sm:p-6 border-b md:border-b-0 md:border-r border-gray-100 shrink-0 relative select-none"
         >
-          <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-[320px] sm:min-h-[400px] md:min-h-[500px] max-h-[52vh] md:max-h-[580px] p-2">
+          <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-[300px] sm:min-h-[380px] md:min-h-[480px] max-h-[52vh] md:max-h-[560px] p-2">
             <img
               src={activeImage}
               alt={product.title}
-              className="w-full h-full object-contain object-center transition-all duration-300 gpu-smooth drop-shadow-xs"
+              className="max-w-full max-h-full w-auto h-auto object-contain object-center transition-all duration-300 gpu-smooth drop-shadow-xs"
             />
           </div>
 
