@@ -7,7 +7,6 @@ interface FooterProps {
   onSelectCategory: (category: string) => void;
   onOpenPolicy: (title: string, content: string) => void;
   onOpenTracking: () => void;
-  onOpenAdmin?: () => void;
   settings: StoreSettings;
 }
 
@@ -15,7 +14,6 @@ export const Footer: React.FC<FooterProps> = React.memo(({
   onSelectCategory,
   onOpenPolicy,
   onOpenTracking,
-  onOpenAdmin,
   settings
 }) => {
   const [emailInput, setEmailInput] = useState('');
@@ -228,16 +226,6 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                     Refund Policy
                   </button>
                 </li>
-                {onOpenAdmin && (
-                  <li>
-                    <button
-                      onClick={onOpenAdmin}
-                      className="hover:text-black transition-colors cursor-pointer text-left text-neutral-600 hover:text-black"
-                    >
-                      Owner Portal
-                    </button>
-                  </li>
-                )}
               </ul>
             </div>
 

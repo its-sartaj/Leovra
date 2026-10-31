@@ -528,7 +528,6 @@ export default function App() {
           setTrackingOrderNumber('');
           setIsTrackingOpen(true);
         }}
-        onOpenAdmin={() => navigateView('admin')}
         settings={settings}
       />
 
@@ -616,7 +615,6 @@ export default function App() {
           setTrackingOrderNumber('');
           setIsTrackingOpen(true);
         }}
-        onOpenAdmin={() => navigateView('admin')}
         settings={settings}
       />
 

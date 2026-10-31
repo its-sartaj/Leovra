@@ -8,7 +8,6 @@ interface MobileMenuDrawerProps {
   onClose: () => void;
   onSelectCategory: (categoryId: string) => void;
   onOpenTracking: () => void;
-  onOpenAdmin?: () => void;
   settings: StoreSettings;
 }
 
@@ -17,7 +16,6 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
   onClose,
   onSelectCategory,
   onOpenTracking,
-  onOpenAdmin,
   settings
 }) => {
   const touchStartX = useRef<number | null>(null);
@@ -116,18 +114,6 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                 <Truck className="w-3.5 h-3.5" />
                 <span>Track Your Order</span>
               </button>
-
-              {onOpenAdmin && (
-                <button
-                  onClick={() => {
-                    onClose();
-                    onOpenAdmin();
-                  }}
-                  className="text-left text-xs font-semibold text-gray-500 hover:text-black uppercase tracking-wider flex items-center space-x-2 cursor-pointer hover:translate-x-1 transition-transform"
-                >
-                  <span>Owner Admin Portal</span>
-                </button>
-              )}
             </div>
           </nav>
         </div>
