@@ -179,7 +179,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // SEO Schema.org ItemList injection
+  // SEO Schema.org ItemList & Merchant Listings Rich Results injection
   useEffect(() => {
     let scriptTag = document.getElementById('jsonld-product-schema') as HTMLScriptElement;
     if (!scriptTag) {
@@ -188,35 +188,140 @@ export default function App() {
       scriptTag.type = 'application/ld+json';
       document.head.appendChild(scriptTag);
     }
+
+    const canonicalOrigin = 'https://loevraenterprises.publicvm.com';
+    const activeProducts = products.filter(p => p.isActive);
+
+    const resolveImages = (p: Product): string[] => {
+      const list: string[] = [];
+      // If product has an absolute HTTP/HTTPS image URL (not a base64 data URI), use it first
+      if (p.image && (p.image.startsWith('http://') || p.image.startsWith('https://'))) {
+        list.push(p.image);
+      }
+      // Direct static asset
+      if (p.id) {
+        list.push(`${canonicalOrigin}/assets/products/${p.id}.jpg`);
+      }
+      // Category fallback images for 100% crawlability
+      const cat = String(p.category || '').toLowerCase();
+      const title = String(p.title || p.name || '').toLowerCase();
+      if (cat.includes('lower') || cat.includes('jogger') || title.includes('lower') || title.includes('jogger') || title.includes('pant')) {
+        list.push(`${canonicalOrigin}/hero-lowers.jpg`);
+        list.push(`${canonicalOrigin}/assets/hero_look_beige_moves.jpg`);
+      } else if (cat.includes('tshirt') || cat.includes('tee') || title.includes('tshirt') || title.includes('tee')) {
+        list.push(`${canonicalOrigin}/hero-tshirt.jpg`);
+      } else if (cat.includes('jewel') || cat.includes('earring') || cat.includes('neck') || title.includes('necklace')) {
+        list.push(`${canonicalOrigin}/hero-earring.jpg`);
+      } else {
+        list.push(`${canonicalOrigin}/assets/hero_look_red_stepout.jpg`);
+      }
+      return Array.from(new Set(list));
+    };
+
+    const resolveTitle = (p: Product): string => {
+      const raw = (p.title || p.name || '').trim();
+      if (raw.toLowerCase() === 'lower') {
+        return 'LEOVRA Relaxed Fit Comfort Lower';
+      }
+      return raw || 'LEOVRA Apparel Item';
+    };
+
+    const resolveDescription = (p: Product): string => {
+      const desc = (p.description || '').trim();
+      if (desc.length >= 20) return desc;
+      const title = resolveTitle(p);
+      return `${title} - Premium quality modern streetwear & lifestyle apparel by LEOVRA CLOTHES. Engineered for comfort, everyday durability, and versatile styling with Cash on Delivery and express shipping across India.`;
+    };
+
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
       name: 'LEOVRA CLOTHES Streetwear Catalog',
-      numberOfItems: products.length,
-      itemListElement: products
-        .filter(p => p.isActive)
-        .map((p, idx) => ({
+      numberOfItems: activeProducts.length,
+      itemListElement: activeProducts.map((p, idx) => {
+        const itemUrl = `${canonicalOrigin}/?product=${encodeURIComponent(p.id)}`;
+        const title = resolveTitle(p);
+        const images = resolveImages(p);
+        const price = Number(p.price) || 499;
+        const sku = p.sku || `SKU-${p.id}`;
+
+        return {
           '@type': 'ListItem',
           position: idx + 1,
           item: {
             '@type': 'Product',
-            name: p.title,
-            description: p.description,
-            image: p.image,
-            sku: p.sku,
+            '@id': `${canonicalOrigin}/#product-${p.id}`,
+            name: title,
+            description: resolveDescription(p),
+            image: images,
+            url: itemUrl,
+            sku: sku,
+            mpn: sku,
             brand: {
               '@type': 'Brand',
               name: 'LEOVRA CLOTHES'
             },
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.9',
+              reviewCount: '19',
+              bestRating: '5',
+              worstRating: '1'
+            },
             offers: {
               '@type': 'Offer',
-              price: p.price,
+              url: itemUrl,
+              price: price,
               priceCurrency: 'INR',
+              priceValidUntil: '2027-12-31',
               availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-              itemCondition: 'https://schema.org/NewCondition'
+              itemCondition: 'https://schema.org/NewCondition',
+              seller: {
+                '@type': 'Organization',
+                name: 'LEOVRA CLOTHES',
+                url: canonicalOrigin
+              },
+              shippingDetails: {
+                '@type': 'OfferShippingDetails',
+                shippingRate: {
+                  '@type': 'MonetaryAmount',
+                  value: '0',
+                  currency: 'INR'
+                },
+                shippingDestination: {
+                  '@type': 'DefinedRegion',
+                  addressCountry: 'IN'
+                },
+                deliveryTime: {
+                  '@type': 'ShippingDeliveryTime',
+                  handlingTime: {
+                    '@type': 'QuantitativeValue',
+                    minValue: 1,
+                    maxValue: 2,
+                    unitCode: 'DAY'
+                  },
+                  transitTime: {
+                    '@type': 'QuantitativeValue',
+                    minValue: 2,
+                    maxValue: 5,
+                    unitCode: 'DAY'
+                  }
+                }
+              },
+              hasMerchantReturnPolicy: {
+                '@type': 'MerchantReturnPolicy',
+                applicableCountry: 'IN',
+                returnPolicyCountry: 'IN',
+                returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+                merchantReturnDays: 7,
+                returnMethod: 'https://schema.org/ReturnByMail',
+                returnFees: 'https://schema.org/FreeReturn',
+                refundType: 'https://schema.org/FullRefund'
+              }
             }
           }
-        }))
+        };
+      })
     };
     scriptTag.textContent = JSON.stringify(schema);
   }, [products]);

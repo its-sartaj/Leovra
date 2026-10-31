@@ -50,6 +50,29 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
+// Static product photo extraction directory (Guarantees crawlable JPEG URLs for Google SEO)
+const publicProductsDir = path.resolve(__dirname, 'public', 'assets', 'products');
+const distProductsDir = path.resolve(__dirname, 'dist', 'assets', 'products');
+if (!fs.existsSync(publicProductsDir)) fs.mkdirSync(publicProductsDir, { recursive: true });
+if (!fs.existsSync(distProductsDir)) fs.mkdirSync(distProductsDir, { recursive: true });
+
+const extractAndSaveBase64Image = (productId, imageStr) => {
+  if (!productId || !imageStr || typeof imageStr !== 'string' || !imageStr.startsWith('data:image/')) return null;
+  const matches = imageStr.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+  if (!matches) return null;
+  const buffer = Buffer.from(matches[2], 'base64');
+  const pubFile = path.join(publicProductsDir, `${productId}.jpg`);
+  const distFile = path.join(distProductsDir, `${productId}.jpg`);
+  try {
+    fs.writeFileSync(pubFile, buffer);
+    if (fs.existsSync(distProductsDir)) fs.writeFileSync(distFile, buffer);
+    return `/assets/products/${productId}.jpg`;
+  } catch (err) {
+    console.warn(`[ImageStore] Failed saving product image ${productId}:`, err.message);
+    return null;
+  }
+};
+
 const productsFilePath = path.join(dataDir, 'products.json');
 const ordersFilePath = path.join(dataDir, 'orders.json');
 const customersFilePath = path.join(dataDir, 'customers.json');
@@ -173,6 +196,40 @@ app.get(['/healthz', '/api/health'], (req, res) => {
 });
 
 // 1. PRODUCTS API
+// Direct Product Image Endpoint (Decodes base64 on-demand or serves static JPEG for Googlebot)
+app.get(['/api/products/:id/image', '/api/products/:id/image.jpg', '/assets/products/:id.jpg'], (req, res) => {
+  const { id } = req.params;
+  const cleanId = id.replace(/\.jpg$/i, '');
+  const filePath = path.join(publicProductsDir, `${cleanId}.jpg`);
+
+  if (fs.existsSync(filePath)) {
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    return res.sendFile(filePath);
+  }
+
+  // Fallback to checking product database
+  const products = readJson(productsFilePath, []);
+  const product = products.find(p => p && p.id === cleanId);
+  const rawImg = product?.image || product?.images?.[0] || product?.additionalImages?.[0];
+  if (rawImg && rawImg.startsWith('data:image/')) {
+    extractAndSaveBase64Image(cleanId, rawImg);
+    if (fs.existsSync(filePath)) {
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      return res.sendFile(filePath);
+    }
+  }
+
+  // Category fallback image
+  const fallback = path.join(__dirname, 'public', 'assets', 'hero_look_red_stepout.jpg');
+  if (fs.existsSync(fallback)) {
+    res.setHeader('Content-Type', 'image/jpeg');
+    return res.sendFile(fallback);
+  }
+  res.status(404).send('Image Not Found');
+});
+
 app.get('/api/products', (req, res) => {
   const products = readJson(productsFilePath, []);
   const deletedIds = new Set(readJson(deletedProductsFilePath, []));
@@ -189,6 +246,12 @@ app.post('/api/products', requireAdminAuth, (req, res) => {
     if (Array.isArray(payload)) {
       // Full catalog sync / replacement: exclude permanently deleted products
       products = payload.filter(p => p && !deletedIds.has(p.id) && !p.deletedAt);
+      products.forEach(p => {
+        if (p && p.id) {
+          const raw = p.image || p.images?.[0] || p.additionalImages?.[0];
+          if (raw) extractAndSaveBase64Image(p.id, raw);
+        }
+      });
     } else if (payload && typeof payload === 'object' && payload.name) {
       if (deletedIds.has(payload.id)) {
         return res.status(400).json({ error: 'This product has been permanently deleted' });
@@ -204,6 +267,9 @@ app.post('/api/products', requireAdminAuth, (req, res) => {
         };
         products = [newProduct, ...products];
       }
+      const targetId = payload.id || products[0].id;
+      const raw = payload.image || payload.images?.[0] || payload.additionalImages?.[0];
+      if (raw) extractAndSaveBase64Image(targetId, raw);
     } else {
       return res.status(400).json({ error: 'Invalid product payload' });
     }
