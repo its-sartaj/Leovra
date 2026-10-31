@@ -18,13 +18,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       onClick={() => onOpenDetails(product)}
       className="product-card group cursor-pointer flex flex-col select-none transition-transform duration-200 ease-out active:scale-[0.98] gpu-smooth"
     >
-      {/* Product Image Box with 2nd photo hover preview */}
-      <div className="product-img-wrapper w-full overflow-hidden relative group">
+      {/* Product Image Box with 2nd photo hover preview - 100% Uncropped Full Photo */}
+      <div className="product-img-wrapper w-full overflow-hidden relative group bg-[#f5f5f5] flex items-center justify-center">
         <img
           src={product.image}
           alt={product.title}
           loading="lazy"
-          className={`w-full h-full object-cover object-center img-zoom transition-opacity duration-300 ${
+          className={`w-full h-full object-contain object-center img-zoom transition-opacity duration-300 ${
             product.additionalImages && product.additionalImages[0] ? 'group-hover:opacity-0' : ''
           }`}
         />
@@ -33,7 +33,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             src={product.additionalImages[0]}
             alt={`${product.title} alternate view`}
             loading="lazy"
-            className="w-full h-full object-cover object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 img-zoom"
+            className="w-full h-full object-contain object-center absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 img-zoom"
           />
         )}
 

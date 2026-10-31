@@ -115,8 +115,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           ) : (
             items.map((item, idx) => (
               <div key={`${item.productId}-${item.size}-${item.color}-${idx}`} className="py-4 flex space-x-3 text-xs">
-                <div className="w-20 h-24 bg-[#f3f3f3] shrink-0 overflow-hidden">
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                <div className="w-20 h-24 bg-[#f3f3f3] shrink-0 overflow-hidden flex items-center justify-center p-1">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-1 flex flex-col justify-between">
                   <div>

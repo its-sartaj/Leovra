@@ -268,7 +268,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                   {foundOrder.items.map((item, idx) => (
                     <div key={idx} className="py-2 flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <img src={item.image} alt="" className="w-8 h-9 object-cover bg-gray-100" />
+                        <img src={item.image} alt="" className="w-8 h-10 object-contain bg-gray-100 p-0.5" />
                         <div>
                           <p className="font-semibold text-black line-clamp-1">{item.title}</p>
                           <p className="text-[10px] text-gray-400">

@@ -37,8 +37,8 @@ const compressImageFile = (file: File): Promise<string> => {
       const img = new Image();
       img.src = event.target?.result as string;
       img.onload = () => {
-        const maxWidth = 1000;
-        const maxHeight = 1000;
+        const maxWidth = 1600;
+        const maxHeight = 2000;
         let width = img.width;
         let height = img.height;
 
@@ -65,7 +65,7 @@ const compressImageFile = (file: File): Promise<string> => {
 
         ctx.drawImage(img, 0, 0, width, height);
         // High quality JPEG compression for sharp visuals & minimal payload size
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
         resolve(compressedDataUrl);
       };
       img.onerror = (err) => reject(err);
@@ -879,8 +879,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {products.map(prod => (
                   <div key={prod.id} className="border border-neutral-200 p-3 flex flex-col justify-between text-xs space-y-2">
-                    <div className="relative aspect-[1/1.12] bg-neutral-100 overflow-hidden">
-                      <img src={prod.image} alt="" className="w-full h-full object-cover" />
+                    <div className="relative aspect-[3/4] bg-neutral-100 overflow-hidden flex items-center justify-center">
+                      <img src={prod.image} alt="" className="w-full h-full object-contain" />
                       <span
                         className={`absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5 uppercase ${
                           prod.isActive ? 'bg-black text-white' : 'bg-red-600 text-white'
@@ -987,7 +987,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         return (
                           <div
                             key={slotIdx}
-                            className="relative border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 flex flex-col justify-between aspect-[3/3.8] p-1.5"
+                            className="relative border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 flex flex-col justify-between aspect-[3/4] p-1.5"
                           >
                             {/* Slot Header Badge */}
                             <div className="flex justify-between items-center mb-1">
@@ -1010,13 +1010,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               )}
                             </div>
 
-                            {/* Slot Image or Upload Box */}
+                            {/* Slot Image or Upload Box - 100% Full Uncropped Preview */}
                             {imgUrl ? (
                               <div className="relative flex-1 rounded overflow-hidden bg-white flex items-center justify-center group">
                                 <img
                                   src={imgUrl}
                                   alt={`Product photo ${slotIdx + 1}`}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-contain"
                                 />
                                 <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 cursor-pointer text-white text-[10px] font-semibold">
                                   <Upload className="w-3.5 h-3.5" />

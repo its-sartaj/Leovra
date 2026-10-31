@@ -90,17 +90,17 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <X className="w-4 h-4" />
         </button>
 
-        {/* Left Column: Image Preview Gallery with Mobile Swipe */}
+        {/* Left Column: Image Preview Gallery with Mobile Swipe - 100% Full Uncropped Photo */}
         <div
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          className="md:w-1/2 bg-[#f3f3f3] flex flex-col justify-between p-3 sm:p-6 border-b md:border-b-0 md:border-r border-gray-100 shrink-0 relative select-none"
+          className="md:w-1/2 bg-[#f6f6f6] flex flex-col justify-between p-3 sm:p-6 border-b md:border-b-0 md:border-r border-gray-100 shrink-0 relative select-none"
         >
-          <div className="w-full flex-1 flex items-center justify-center overflow-hidden h-48 sm:h-64 md:h-full min-h-[200px] sm:min-h-[260px] md:min-h-[340px] max-h-[260px] sm:max-h-[320px] md:max-h-[460px]">
+          <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-[320px] sm:min-h-[400px] md:min-h-[500px] max-h-[52vh] md:max-h-[580px] p-2">
             <img
               src={activeImage}
               alt={product.title}
-              className="w-full h-full object-contain transition-all duration-300 gpu-smooth"
+              className="w-full h-full object-contain object-center transition-all duration-300 gpu-smooth drop-shadow-xs"
             />
           </div>
 
@@ -145,7 +145,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     activeImage === imgUrl ? 'border-black ring-1 ring-black' : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <img src={imgUrl} alt={`${product.title} angle ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={imgUrl} alt={`${product.title} angle ${i + 1}`} className="w-full h-full object-contain p-0.5" />
                 </button>
               ))}
             </div>

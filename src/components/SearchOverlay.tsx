@@ -84,7 +84,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                     <img
                       src={product.image}
                       alt={product.title}
-                      className="w-11 h-12 object-cover bg-gray-100 shrink-0 rounded-xs"
+                      className="w-11 h-14 object-contain bg-gray-100 shrink-0 rounded-xs p-0.5"
                     />
                     <div className="flex-1 text-xs">
                       <p className="font-semibold text-black">{product.title}</p>
