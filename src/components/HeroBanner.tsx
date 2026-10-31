@@ -108,26 +108,21 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      style={{
-        backgroundColor: currentLook.bgColor,
-        backgroundImage: currentLook.bgGradient
-      }}
-      className="relative w-full h-[64vh] sm:h-[74vh] md:h-[82vh] min-h-[480px] max-h-[820px] flex items-center justify-center overflow-hidden select-none cursor-pointer transition-colors duration-1000 group touch-pan"
+      className="relative w-full h-[64vh] sm:h-[74vh] md:h-[82vh] min-h-[480px] max-h-[820px] flex items-center justify-center overflow-hidden select-none cursor-pointer group touch-pan"
     >
-      {/* Background Slides: 100% Full-Size Uncropped Photo with Matched Studio Cream Canvas */}
-      {HERO_LOOKS.map((look, idx) => {
-        const isCurrent = idx === currentIndex;
-        return (
+      {/* Horizontal Sliding Carousel: Butter-smooth 120fps translate3d */}
+      <div
+        className="flex w-full h-full transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
+        style={{ transform: `translate3d(-${currentIndex * 100}%, 0, 0)` }}
+      >
+        {HERO_LOOKS.map((look, idx) => (
           <div
             key={look.id}
-            aria-hidden={!isCurrent}
             style={{
-              opacity: isCurrent ? 1 : 0,
-              zIndex: isCurrent ? 10 : 1,
-              background: look.bgGradient,
-              transition: 'opacity 500ms ease-out'
+              backgroundColor: look.bgColor,
+              backgroundImage: look.bgGradient
             }}
-            className="absolute inset-0 w-full h-full pointer-events-none flex items-center justify-center p-2 sm:p-4"
+            className="w-full h-full shrink-0 flex items-center justify-center p-2 sm:p-4 relative"
           >
             {/* 100% Full-Size Uncropped Photo */}
             <div className="relative h-full w-auto max-h-full max-w-full flex items-center justify-center">
@@ -138,13 +133,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
                 height={1024}
                 fetchPriority={idx === 0 ? 'high' : 'auto'}
                 decoding={idx === 0 ? 'sync' : 'async'}
-                className="h-full w-auto max-h-full max-w-full object-contain mx-auto"
+                className="h-full w-auto max-h-full max-w-full object-contain mx-auto select-none pointer-events-none"
                 loading={idx === 0 ? 'eager' : 'lazy'}
               />
             </div>
           </div>
-        );
-      })}
+        ))}
+      </div>
 
       {/* Sleek Laptop / Desktop Navigation Arrows (Smoothly fade in on hover) */}
       <button

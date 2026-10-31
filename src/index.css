@@ -7,14 +7,14 @@
 
 @layer base {
   *, ::before, ::after {
-    font-family: 'Caveat', cursive, sans-serif !important;
-    -webkit-tap-highlight-color: transparent;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html {
     -webkit-text-size-adjust: 100%;
-    font-family: 'Caveat', cursive, sans-serif !important;
+    font-family: 'Caveat', cursive, sans-serif;
+    overflow-x: clip;
   }
 
   body {
@@ -23,12 +23,13 @@
     color: #121212;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow-x: clip;
     width: 100%;
-    font-family: 'Caveat', cursive, sans-serif !important;
+    font-family: 'Caveat', cursive, sans-serif;
     font-size: 1.18rem;
     line-height: 1.45;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   body.overflow-hidden {
@@ -37,7 +38,7 @@
   }
 
   button, input, select, textarea, [role="button"], a {
-    font-family: 'Caveat', cursive, sans-serif !important;
+    font-family: 'Caveat', cursive, sans-serif;
     touch-action: manipulation;
   }
 }

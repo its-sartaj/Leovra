@@ -434,7 +434,7 @@ export default function App() {
 
           {/* Horizontal Scrolling Category Filter Pills with Smooth Momentum and Auto-Centering */}
           <div className="relative">
-            <div className="flex space-x-2 overflow-x-auto no-scrollbar pb-3 text-xs sm:text-sm scroll-smooth touch-pan">
+            <div className="flex space-x-2 overflow-x-auto no-scrollbar pb-3 text-xs sm:text-sm touch-pan">
               {[
                 { id: 'all', label: 'All Products' },
                 { id: 'new', label: 'New Arrivals' },
