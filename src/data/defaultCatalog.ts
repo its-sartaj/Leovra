@@ -90,7 +90,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   shippingPolicyText: "All confirmed orders are packed and dispatched within 24 to 48 business hours. Deliveries typically arrive within 3-5 business days across major metro cities, and 4-7 business days for regional zones.",
   privacyPolicyText: "Your privacy and data security are paramount. We strictly use industry standard 256-bit encryption for order handling and never share customer information.",
   termsText: "By placing an order on LEOVRA CLOTHES, you agree to our catalog terms, return timelines, and verified payment policies. All prices are stated inclusive of applicable taxes.",
-  emailWebhookUrl: "",
+  emailWebhookUrl: "https://script.google.com/macros/s/AKfycbwRklPK_7jJrQqikk3bKIesXK1cP_vDq8u8Wye0lVi5emFhze8F2kyH4jGIW6bPpBUT/exec",
   backendApiUrl: "",
   senderEmail: "leovracloth@gmail.com"
 };

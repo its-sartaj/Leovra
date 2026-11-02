@@ -1,6 +1,8 @@
 import { Order, StoreSettings, OrderCustomer } from '../types';
 import { storeService } from './storeService';
 
+export const DEFAULT_GMAIL_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwRklPK_7jJrQqikk3bKIesXK1cP_vDq8u8Wye0lVi5emFhze8F2kyH4jGIW6bPpBUT/exec';
+
 export const GOOGLE_APPS_SCRIPT_TEMPLATE = `// ============================================================
 // LEOVRA CLOTHES - 1-Click Gmail Auto-Invoice Webhook
 // Deploy this script in Google Apps Script (script.google.com)
@@ -352,7 +354,10 @@ export const sendOrderInvoiceEmail = async (
   }
 
   const settings = storeService.getSettings();
-  const webhookUrl = settings.emailWebhookUrl || localStorage.getItem('lc_email_webhook_url') || '';
+  let webhookUrl = (settings.emailWebhookUrl || localStorage.getItem('lc_email_webhook_url') || '').trim();
+  if (!webhookUrl || webhookUrl.includes('7jjr') || !webhookUrl.startsWith('http')) {
+    webhookUrl = DEFAULT_GMAIL_WEBHOOK_URL;
+  }
   const backendApiUrl = settings.backendApiUrl || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? '' : '');
   const orderNum = order.orderNumber || order.id || 'LC-ORDER';
   const subject = `Order Confirmed: #${orderNum} - ${settings.brandName || 'LEOVRA CLOTHES'} Tax Invoice`;
@@ -440,7 +445,10 @@ export const sendTestEmail = async (
   }
 
   const settings = storeService.getSettings();
-  const webhook = (customWebhookUrl || settings.emailWebhookUrl || localStorage.getItem('lc_email_webhook_url') || '').trim();
+  let webhook = (customWebhookUrl || settings.emailWebhookUrl || localStorage.getItem('lc_email_webhook_url') || '').trim();
+  if (!webhook || webhook.includes('7jjr') || !webhook.startsWith('http')) {
+    webhook = DEFAULT_GMAIL_WEBHOOK_URL;
+  }
 
   // Test via Google Apps Script Webhook
   if (webhook && webhook.startsWith('http')) {

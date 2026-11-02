@@ -134,11 +134,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [toastMessage, setToastMessage] = useState('');
 
   // Email Notification & Invoice Settings State
-  const [emailWebhookUrl, setEmailWebhookUrl] = useState('');
+  const [emailWebhookUrl, setEmailWebhookUrl] = useState('https://script.google.com/macros/s/AKfycbwRklPK_7jJrQqikk3bKIesXK1cP_vDq8u8Wye0lVi5emFhze8F2kyH4jGIW6bPpBUT/exec');
   const [copiedScript, setCopiedScript] = useState(false);
-  const [emailUser, setEmailUser] = useState('');
+  const [emailUser, setEmailUser] = useState('leovracloth@gmail.com');
   const [emailPass, setEmailPass] = useState('');
-  const [isEmailConfigured, setIsEmailConfigured] = useState(false);
+  const [isEmailConfigured, setIsEmailConfigured] = useState(true);
   const [testEmailTarget, setTestEmailTarget] = useState('');
   const [testEmailLoading, setTestEmailLoading] = useState(false);
   const [testEmailMsg, setTestEmailMsg] = useState('');
@@ -151,11 +151,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const loadEmailSettings = () => {
     const s = storeService.getSettings();
-    const savedWebhook = s.emailWebhookUrl || localStorage.getItem('lc_email_webhook_url') || '';
-    if (savedWebhook) {
-      setEmailWebhookUrl(savedWebhook);
-      setIsEmailConfigured(true);
+    let savedWebhook = (s.emailWebhookUrl || localStorage.getItem('lc_email_webhook_url') || '').trim();
+    if (!savedWebhook || savedWebhook.includes('7jjr') || !savedWebhook.startsWith('http')) {
+      savedWebhook = 'https://script.google.com/macros/s/AKfycbwRklPK_7jJrQqikk3bKIesXK1cP_vDq8u8Wye0lVi5emFhze8F2kyH4jGIW6bPpBUT/exec';
     }
+    setEmailWebhookUrl(savedWebhook);
+    setIsEmailConfigured(true);
     if (s.senderEmail) {
       setEmailUser(s.senderEmail);
     }

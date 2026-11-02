@@ -179,6 +179,9 @@ class StoreService {
           if (!s.senderEmail || s.senderEmail.includes('leovraclothes@gmail.com')) {
             s.senderEmail = 'leovracloth@gmail.com';
           }
+          if (!s.emailWebhookUrl || s.emailWebhookUrl.includes('7jjr') || !s.emailWebhookUrl.startsWith('http')) {
+            s.emailWebhookUrl = 'https://script.google.com/macros/s/AKfycbwRklPK_7jJrQqikk3bKIesXK1cP_vDq8u8Wye0lVi5emFhze8F2kyH4jGIW6bPpBUT/exec';
+          }
           localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s));
         } catch {
           localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
@@ -610,6 +613,10 @@ class StoreService {
         }
         if (!s.senderEmail || s.senderEmail.includes('leovraclothes@gmail.com')) {
           s.senderEmail = 'leovracloth@gmail.com';
+          updated = true;
+        }
+        if (!s.emailWebhookUrl || s.emailWebhookUrl.includes('7jjr') || !s.emailWebhookUrl.startsWith('http')) {
+          s.emailWebhookUrl = 'https://script.google.com/macros/s/AKfycbwRklPK_7jJrQqikk3bKIesXK1cP_vDq8u8Wye0lVi5emFhze8F2kyH4jGIW6bPpBUT/exec';
           updated = true;
         }
         if (updated) {
