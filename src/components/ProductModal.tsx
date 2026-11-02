@@ -19,20 +19,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   onBuyNow,
   onOpenPolicy
 }) => {
-  if (!isOpen || !product) return null;
-
-  const [activeImage, setActiveImage] = useState(product.image);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
+  const [activeImage, setActiveImage] = useState(product?.image || '');
+  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'M');
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const touchStartX = useRef<number | null>(null);
 
-  const galleryImages = Array.from(new Set([product.image, ...(product.additionalImages || [])])).filter(Boolean);
-
   useEffect(() => {
     if (product) {
       setActiveImage(product.image);
-      setSelectedSize(product.sizes[0] || 'M');
+      setSelectedSize(product.sizes?.[0] || 'M');
       setSelectedColorIndex(0);
       setQuantity(1);
     }
@@ -41,11 +37,15 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   // Handle Esc key to close smoothly
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && isOpen) onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [isOpen, onClose]);
+
+  const galleryImages = product
+    ? Array.from(new Set([product.image, ...(product.additionalImages || [])])).filter(Boolean)
+    : [];
 
   // Mobile Gallery Touch Swiping
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -69,7 +69,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     touchStartX.current = null;
   };
 
-  const activeColor = product.colors[selectedColorIndex] || { name: 'Standard', hex: '#000000' };
+  if (!isOpen || !product) return null;
+
+  const activeColor = product.colors?.[selectedColorIndex] || { name: 'Standard', hex: '#000000' };
   const isSoldOut = product.stock <= 0;
 
   return (

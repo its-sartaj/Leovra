@@ -366,14 +366,14 @@ export default function App() {
   }, [products, searchQuery]);
 
   // Cart operations
-  const handleAddToCart = (product: Product, size: string, color: string, quantity: number) => {
+  const handleAddToCart = (product: Product, size: string, color: string, quantity: number): CartItem[] => {
     const idx = cart.findIndex(it => it.productId === product.id && it.size === size && it.color === color);
+    let next: CartItem[];
     if (idx > -1) {
-      const next = [...cart];
+      next = [...cart];
       next[idx].quantity += quantity;
-      setCart(next);
     } else {
-      setCart([
+      next = [
         ...cart,
         {
           id: `${product.id}-${size}-${color}-${Date.now()}`,
@@ -387,9 +387,11 @@ export default function App() {
           quantity,
           sku: product.sku
         }
-      ]);
+      ];
     }
+    setCart(next);
     showToast(`Added ${quantity} × ${product.title} to bag`);
+    return next;
   };
 
   const handleUpdateQuantity = (idx: number, delta: number) => {
@@ -637,18 +639,20 @@ export default function App() {
       />
 
       {/* Modals & Slide-over Drawers */}
-      <ProductModal
-        product={selectedProduct}
-        isOpen={!!selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-        onAddToCart={(prod, size, color, qty) => {
-          handleAddToCart(prod, size, color, qty);
-          setSelectedProduct(null);
-          setIsCartOpen(true);
-        }}
-        onBuyNow={(prod, size, color, qty) => handleBuyNow(prod, size, color, qty)}
-        onOpenPolicy={(title, content) => setPolicyModal({ open: true, title, content })}
-      />
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          isOpen={true}
+          onClose={() => setSelectedProduct(null)}
+          onAddToCart={(prod, size, color, qty) => {
+            handleAddToCart(prod, size, color, qty);
+            setSelectedProduct(null);
+            setIsCartOpen(true);
+          }}
+          onBuyNow={(prod, size, color, qty) => handleBuyNow(prod, size, color, qty)}
+          onOpenPolicy={(title, content) => setPolicyModal({ open: true, title, content })}
+        />
+      )}
 
       <CartDrawer
         isOpen={isCartOpen}
@@ -663,52 +667,64 @@ export default function App() {
         freeShippingThreshold={settings.freeShippingThreshold}
       />
 
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        items={cart}
-        onOrderSuccess={handleOrderSuccess}
-        freeShippingThreshold={settings.freeShippingThreshold}
-        standardShippingFee={settings.standardShippingFee}
-        upiId={settings.upiId}
-      />
+      {isCheckoutOpen && (
+        <CheckoutModal
+          isOpen={true}
+          onClose={() => setIsCheckoutOpen(false)}
+          items={cart}
+          onOrderSuccess={handleOrderSuccess}
+          freeShippingThreshold={settings.freeShippingThreshold}
+          standardShippingFee={settings.standardShippingFee}
+          upiId={settings.upiId}
+        />
+      )}
 
-      <OrderConfirmationModal
-        order={completedOrder}
-        isOpen={!!completedOrder}
-        onClose={() => setCompletedOrder(null)}
-        onTrackOrder={handleTrackOrderFromElsewhere}
-        onViewInvoice={order => setInvoiceOrder(order)}
-      />
+      {completedOrder && (
+        <OrderConfirmationModal
+          order={completedOrder}
+          isOpen={true}
+          onClose={() => setCompletedOrder(null)}
+          onTrackOrder={handleTrackOrderFromElsewhere}
+          onViewInvoice={order => setInvoiceOrder(order)}
+        />
+      )}
 
-      <OrderTrackingModal
-        isOpen={isTrackingOpen}
-        onClose={() => setIsTrackingOpen(false)}
-        initialOrderNumber={trackingOrderNumber}
-        onViewInvoice={order => setInvoiceOrder(order)}
-      />
+      {isTrackingOpen && (
+        <OrderTrackingModal
+          isOpen={true}
+          onClose={() => setIsTrackingOpen(false)}
+          initialOrderNumber={trackingOrderNumber}
+          onViewInvoice={order => setInvoiceOrder(order)}
+        />
+      )}
 
-      <InvoiceModal
-        order={invoiceOrder}
-        isOpen={!!invoiceOrder}
-        onClose={() => setInvoiceOrder(null)}
-        brandName={settings.brandName}
-      />
+      {invoiceOrder && (
+        <InvoiceModal
+          order={invoiceOrder}
+          isOpen={true}
+          onClose={() => setInvoiceOrder(null)}
+          brandName={settings.brandName}
+        />
+      )}
 
-      <PolicyModal
-        isOpen={policyModal.open}
-        onClose={() => setPolicyModal({ open: false, title: '', content: '' })}
-        title={policyModal.title}
-        content={policyModal.content}
-      />
+      {policyModal.open && (
+        <PolicyModal
+          isOpen={true}
+          onClose={() => setPolicyModal({ open: false, title: '', content: '' })}
+          title={policyModal.title}
+          content={policyModal.content}
+        />
+      )}
 
-      <CustomerAccountModal
-        isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
-        onSendPasscode={val => showToast(`Signed in with ${val}`)}
-        onViewInvoice={order => setInvoiceOrder(order)}
-        onTrackOrder={handleTrackOrderFromElsewhere}
-      />
+      {isAccountModalOpen && (
+        <CustomerAccountModal
+          isOpen={true}
+          onClose={() => setIsAccountModalOpen(false)}
+          onSendPasscode={val => showToast(`Signed in with ${val}`)}
+          onViewInvoice={order => setInvoiceOrder(order)}
+          onTrackOrder={handleTrackOrderFromElsewhere}
+        />
+      )}
 
       <MobileMenuDrawer
         isOpen={isMobileMenuOpen}

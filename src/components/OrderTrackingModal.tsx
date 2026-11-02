@@ -16,8 +16,6 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   initialOrderNumber = '',
   onViewInvoice
 }) => {
-  if (!isOpen) return null;
-
   const [orderQuery, setOrderQuery] = useState(initialOrderNumber);
   const [phoneQuery, setPhoneQuery] = useState('');
   const [foundOrder, setFoundOrder] = useState<Order | null>(null);
@@ -98,6 +96,8 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   };
 
   const currentStep = foundOrder ? getStepStatus(foundOrder) : 0;
+
+  if (!isOpen) return null;
 
   return (
     <div

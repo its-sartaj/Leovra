@@ -25,33 +25,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   standardShippingFee,
   upiId
 }) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(authService.getCurrentUser());
-
-  useEffect(() => {
-    const unsub = authService.subscribe((u) => {
-      setCurrentUser(u);
-      if (u) {
-        setFullName((prev) => prev || u.name || '');
-        setEmail(u.email || '');
-        if (u.phone) setPhone((prev) => prev || u.phone || '');
-        if (u.address) setAddress((prev) => prev || u.address || '');
-        if (u.city) setCity((prev) => prev || u.city || '');
-        if (u.pincode) setPincode((prev) => prev || u.pincode || '');
-      }
-    });
-    return () => unsub();
-  }, [isOpen]);
-
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -68,6 +42,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedUpi, setCopiedUpi] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    const unsub = authService.subscribe((u) => {
+      setCurrentUser(u);
+      if (u) {
+        setFullName((prev) => prev || u.name || '');
+        setEmail(u.email || '');
+        if (u.phone) setPhone((prev) => prev || u.phone || '');
+        if (u.address) setAddress((prev) => prev || u.address || '');
+        if (u.city) setCity((prev) => prev || u.city || '');
+        if (u.pincode) setPincode((prev) => prev || u.pincode || '');
+      }
+    });
+    return () => unsub();
+  }, [isOpen]);
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
@@ -177,6 +174,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setIsSubmitting(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div
