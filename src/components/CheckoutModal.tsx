@@ -145,6 +145,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           pincode: pincode.trim() || undefined,
           notes: notes.trim() || undefined
         },
+        customerName: fullName.trim(),
+        customerPhone: phone.trim(),
+        customerEmail: finalEmail || undefined,
+        customerAddress: address.trim(),
+        customerCity: city.trim(),
         items: [...items],
         subtotal,
         discount: discountAmount,

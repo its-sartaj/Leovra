@@ -20,10 +20,19 @@ import {
   Upload,
   Image as ImageIcon,
   X,
-  Mail
+  Mail,
+  Printer,
+  MessageCircle,
+  Copy
 } from 'lucide-react';
 import { Product, Order, Coupon, StoreSettings } from '../types';
 import { storeService } from '../services/storeService';
+import { 
+  sendTestEmail as runTestEmail, 
+  GOOGLE_APPS_SCRIPT_TEMPLATE, 
+  openPrintInvoice, 
+  openWhatsAppInvoice 
+} from '../services/emailService';
 import { Logo } from './Logo';
 
 /**
@@ -125,6 +134,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [toastMessage, setToastMessage] = useState('');
 
   // Email Notification & Invoice Settings State
+  const [emailWebhookUrl, setEmailWebhookUrl] = useState('');
+  const [copiedScript, setCopiedScript] = useState(false);
   const [emailUser, setEmailUser] = useState('');
   const [emailPass, setEmailPass] = useState('');
   const [isEmailConfigured, setIsEmailConfigured] = useState(false);
@@ -139,11 +150,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const loadEmailSettings = () => {
+    const s = storeService.getSettings();
+    const savedWebhook = s.emailWebhookUrl || localStorage.getItem('lc_email_webhook_url') || '';
+    if (savedWebhook) {
+      setEmailWebhookUrl(savedWebhook);
+      setIsEmailConfigured(true);
+    }
+    if (s.senderEmail) {
+      setEmailUser(s.senderEmail);
+    }
+
     fetch('/api/email-settings')
       .then(res => res.json())
       .then(data => {
         if (data) {
-          setIsEmailConfigured(data.isConfigured);
+          if (data.isConfigured) setIsEmailConfigured(true);
           if (data.user) setEmailUser(data.user);
         }
       })
@@ -158,10 +179,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     loadEmailSettings();
   };
 
+  const handleCopyAppsScript = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_TEMPLATE);
+      setCopiedScript(true);
+      setTimeout(() => setCopiedScript(false), 3000);
+    }
+  };
+
   const handleSaveEmailConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/email-settings', {
+      const cleanWebhook = emailWebhookUrl.trim();
+      if (cleanWebhook) {
+        localStorage.setItem('lc_email_webhook_url', cleanWebhook);
+      } else {
+        localStorage.removeItem('lc_email_webhook_url');
+      }
+
+      const updated = storeService.saveSettings({
+        emailWebhookUrl: cleanWebhook,
+        senderEmail: emailUser.trim() || undefined
+      });
+      setSettings(updated);
+
+      const active = Boolean(cleanWebhook || (emailUser && emailPass));
+      setIsEmailConfigured(active);
+      setEmailSettingsSavedMsg('Gmail Webhook & Email Settings saved successfully!');
+      setTimeout(() => setEmailSettingsSavedMsg(''), 4000);
+
+      // Also sync to local backend if running
+      fetch('/api/email-settings', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -171,14 +219,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           user: emailUser.trim(),
           pass: emailPass.trim() || undefined
         })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setIsEmailConfigured(data.isConfigured);
-        setEmailSettingsSavedMsg('Gmail settings saved successfully!');
-        setEmailPass('');
-        setTimeout(() => setEmailSettingsSavedMsg(''), 3500);
-      }
+      }).catch(() => {});
     } catch (err: any) {
       showToast(err.message || 'Failed to save email settings');
     }
@@ -192,16 +233,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setTestEmailLoading(true);
     setTestEmailMsg('');
     try {
-      const res = await fetch('/api/test-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: testEmailTarget.trim() })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setTestEmailMsg(`✓ Test invoice email delivered to ${testEmailTarget}!`);
+      const res = await runTestEmail(testEmailTarget.trim(), emailWebhookUrl.trim());
+      if (res.success) {
+        setTestEmailMsg(`✓ ${res.message}`);
       } else {
-        setTestEmailMsg(`Notice: ${data.message || data.error || 'Check SMTP configuration'}`);
+        setTestEmailMsg(`Notice: ${res.message || res.error || 'Failed to dispatch email'}`);
       }
     } catch (err: any) {
       setTestEmailMsg(`Error: ${err.message}`);
@@ -800,9 +836,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <button
                             onClick={() => onViewInvoice(order)}
                             className="p-1 text-neutral-600 hover:text-black cursor-pointer inline-block"
-                            title="View Invoice"
+                            title="View Tax Invoice Modal"
                           >
                             <FileText className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openPrintInvoice(order)}
+                            className="p-1 text-neutral-600 hover:text-black cursor-pointer inline-block"
+                            title="Print / Save Tax Invoice as PDF"
+                          >
+                            <Printer className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openWhatsAppInvoice(order)}
+                            className="p-1 text-neutral-600 hover:text-emerald-700 cursor-pointer inline-block"
+                            title="Share Invoice on WhatsApp"
+                          >
+                            <MessageCircle className="w-4 h-4" />
                           </button>
                           {(order.customer?.email || order.customerEmail) && (
                             <button
@@ -1695,27 +1745,81 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="flex items-center space-x-2">
                     <Mail className="w-4 h-4 text-neutral-800" />
                     <h4 className="font-extrabold text-xs uppercase tracking-wider text-black">
-                      Gmail Auto-Notification &amp; Tax Invoice Dispatch System
+                      Gmail Auto-Notification &amp; Tax Invoice Dispatch Setup
                     </h4>
                   </div>
-                  <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                  <span className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
                     isEmailConfigured ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                   }`}>
-                    {isEmailConfigured ? '✓ Live Gmail Active' : 'Setup Pending / Simulated'}
+                    {isEmailConfigured ? '✓ Live Gmail Active' : 'Setup Required'}
                   </span>
                 </div>
 
                 <p className="text-xs text-gray-500 mb-4">
-                  When a customer signs in with their Gmail and completes an order, this SMTP service automatically emails their official Tax Invoice and order confirmation notification.
+                  Whenever a customer places an order, their official Tax Invoice and confirmation notification are automatically emailed to their Gmail.
                 </p>
 
                 {emailSettingsSavedMsg && (
-                  <div className="mb-3 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-                    {emailSettingsSavedMsg}
+                  <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded">
+                    ✓ {emailSettingsSavedMsg}
                   </div>
                 )}
 
+                {/* METHOD 1: GOOGLE APPS SCRIPT WEB APP (PERFECT FOR GITHUB PAGES) */}
+                <div className="mb-5 p-4 bg-emerald-50/70 border border-emerald-200 text-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-emerald-950 uppercase tracking-wide text-[11px] block">
+                        Method 1: Google Apps Script Web App (Recommended for GitHub Pages)
+                      </span>
+                      <p className="text-[11px] text-emerald-800 mt-0.5">
+                        Free forever &bull; No node server required &bull; Sends directly from your own Gmail (<code className="font-mono font-bold">leovraclothes@gmail.com</code>).
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyAppsScript}
+                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] uppercase tracking-wider flex items-center space-x-1.5 transition-all cursor-pointer shadow-xs shrink-0"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{copiedScript ? '✓ Copied!' : 'Copy Script Code'}</span>
+                    </button>
+                  </div>
+
+                  {/* 4-Step Deployment Guide */}
+                  <div className="bg-white/80 p-3 rounded border border-emerald-200 text-[11px] text-gray-700 space-y-1.5">
+                    <p className="font-bold text-black uppercase tracking-wider text-[10px]">
+                      1-Minute Setup Instructions:
+                    </p>
+                    <ol className="list-decimal pl-4 space-y-1">
+                      <li>Click the <strong>"Copy Script Code"</strong> button above.</li>
+                      <li>Open <a href="https://script.google.com/home" target="_blank" rel="noreferrer" className="text-emerald-700 underline font-bold">script.google.com</a> logged in as your store Gmail.</li>
+                      <li>Click <strong>+ New project</strong>, delete existing code, paste the copied code, and click Save.</li>
+                      <li>Click <strong>Deploy &rarr; New deployment &rarr; Web app</strong>. Set <em>Execute as: Me</em> and <em>Who has access: Anyone</em> &rarr; Click Deploy.</li>
+                      <li>Copy the generated <strong>Web app URL</strong>, paste it below, and click <strong>Save Settings</strong>!</li>
+                    </ol>
+                  </div>
+
+                  <div>
+                    <label className="block text-emerald-950 font-bold mb-1">
+                      Google Apps Script Web App URL
+                    </label>
+                    <input
+                      type="url"
+                      value={emailWebhookUrl}
+                      onChange={e => setEmailWebhookUrl(e.target.value)}
+                      placeholder="https://script.google.com/macros/s/AKfycb.../exec"
+                      className="w-full p-2 border border-emerald-300 bg-white focus:border-black outline-none font-mono text-xs"
+                    />
+                  </div>
+                </div>
+
+                {/* METHOD 2: NODE.JS GMAIL SMTP (FOR LOCAL SERVER OR VPS) */}
                 <div className="space-y-3 text-xs mb-6 p-4 bg-neutral-50 border border-neutral-200">
+                  <span className="font-bold text-neutral-800 uppercase tracking-wide text-[11px] block">
+                    Method 2: Node.js Gmail SMTP (For Local Server or VPS)
+                  </span>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-neutral-700 font-semibold mb-1">
@@ -1741,7 +1845,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         className="w-full p-2 border border-neutral-300 focus:border-black outline-none font-mono"
                       />
                       <span className="text-[10px] text-gray-400 mt-0.5 block">
-                        Generated from: Google Account &rarr; Security &rarr; 2-Step Verification &rarr; App passwords
+                        Google Account &rarr; Security &rarr; 2-Step Verification &rarr; App passwords
                       </span>
                     </div>
                   </div>
@@ -1749,9 +1853,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <button
                     type="button"
                     onClick={handleSaveEmailConfig}
-                    className="px-4 py-2 bg-neutral-900 hover:bg-black text-white font-bold uppercase text-[11px] tracking-wider active:scale-95 transition-all cursor-pointer"
+                    className="px-5 py-2.5 bg-neutral-900 hover:bg-black text-white font-bold uppercase text-[11px] tracking-wider active:scale-95 transition-all cursor-pointer"
                   >
-                    Save Gmail SMTP Settings
+                    Save All Email Settings
                   </button>
                 </div>
 
@@ -1761,14 +1865,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     Send Test Verification Email
                   </h5>
                   <p className="text-[11px] text-gray-500">
-                    Verify that your Gmail SMTP is dispatching emails properly without having to place a real order.
+                    Verify that your Gmail Webhook or SMTP is dispatching emails properly without placing a real order.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2 max-w-md">
                     <input
                       type="email"
                       value={testEmailTarget}
                       onChange={e => setTestEmailTarget(e.target.value)}
-                      placeholder="Enter your Gmail to test (e.g. myname@gmail.com)"
+                      placeholder="Enter Gmail to test (e.g. niyazmd565@gmail.com)"
                       className="flex-1 p-2 border border-gray-300 focus:border-black outline-none text-xs"
                     />
                     <button
@@ -1781,7 +1885,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </button>
                   </div>
                   {testEmailMsg && (
-                    <p className="text-xs font-semibold text-neutral-800 mt-1">{testEmailMsg}</p>
+                    <p className={`text-xs font-semibold mt-1 ${testEmailMsg.startsWith('✓') ? 'text-emerald-700' : 'text-neutral-800'}`}>
+                      {testEmailMsg}
+                    </p>
                   )}
                 </div>
               </div>

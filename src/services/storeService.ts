@@ -12,6 +12,7 @@ import {
   saveRemoteOrders,
   subscribeRemoteChanges 
 } from './firebaseService';
+import { sendOrderInvoiceEmail } from './emailService';
 
 const STORAGE_KEYS = {
   PRODUCTS: 'lc_products_v2',
@@ -346,15 +347,27 @@ class StoreService {
     const orderNum = `LC-${date.getFullYear()}-${randomDigits}`;
     const invoiceNum = `INV-LC-${randomDigits}`;
 
+    const custName = orderData.customerName || orderData.customer?.fullName || 'Customer';
+    const custPhone = orderData.customerPhone || orderData.customer?.phone || '7979968347';
+    const custEmail = (orderData.customerEmail || orderData.customer?.email || '').trim();
+    const custAddress = orderData.customerAddress || orderData.customer?.address || 'Delivery address';
+    const custCity = orderData.customerCity || orderData.customer?.city || 'India';
+
     const newOrder: Order = {
       id: `ord-${Date.now()}`,
       orderNumber: orderNum,
       orderDate: date.toISOString(),
+      customerName: custName,
+      customerPhone: custPhone,
+      customerEmail: custEmail || undefined,
+      customerAddress: custAddress,
+      customerCity: custCity,
       customer: orderData.customer || {
-        fullName: orderData.customerName || 'Customer',
-        phone: orderData.customerPhone || '7979968347',
-        address: orderData.customerAddress || 'Delivery address',
-        city: orderData.customerCity || 'India'
+        fullName: custName,
+        phone: custPhone,
+        email: custEmail || undefined,
+        address: custAddress,
+        city: custCity
       },
       items: orderData.items || [],
       subtotal: Number(orderData.subtotal) || 0,
@@ -397,14 +410,19 @@ class StoreService {
     saveRemoteProducts(products).catch(() => {});
     saveRemoteOrders(orders).catch(() => {});
 
-    // Sync with backend API to dispatch order confirmation & Tax Invoice email to customer's Gmail
+    // Automatically send order confirmation & Tax Invoice email to customer's Gmail
+    if (custEmail && custEmail.includes('@')) {
+      sendOrderInvoiceEmail(newOrder, custEmail).catch((err) => {
+        console.warn('Auto-email dispatch notice:', err?.message || err);
+      });
+    }
+
+    // Also attempt backend API sync for dual redundancy
     fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newOrder)
-    }).catch((err) => {
-      console.warn('Backend order sync / email dispatch notice:', err.message);
-    });
+    }).catch(() => {});
 
     return newOrder;
   }
@@ -413,17 +431,8 @@ class StoreService {
     order: Order,
     email?: string
   ): Promise<{ success: boolean; message?: string; error?: string }> {
-    try {
-      const res = await fetch('/api/send-order-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order, email })
-      });
-      const data = await res.json();
-      return data;
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Failed to dispatch email' };
-    }
+    const target = email || order.customerEmail || order.customer?.email;
+    return sendOrderInvoiceEmail(order, target);
   }
 
   public updateOrderStatus(

@@ -11,10 +11,13 @@ import {
   RefreshCw, 
   FileText, 
   Truck,
-  ExternalLink
+  ExternalLink,
+  Printer,
+  MessageCircle
 } from 'lucide-react';
 import { authService } from '../services/authService';
 import { storeService } from '../services/storeService';
+import { openPrintInvoice, openWhatsAppInvoice } from '../services/emailService';
 import { AuthUser, Order } from '../types';
 
 interface CustomerAccountModalProps {
@@ -479,13 +482,31 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
                           </div>
 
                           <div className="pt-2 border-t border-gray-100 flex flex-wrap gap-2 justify-end">
+                            <button
+                              onClick={() => openPrintInvoice(ord)}
+                              className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-black font-semibold text-[11px] flex items-center space-x-1 transition-colors cursor-pointer"
+                              title="Print / Save PDF Invoice"
+                            >
+                              <Printer className="w-3 h-3" />
+                              <span>Print</span>
+                            </button>
+
+                            <button
+                              onClick={() => openWhatsAppInvoice(ord)}
+                              className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-[11px] flex items-center space-x-1 transition-colors cursor-pointer border border-emerald-200"
+                              title="Share on WhatsApp"
+                            >
+                              <MessageCircle className="w-3 h-3" />
+                              <span>WhatsApp</span>
+                            </button>
+
                             {onViewInvoice && (
                               <button
                                 onClick={() => onViewInvoice(ord)}
                                 className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-black font-semibold text-[11px] flex items-center space-x-1 transition-colors cursor-pointer"
                               >
                                 <FileText className="w-3 h-3" />
-                                <span>Invoice</span>
+                                <span>Details</span>
                               </button>
                             )}
 

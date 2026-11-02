@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, FileText, Truck, ArrowRight, X, Mail } from 'lucide-react';
+import { CheckCircle2, FileText, Truck, ArrowRight, X, Mail, Printer, MessageCircle } from 'lucide-react';
 import { Order } from '../types';
 import { storeService } from '../services/storeService';
+import { openPrintInvoice, openWhatsAppInvoice } from '../services/emailService';
 import { Logo } from './Logo';
 
 interface OrderConfirmationModalProps {
@@ -161,12 +162,31 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             <span>Track Order Status</span>
           </button>
 
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => openPrintInvoice(order)}
+              className="py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-semibold uppercase tracking-wider flex items-center justify-center space-x-1.5 active:scale-[0.98] transition-all cursor-pointer"
+              title="Print or Save Official Invoice as PDF"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print / PDF</span>
+            </button>
+            <button
+              onClick={() => openWhatsAppInvoice(order)}
+              className="py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold uppercase tracking-wider flex items-center justify-center space-x-1.5 active:scale-[0.98] transition-all cursor-pointer"
+              title="Share order summary on WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>WhatsApp</span>
+            </button>
+          </div>
+
           <button
             onClick={() => onViewInvoice(order)}
-            className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-black font-semibold uppercase tracking-wider flex items-center justify-center space-x-2 active:scale-[0.98] transition-all cursor-pointer"
+            className="w-full py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium tracking-wide flex items-center justify-center space-x-1.5 transition-all cursor-pointer border border-gray-200"
           >
-            <FileText className="w-4 h-4" />
-            <span>View Tax Invoice</span>
+            <FileText className="w-3.5 h-3.5" />
+            <span>View Tax Invoice Details</span>
           </button>
 
           <button

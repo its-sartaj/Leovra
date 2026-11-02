@@ -158,6 +158,9 @@ export interface StoreSettings {
   shippingPolicyText: string;
   privacyPolicyText: string;
   termsText: string;
+  emailWebhookUrl?: string;
+  backendApiUrl?: string;
+  senderEmail?: string;
 }
 
 export interface FilterOptions {
