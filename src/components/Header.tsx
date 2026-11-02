@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Search, User, ShoppingBag, Truck } from 'lucide-react';
 import { Logo } from './Logo';
+import { authService } from '../services/authService';
+import { AuthUser } from '../types';
 
 interface HeaderProps {
   cartCount: number;
@@ -24,6 +26,12 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   announcementText
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(authService.getCurrentUser());
+
+  useEffect(() => {
+    const unsub = authService.subscribe(setCurrentUser);
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -95,9 +103,31 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             <button
               onClick={onOpenAccount}
               aria-label="Customer Account & Orders"
-              className="p-1.5 text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
+              className="p-1 text-[#121212] hover:opacity-85 active:scale-95 focus:outline-none transition-all duration-150 cursor-pointer flex items-center space-x-1.5"
             >
-              <User className="w-5 h-5 stroke-[1.75]" />
+              {currentUser ? (
+                <div className="flex items-center space-x-1.5">
+                  <div className="relative">
+                    {currentUser.picture ? (
+                      <img
+                        src={currentUser.picture}
+                        alt={currentUser.name}
+                        className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border border-gray-300 object-cover"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-neutral-900 text-white text-[11px] font-bold flex items-center justify-center">
+                        {currentUser.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-white" />
+                  </div>
+                  <span className="hidden md:inline text-xs font-semibold text-neutral-800 max-w-[85px] truncate">
+                    {currentUser.name.split(' ')[0]}
+                  </span>
+                </div>
+              ) : (
+                <User className="w-5 h-5 stroke-[1.75]" />
+              )}
             </button>
             <button
               onClick={onOpenCart}

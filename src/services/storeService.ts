@@ -396,7 +396,34 @@ class StoreService {
 
     saveRemoteProducts(products).catch(() => {});
     saveRemoteOrders(orders).catch(() => {});
+
+    // Sync with backend API to dispatch order confirmation & Tax Invoice email to customer's Gmail
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newOrder)
+    }).catch((err) => {
+      console.warn('Backend order sync / email dispatch notice:', err.message);
+    });
+
     return newOrder;
+  }
+
+  public async resendOrderInvoiceEmail(
+    order: Order,
+    email?: string
+  ): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      const res = await fetch('/api/send-order-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order, email })
+      });
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Failed to dispatch email' };
+    }
   }
 
   public updateOrderStatus(

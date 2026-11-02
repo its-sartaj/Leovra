@@ -19,7 +19,8 @@ import {
   ExternalLink,
   Upload,
   Image as ImageIcon,
-  X
+  X,
+  Mail
 } from 'lucide-react';
 import { Product, Order, Coupon, StoreSettings } from '../types';
 import { storeService } from '../services/storeService';
@@ -123,9 +124,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Toast feedback
   const [toastMessage, setToastMessage] = useState('');
 
+  // Email Notification & Invoice Settings State
+  const [emailUser, setEmailUser] = useState('');
+  const [emailPass, setEmailPass] = useState('');
+  const [isEmailConfigured, setIsEmailConfigured] = useState(false);
+  const [testEmailTarget, setTestEmailTarget] = useState('');
+  const [testEmailLoading, setTestEmailLoading] = useState(false);
+  const [testEmailMsg, setTestEmailMsg] = useState('');
+  const [emailSettingsSavedMsg, setEmailSettingsSavedMsg] = useState('');
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3500);
+  };
+
+  const loadEmailSettings = () => {
+    fetch('/api/email-settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setIsEmailConfigured(data.isConfigured);
+          if (data.user) setEmailUser(data.user);
+        }
+      })
+      .catch(() => {});
   };
 
   const reloadData = () => {
@@ -133,6 +155,78 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setProducts(storeService.getProducts());
     setCoupons(storeService.getCoupons());
     setSettings(storeService.getSettings());
+    loadEmailSettings();
+  };
+
+  const handleSaveEmailConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/email-settings', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'leovra_sec_token_7979_k8v9'
+        },
+        body: JSON.stringify({
+          user: emailUser.trim(),
+          pass: emailPass.trim() || undefined
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsEmailConfigured(data.isConfigured);
+        setEmailSettingsSavedMsg('Gmail settings saved successfully!');
+        setEmailPass('');
+        setTimeout(() => setEmailSettingsSavedMsg(''), 3500);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save email settings');
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    if (!testEmailTarget.trim()) {
+      setTestEmailMsg('Please enter a target email address.');
+      return;
+    }
+    setTestEmailLoading(true);
+    setTestEmailMsg('');
+    try {
+      const res = await fetch('/api/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: testEmailTarget.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTestEmailMsg(`✓ Test invoice email delivered to ${testEmailTarget}!`);
+      } else {
+        setTestEmailMsg(`Notice: ${data.message || data.error || 'Check SMTP configuration'}`);
+      }
+    } catch (err: any) {
+      setTestEmailMsg(`Error: ${err.message}`);
+    } finally {
+      setTestEmailLoading(false);
+    }
+  };
+
+  const handleAdminEmailOrderInvoice = async (order: Order) => {
+    const targetEmail = order.customer?.email || order.customerEmail;
+    if (!targetEmail) {
+      showToast('No customer email on this order.');
+      return;
+    }
+    try {
+      showToast(`Sending invoice to ${targetEmail}...`);
+      const res = await storeService.resendOrderInvoiceEmail(order, targetEmail);
+      if (res.success) {
+        showToast(`Tax invoice emailed to ${targetEmail}!`);
+      } else {
+        showToast(`Status: ${res.message || res.error || 'Dispatched'}`);
+      }
+    } catch {
+      showToast('Dispatched email.');
+    }
   };
 
   useEffect(() => {
@@ -710,6 +804,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           >
                             <FileText className="w-4 h-4" />
                           </button>
+                          {(order.customer?.email || order.customerEmail) && (
+                            <button
+                              onClick={() => handleAdminEmailOrderInvoice(order)}
+                              className="p-1 text-neutral-600 hover:text-emerald-700 cursor-pointer inline-block"
+                              title={`Email Tax Invoice to ${order.customer?.email || order.customerEmail}`}
+                            >
+                              <Mail className="w-4 h-4" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))
@@ -1584,6 +1687,103 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 >
                   Export Data Backup
                 </button>
+              </div>
+
+              {/* GMAIL & INVOICE NOTIFICATION INTEGRATION */}
+              <div className="pt-6 border-t border-neutral-200">
+                <div className="flex items-center justify-between pb-2 mb-3 border-b border-neutral-100">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="w-4 h-4 text-neutral-800" />
+                    <h4 className="font-extrabold text-xs uppercase tracking-wider text-black">
+                      Gmail Auto-Notification &amp; Tax Invoice Dispatch System
+                    </h4>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                    isEmailConfigured ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                  }`}>
+                    {isEmailConfigured ? '✓ Live Gmail Active' : 'Setup Pending / Simulated'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-gray-500 mb-4">
+                  When a customer signs in with their Gmail and completes an order, this SMTP service automatically emails their official Tax Invoice and order confirmation notification.
+                </p>
+
+                {emailSettingsSavedMsg && (
+                  <div className="mb-3 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                    {emailSettingsSavedMsg}
+                  </div>
+                )}
+
+                <div className="space-y-3 text-xs mb-6 p-4 bg-neutral-50 border border-neutral-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-neutral-700 font-semibold mb-1">
+                        Store Sender Gmail Address
+                      </label>
+                      <input
+                        type="email"
+                        value={emailUser}
+                        onChange={e => setEmailUser(e.target.value)}
+                        placeholder="e.g. leovraclothes@gmail.com"
+                        className="w-full p-2 border border-neutral-300 focus:border-black outline-none font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-neutral-700 font-semibold mb-1">
+                        Google App Password (16-char)
+                      </label>
+                      <input
+                        type="password"
+                        value={emailPass}
+                        onChange={e => setEmailPass(e.target.value)}
+                        placeholder="16-character Google App Password"
+                        className="w-full p-2 border border-neutral-300 focus:border-black outline-none font-mono"
+                      />
+                      <span className="text-[10px] text-gray-400 mt-0.5 block">
+                        Generated from: Google Account &rarr; Security &rarr; 2-Step Verification &rarr; App passwords
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveEmailConfig}
+                    className="px-4 py-2 bg-neutral-900 hover:bg-black text-white font-bold uppercase text-[11px] tracking-wider active:scale-95 transition-all cursor-pointer"
+                  >
+                    Save Gmail SMTP Settings
+                  </button>
+                </div>
+
+                {/* Test Email Verification */}
+                <div className="p-4 bg-gray-50 border border-gray-200 text-xs space-y-2">
+                  <h5 className="font-bold text-black uppercase tracking-wider text-[11px]">
+                    Send Test Verification Email
+                  </h5>
+                  <p className="text-[11px] text-gray-500">
+                    Verify that your Gmail SMTP is dispatching emails properly without having to place a real order.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2 max-w-md">
+                    <input
+                      type="email"
+                      value={testEmailTarget}
+                      onChange={e => setTestEmailTarget(e.target.value)}
+                      placeholder="Enter your Gmail to test (e.g. myname@gmail.com)"
+                      className="flex-1 p-2 border border-gray-300 focus:border-black outline-none text-xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSendTestEmail}
+                      disabled={testEmailLoading}
+                      className="px-4 py-2 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider active:scale-95 transition-all cursor-pointer shrink-0"
+                    >
+                      {testEmailLoading ? 'Sending...' : 'Send Test Email'}
+                    </button>
+                  </div>
+                  {testEmailMsg && (
+                    <p className="text-xs font-semibold text-neutral-800 mt-1">{testEmailMsg}</p>
+                  )}
+                </div>
               </div>
             </form>
           </div>

@@ -255,6 +255,143 @@ function backendDevPlugin(): Plugin {
           }
         }
 
+        if (pathname === '/api/auth/google') {
+          if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', () => {
+              try {
+                const { email, name, picture, credential } = JSON.parse(body);
+                let finalEmail = email;
+                let finalName = name;
+                let finalPicture = picture;
+
+                if (credential && (!finalEmail || !finalName)) {
+                  try {
+                    const parts = credential.split('.');
+                    if (parts.length >= 2) {
+                      const decoded = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+                      finalEmail = decoded.email || finalEmail;
+                      finalName = decoded.name || finalName;
+                      finalPicture = decoded.picture || finalPicture;
+                    }
+                  } catch {}
+                }
+
+                if (!finalEmail || !finalEmail.includes('@')) {
+                  res.statusCode = 400;
+                  return res.end('{"error":"Valid email required"}');
+                }
+
+                const cleanEmail = finalEmail.trim().toLowerCase();
+                let customers = readJson('customers.json', []);
+                let existingIdx = customers.findIndex((c: any) => (c.email || '').toLowerCase() === cleanEmail);
+
+                const userProfile = {
+                  id: existingIdx >= 0 ? customers[existingIdx].id : 'USER-' + Date.now().toString(36).toUpperCase(),
+                  name: finalName || cleanEmail.split('@')[0],
+                  email: cleanEmail,
+                  picture: finalPicture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(finalName || cleanEmail)}`,
+                  provider: 'google',
+                  phone: existingIdx >= 0 ? customers[existingIdx].phone : '',
+                  address: existingIdx >= 0 ? customers[existingIdx].address : '',
+                  city: existingIdx >= 0 ? customers[existingIdx].city : '',
+                  pincode: existingIdx >= 0 ? customers[existingIdx].pincode : '',
+                  createdAt: existingIdx >= 0 ? customers[existingIdx].createdAt : new Date().toISOString()
+                };
+
+                if (existingIdx >= 0) {
+                  customers[existingIdx] = { ...customers[existingIdx], ...userProfile };
+                } else {
+                  customers.push(userProfile);
+                }
+                writeJson('customers.json', customers);
+
+                res.setHeader('Content-Type', 'application/json');
+                return res.end(JSON.stringify({ success: true, user: userProfile }));
+              } catch (e: any) {
+                res.statusCode = 500;
+                res.end(JSON.stringify({ error: e.message }));
+              }
+            });
+            return;
+          }
+        }
+
+        if (pathname === '/api/send-order-email' || pathname === '/api/test-email' || pathname === '/api/email-settings') {
+          // Dynamic import of server-email for Vite dev server
+          import('./server-email.js').then((emailModule) => {
+            if (pathname === '/api/send-order-email' && req.method === 'POST') {
+              let body = '';
+              req.on('data', chunk => body += chunk);
+              req.on('end', async () => {
+                try {
+                  const { order, email } = JSON.parse(body);
+                  const result = await emailModule.sendOrderConfirmationEmail(order, email);
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify(result));
+                } catch (e: any) {
+                  res.statusCode = 500;
+                  res.end(JSON.stringify({ error: e.message }));
+                }
+              });
+              return;
+            }
+
+            if (pathname === '/api/test-email' && req.method === 'POST') {
+              let body = '';
+              req.on('data', chunk => body += chunk);
+              req.on('end', async () => {
+                try {
+                  const { email } = JSON.parse(body);
+                  const result = await emailModule.sendTestEmail(email);
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify(result));
+                } catch (e: any) {
+                  res.statusCode = 500;
+                  res.end(JSON.stringify({ error: e.message }));
+                }
+              });
+              return;
+            }
+
+            if (pathname === '/api/email-settings') {
+              if (req.method === 'GET') {
+                const cfg = emailModule.getEmailConfig();
+                res.setHeader('Content-Type', 'application/json');
+                return res.end(JSON.stringify({
+                  isConfigured: cfg.isConfigured,
+                  user: cfg.user,
+                  hasPassword: Boolean(cfg.pass),
+                  storeName: cfg.storeName,
+                  supportEmail: cfg.supportEmail,
+                  supportPhone: cfg.supportPhone
+                }));
+              } else if (req.method === 'POST') {
+                let body = '';
+                req.on('data', chunk => body += chunk);
+                req.on('end', () => {
+                  try {
+                    const data = JSON.parse(body);
+                    emailModule.saveEmailConfig(data);
+                    const cfg = emailModule.getEmailConfig();
+                    res.setHeader('Content-Type', 'application/json');
+                    res.end(JSON.stringify({ success: true, isConfigured: cfg.isConfigured, user: cfg.user }));
+                  } catch (e: any) {
+                    res.statusCode = 500;
+                    res.end(JSON.stringify({ error: e.message }));
+                  }
+                });
+                return;
+              }
+            }
+          }).catch(err => {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: err.message }));
+          });
+          return;
+        }
+
         next();
       });
     }

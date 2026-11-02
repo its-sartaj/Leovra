@@ -76,6 +76,19 @@ export interface CustomerUser {
   createdAt: string;
 }
 
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  picture?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  pincode?: string;
+  provider: 'google' | 'email';
+  createdAt: string;
+}
+
 export interface OrderCustomer {
   fullName: string;
   phone: string;
@@ -100,6 +113,7 @@ export interface Order {
   customerId?: string;
   customerName?: string;
   customerPhone?: string;
+  customerEmail?: string;
   customerAddress?: string;
   customerCity?: string;
   customer?: OrderCustomer;

@@ -705,7 +705,9 @@ export default function App() {
       <CustomerAccountModal
         isOpen={isAccountModalOpen}
         onClose={() => setIsAccountModalOpen(false)}
-        onSendPasscode={val => showToast(`Login passcode sent to ${val || 'your email'}`)}
+        onSendPasscode={val => showToast(`Signed in with ${val}`)}
+        onViewInvoice={order => setInvoiceOrder(order)}
+        onTrackOrder={handleTrackOrderFromElsewhere}
       />
 
       <MobileMenuDrawer

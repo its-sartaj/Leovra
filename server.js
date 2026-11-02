@@ -1,9 +1,17 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import { fileURLToPath } from 'url';
+import { 
+  sendOrderConfirmationEmail, 
+  sendTestEmail, 
+  getEmailConfig, 
+  saveEmailConfig,
+  generateOrderInvoiceHtml 
+} from './server-email.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -316,28 +324,50 @@ app.get('/api/orders', (req, res) => {
   res.status(200).json(orders);
 });
 
-app.post('/api/orders', (req, res) => {
+app.post('/api/orders', async (req, res) => {
   try {
     const orderData = req.body;
-    if (!orderData || !orderData.customerName || !orderData.customerPhone || !Array.isArray(orderData.items)) {
-      return res.status(400).json({ error: 'Missing required order fields' });
+    const customer = orderData.customer || {};
+    const customerName = orderData.customerName || customer.fullName || customer.name || 'Valued Customer';
+    const customerPhone = orderData.customerPhone || customer.phone || '';
+    const customerEmail = (orderData.customerEmail || customer.email || '').trim();
+
+    if (!orderData || !customerPhone || !Array.isArray(orderData.items)) {
+      return res.status(400).json({ error: 'Missing required order fields (customer phone and items list)' });
     }
 
     const orders = readJson(ordersFilePath, []);
     let products = readJson(productsFilePath, []);
 
+    const date = new Date();
+    const randomDigits = Math.floor(10000 + Math.random() * 90000);
+    const orderNum = orderData.orderNumber || `LC-${date.getFullYear()}-${randomDigits}`;
+    const invoiceNum = orderData.invoiceNumber || `INV-LC-${randomDigits}`;
+
     const newOrder = {
       ...orderData,
       id: orderData.id || 'ORD-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 1000).toString(36).toUpperCase(),
-      createdAt: orderData.createdAt || new Date().toISOString(),
-      status: orderData.status || 'Confirmed',
+      orderNumber: orderNum,
+      invoiceNumber: invoiceNum,
+      invoiceDate: orderData.invoiceDate || date.toISOString(),
+      createdAt: orderData.createdAt || date.toISOString(),
+      status: orderData.status || (orderData.paymentMethod === 'upi' ? 'payment_pending' : 'order_placed'),
+      customer: {
+        fullName: customerName,
+        phone: customerPhone,
+        email: customerEmail,
+        address: orderData.customerAddress || customer.address || '',
+        city: orderData.customerCity || customer.city || '',
+        pincode: orderData.customerPincode || customer.pincode || '',
+        notes: orderData.notes || customer.notes || ''
+      }
     };
 
     // Deduct stock for each item in the order
     if (Array.isArray(orderData.items) && orderData.items.length > 0) {
       products = products.map((prod) => {
         const boughtTotal = orderData.items
-          .filter((i) => i.product && i.product.id === prod.id)
+          .filter((i) => (i.product && i.product.id === prod.id) || i.productId === prod.id)
           .reduce((sum, i) => sum + (i.quantity || 1), 0);
         if (boughtTotal > 0) {
           const remaining = Math.max(0, prod.stock - boughtTotal);
@@ -357,7 +387,45 @@ app.post('/api/orders', (req, res) => {
     writeJson(ordersFilePath, updatedOrders);
     broadcastSse('ORDERS_UPDATED', updatedOrders);
 
-    res.status(201).json({ success: true, order: newOrder });
+    // Save or update customer record in customers.json
+    if (customerPhone) {
+      let customers = readJson(customersFilePath, []);
+      const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
+      const existingIdx = customers.findIndex((c) => c.phone === cleanPhone || (customerEmail && c.email === customerEmail));
+      const custRecord = {
+        id: existingIdx >= 0 ? customers[existingIdx].id : 'CUST-' + Date.now(),
+        name: customerName,
+        phone: cleanPhone,
+        email: customerEmail,
+        address: newOrder.customer.address,
+        city: newOrder.customer.city,
+        createdAt: existingIdx >= 0 ? customers[existingIdx].createdAt : new Date().toISOString(),
+      };
+      if (existingIdx >= 0) {
+        customers[existingIdx] = { ...customers[existingIdx], ...custRecord };
+      } else {
+        customers.push(custRecord);
+      }
+      writeJson(customersFilePath, customers);
+    }
+
+    // DISPATCH NOTIFICATION AND TAX INVOICE EMAIL TO CUSTOMER'S GMAIL!
+    let emailResult = null;
+    if (customerEmail) {
+      try {
+        emailResult = await sendOrderConfirmationEmail(newOrder, customerEmail);
+        console.log(`[Order Email] Dispatched to ${customerEmail}:`, emailResult?.success ? 'Success' : emailResult?.error);
+      } catch (emErr) {
+        console.error('[Order Email Error]:', emErr.message);
+        emailResult = { success: false, error: emErr.message };
+      }
+    }
+
+    res.status(201).json({ 
+      success: true, 
+      order: newOrder,
+      emailNotification: emailResult 
+    });
   } catch (err) {
     console.error('[API Create Order Error]:', err);
     res.status(500).json({ error: 'Failed to create order' });
@@ -480,6 +548,146 @@ app.post('/api/customers', (req, res) => {
   } catch (err) {
     console.error('[API Customer Error]:', err);
     res.status(500).json({ error: 'Failed to save customer' });
+  }
+});
+
+// 4. GOOGLE AUTH & CUSTOMER AUTO-SIGNUP API
+app.post('/api/auth/google', (req, res) => {
+  try {
+    const { email, name, picture, credential } = req.body || {};
+    let finalEmail = email;
+    let finalName = name;
+    let finalPicture = picture;
+
+    // Decode Google Identity Services (GIS) JWT token if present
+    if (credential && (!finalEmail || !finalName)) {
+      try {
+        const parts = credential.split('.');
+        if (parts.length >= 2) {
+          const decoded = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+          finalEmail = decoded.email || finalEmail;
+          finalName = decoded.name || finalName;
+          finalPicture = decoded.picture || finalPicture;
+        }
+      } catch (jwtErr) {
+        console.warn('[Google Auth] JWT decode notice:', jwtErr.message);
+      }
+    }
+
+    if (!finalEmail || !finalEmail.includes('@')) {
+      return res.status(400).json({ error: 'Valid Gmail or email address required' });
+    }
+
+    let customers = readJson(customersFilePath, []);
+    const cleanEmail = finalEmail.trim().toLowerCase();
+    let existingIdx = customers.findIndex((c) => (c.email || '').toLowerCase() === cleanEmail);
+
+    const userProfile = {
+      id: existingIdx >= 0 ? customers[existingIdx].id : 'USER-' + Date.now().toString(36).toUpperCase(),
+      name: finalName || cleanEmail.split('@')[0],
+      email: cleanEmail,
+      picture: finalPicture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(finalName || cleanEmail)}`,
+      provider: 'google',
+      phone: existingIdx >= 0 ? customers[existingIdx].phone : '',
+      address: existingIdx >= 0 ? customers[existingIdx].address : '',
+      city: existingIdx >= 0 ? customers[existingIdx].city : '',
+      pincode: existingIdx >= 0 ? customers[existingIdx].pincode : '',
+      createdAt: existingIdx >= 0 ? customers[existingIdx].createdAt : new Date().toISOString()
+    };
+
+    if (existingIdx >= 0) {
+      customers[existingIdx] = { ...customers[existingIdx], ...userProfile };
+    } else {
+      customers.push(userProfile);
+    }
+    writeJson(customersFilePath, customers);
+
+    res.status(200).json({
+      success: true,
+      user: userProfile,
+      message: 'Google account authenticated & synchronized successfully'
+    });
+  } catch (err) {
+    console.error('[API Google Auth Error]:', err);
+    res.status(500).json({ error: 'Authentication failed' });
+  }
+});
+
+// 5. EMAIL NOTIFICATION & INVOICE DISPATCH API
+app.post('/api/send-order-email', async (req, res) => {
+  try {
+    const { order, email } = req.body || {};
+    if (!order) {
+      return res.status(400).json({ error: 'Order object is required' });
+    }
+    const targetEmail = (email || order.customer?.email || order.customerEmail || '').trim();
+    if (!targetEmail) {
+      return res.status(400).json({ error: 'No recipient email specified' });
+    }
+    const result = await sendOrderConfirmationEmail(order, targetEmail);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('[API Send Order Email Error]:', err);
+    res.status(500).json({ error: err.message || 'Failed to send email' });
+  }
+});
+
+app.get('/api/orders/:id/invoice-html', (req, res) => {
+  const { id } = req.params;
+  const orders = readJson(ordersFilePath, []);
+  const order = orders.find(o => o.id === id || o.orderNumber === id);
+  if (!order) {
+    return res.status(404).send('Order not found');
+  }
+  const html = generateOrderInvoiceHtml(order);
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+});
+
+app.get('/api/email-settings', (req, res) => {
+  const cfg = getEmailConfig();
+  res.status(200).json({
+    isConfigured: cfg.isConfigured,
+    user: cfg.user,
+    hasPassword: Boolean(cfg.pass),
+    storeName: cfg.storeName,
+    supportEmail: cfg.supportEmail,
+    supportPhone: cfg.supportPhone
+  });
+});
+
+app.post('/api/email-settings', requireAdminAuth, (req, res) => {
+  try {
+    const { user, pass, storeName, supportEmail, supportPhone } = req.body || {};
+    saveEmailConfig({
+      user: user !== undefined ? user : undefined,
+      pass: pass !== undefined ? pass : undefined,
+      storeName: storeName !== undefined ? storeName : undefined,
+      supportEmail: supportEmail !== undefined ? supportEmail : undefined,
+      supportPhone: supportPhone !== undefined ? supportPhone : undefined
+    });
+    const cfg = getEmailConfig();
+    res.status(200).json({
+      success: true,
+      message: 'Email settings saved successfully',
+      isConfigured: cfg.isConfigured,
+      user: cfg.user
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Failed saving email settings' });
+  }
+});
+
+app.post('/api/test-email', async (req, res) => {
+  try {
+    const { email } = req.body || {};
+    if (!email) {
+      return res.status(400).json({ error: 'Target email address required' });
+    }
+    const result = await sendTestEmail(email);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Test email failed' });
   }
 });
 
