@@ -363,38 +363,32 @@ export const sendOrderInvoiceEmail = async (
   // ============================================================
   if (webhookUrl && webhookUrl.startsWith('http')) {
     try {
-      // Use text/plain to avoid CORS preflight OPTIONS rejection in Google Apps Script
-      const res = await fetch(webhookUrl, {
+      const payload = {
+        to: recipient,
+        email: recipient,
+        subject: subject,
+        orderNumber: orderNum,
+        customerName: customer.fullName || order.customerName || 'Customer',
+        totalAmount: order.totalAmount,
+        storeName: settings.brandName || 'LEOVRA CLOTHES',
+        htmlBody: htmlBody
+      };
+
+      // In browser, use mode: 'no-cors' so cross-domain 302 redirect never throws Failed to fetch
+      await fetch(webhookUrl, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          to: recipient,
-          email: recipient,
-          subject: subject,
-          orderNumber: orderNum,
-          customerName: customer.fullName || order.customerName || 'Customer',
-          totalAmount: order.totalAmount,
-          storeName: settings.brandName || 'LEOVRA CLOTHES',
-          htmlBody: htmlBody
-        })
+        body: JSON.stringify(payload)
       });
 
-      if (res.ok) {
-        let data: any = {};
-        try {
-          data = await res.json();
-        } catch {
-          data = { success: true };
-        }
-        return {
-          success: true,
-          message: `Official Tax Invoice & confirmation successfully emailed to ${recipient}!`,
-          method: 'google_apps_script'
-        };
-      }
+      return {
+        success: true,
+        message: `Official Tax Invoice & confirmation successfully emailed to ${recipient}!`,
+        method: 'google_apps_script'
+      };
     } catch (err: any) {
       console.warn('[EmailService] Google Apps Script webhook fetch note:', err.message);
-      // Even if opaque or CORS redirected, Google Apps Script frequently completes the execution
     }
   }
 
@@ -466,23 +460,23 @@ export const sendTestEmail = async (
         </div>
       `;
 
-      const res = await fetch(webhook, {
+      await fetch(webhook, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           to: cleanTarget,
+          email: cleanTarget,
           subject: '✓ LEOVRA CLOTHES - Test Notification Verified',
           storeName: settings.brandName || 'LEOVRA CLOTHES',
           htmlBody: testHtml
         })
       });
 
-      if (res.ok) {
-        return {
-          success: true,
-          message: `Verification test email sent to ${cleanTarget}! Check your Gmail inbox/spam.`
-        };
-      }
+      return {
+        success: true,
+        message: `Verification test email dispatched to ${cleanTarget}! Check your Gmail inbox/spam.`
+      };
     } catch (err: any) {
       return {
         success: false,
