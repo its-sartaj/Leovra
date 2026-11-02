@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
 import { X, Check, Copy, QrCode, Banknote } from 'lucide-react';
 import { CartItem, Order, AuthUser } from '../types';
@@ -42,6 +42,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -254,7 +255,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             ) : (
               <div className="mb-3.5 p-3 bg-gray-50 border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                 <div>
-                  <p className="font-semibold text-neutral-900">Sign in with Google for 1-Click Auto Checkout</p>
+                  <p className="font-semibold text-neutral-900">1-Click Auto Sign-in with Gmail</p>
                   <p className="text-[11px] text-gray-500">
                     Get order confirmation &amp; official tax invoice delivered straight to your Gmail.
                   </p>
@@ -262,9 +263,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    const promptEmail = prompt('Enter your Gmail address for 1-Click Auto Sign-up:');
-                    if (promptEmail && promptEmail.trim()) {
-                      let e = promptEmail.trim().toLowerCase();
+                    const targetEmail = (email || '').trim().toLowerCase();
+                    if (targetEmail) {
+                      let e = targetEmail;
                       if (!e.includes('@')) e += '@gmail.com';
                       authService.loginWithGmailAuto(e, fullName.trim() || undefined).then((u) => {
                         setFullName(u.name);
@@ -274,6 +275,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         if (u.city) setCity(u.city);
                         if (u.pincode) setPincode(u.pincode);
                       });
+                    } else {
+                      emailInputRef.current?.focus();
                     }
                   }}
                   className="px-3 py-1.5 bg-white border border-gray-300 hover:border-black text-xs font-semibold text-black rounded-none flex items-center space-x-1.5 active:scale-95 transition-all cursor-pointer shrink-0"
@@ -284,7 +287,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                   </svg>
-                  <span>Auto Sign-in with Google</span>
+                  <span>Sign in with Gmail</span>
                 </button>
               </div>
             )}
@@ -318,21 +321,32 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </label>
                 <div className="relative">
                   <input
+                    ref={emailInputRef}
                     type="email"
                     value={currentUser?.email || email}
                     onChange={e => !currentUser && setEmail(e.target.value)}
                     readOnly={Boolean(currentUser)}
                     placeholder="name@gmail.com"
-                    className={`w-full p-2.5 border outline-none ${
+                    className={`w-full p-2.5 pr-20 border outline-none ${
                       currentUser
                         ? 'bg-gray-100 border-gray-300 text-gray-700 cursor-not-allowed'
                         : 'border-gray-300 focus:border-black'
                     }`}
                   />
-                  {currentUser && (
+                  {currentUser ? (
                     <span className="absolute right-3 top-2.5 text-xs text-emerald-600 font-semibold flex items-center space-x-1">
                       <span>✓ Auto-Linked</span>
                     </span>
+                  ) : (
+                    !email.includes('@') && email.trim().length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setEmail(email.trim() + '@gmail.com')}
+                        className="absolute right-2 top-2 text-[10px] bg-gray-100 hover:bg-gray-200 px-2 py-1 font-mono text-gray-700 rounded-xs cursor-pointer"
+                      >
+                        +@gmail.com
+                      </button>
+                    )
                   )}
                 </div>
               </div>

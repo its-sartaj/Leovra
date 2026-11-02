@@ -70,16 +70,24 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
     return () => unsub();
   }, []);
 
-  // Initialize Google Identity Services One Tap / Button when modal opens
+  const rawClientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
+  const hasValidGoogleClient = Boolean(
+    rawClientId &&
+    typeof rawClientId === 'string' &&
+    rawClientId.trim().length > 15 &&
+    rawClientId.includes('.apps.googleusercontent.com') &&
+    rawClientId !== 'dummy-google-client-id'
+  );
+
+  // Initialize Google Identity Services One Tap ONLY if a valid registered Google Client ID is configured
   useEffect(() => {
-    if (!isOpen || user) return;
+    if (!isOpen || user || !hasValidGoogleClient) return;
 
     const setupGoogle = () => {
       if (typeof window !== 'undefined' && window.google?.accounts?.id) {
         try {
-          const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || 'dummy-google-client-id';
           window.google.accounts.id.initialize({
-            client_id: clientId,
+            client_id: rawClientId,
             callback: (res: any) => {
               if (res?.credential) {
                 authService.loginWithGoogleCredential(res.credential)
@@ -102,7 +110,7 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
               width: 280
             });
           }
-        } catch (e) {
+        } catch {
           // Google SDK init notice
         }
       }
@@ -110,7 +118,7 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
 
     const timer = setTimeout(setupGoogle, 300);
     return () => clearTimeout(timer);
-  }, [isOpen, user]);
+  }, [isOpen, user, hasValidGoogleClient, rawClientId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -238,86 +246,50 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
             /* 1. NOT LOGGED IN: GOOGLE AUTO SIGNUP VIEW */
             /* ========================================== */
             <div>
-              <div className="text-center pb-4">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-3 text-neutral-800">
-                  <Mail className="w-6 h-6 text-black" />
+              <div className="text-center pb-5">
+                <div className="w-13 h-13 rounded-full bg-neutral-900 text-white flex items-center justify-center mx-auto mb-3 shadow-md">
+                  <Mail className="w-6 h-6 text-white" />
                 </div>
-                <h4 className="text-base font-extrabold text-neutral-900">
-                  Gmail Auto Sign-up &amp; Login
+                <h4 className="text-base font-extrabold text-neutral-900 tracking-tight">
+                  Customer Sign-up &amp; Login
                 </h4>
-                <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
-                  Instant 1-Click login with your Gmail account. Receive order notifications &amp; tax invoices directly in your inbox.
+                <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto leading-relaxed">
+                  Sign in with your Gmail to view your order history, track live delivery status, and print official tax invoices.
                 </p>
               </div>
 
               {authError && (
-                <div className="mb-4 p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm">
                   {authError}
                 </div>
               )}
 
-              {/* 1-Click Google Identity Container */}
-              <div className="flex flex-col items-center justify-center my-3">
-                <div ref={googleBtnContainerRef} className="min-h-[42px] flex items-center justify-center" />
-                
-                {/* Fallback Direct Google Button */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const promptEmail = prompt('Enter your Gmail address for instant 1-click Auto Sign-up:');
-                    if (promptEmail && promptEmail.trim()) {
-                      let e = promptEmail.trim().toLowerCase();
-                      if (!e.includes('@')) e += '@gmail.com';
-                      authService.loginWithGmailAuto(e).then((u) => {
-                        setToastMsg(`Logged in as ${u.email}!`);
-                        setTimeout(() => setToastMsg(''), 3000);
-                      });
-                    }
-                  }}
-                  className="w-full mt-2 py-2.5 px-4 bg-white border border-gray-300 hover:border-black text-gray-700 hover:text-black font-semibold text-xs rounded-none flex items-center justify-center space-x-2.5 shadow-xs hover:shadow-sm active:scale-98 transition-all cursor-pointer"
-                >
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                    />
-                  </svg>
-                  <span>Continue with Google</span>
-                </button>
-              </div>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200" />
+              {/* If official GIS Client ID is configured, render Google button */}
+              {hasValidGoogleClient && (
+                <div className="flex flex-col items-center justify-center mb-4">
+                  <div ref={googleBtnContainerRef} className="min-h-[42px] flex items-center justify-center" />
+                  <div className="relative w-full my-3">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center text-[10px] uppercase tracking-widest text-gray-400 bg-white px-2">
+                      <span>Or Enter Your Gmail Below</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="relative flex justify-center text-[10px] uppercase tracking-widest text-gray-400 bg-white px-2">
-                  <span>Or Enter Your Gmail Directly</span>
-                </div>
-              </div>
+              )}
 
-              {/* Direct Gmail Input Auto-Signup */}
-              <form onSubmit={handleGmailAutoSignup} className="space-y-3">
+              {/* Direct Seamless 1-Click Gmail Form */}
+              <form onSubmit={handleGmailAutoSignup} className="space-y-3.5">
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-700 mb-1">
-                    Your Full Name (Optional)
+                    Your Full Name <span className="text-gray-400 font-normal">(Optional)</span>
                   </label>
                   <input
                     type="text"
                     value={nameInput}
                     onChange={(e) => setNameInput(e.target.value)}
-                    placeholder="e.g. Rahul Sharma"
+                    placeholder="e.g. Md Sartaj"
                     className="w-full p-2.5 border border-gray-300 text-xs outline-none focus:border-black transition-colors"
                   />
                 </div>
@@ -332,25 +304,28 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
                       required
                       value={gmailInput}
                       onChange={(e) => setGmailInput(e.target.value)}
-                      placeholder="username@gmail.com"
+                      placeholder="e.g. leovracloth@gmail.com"
                       className="w-full p-2.5 pr-20 border border-gray-300 text-xs outline-none focus:border-black transition-colors"
                     />
-                    {!gmailInput.includes('@') && gmailInput.length > 2 && (
+                    {!gmailInput.includes('@') && gmailInput.trim().length > 1 && (
                       <button
                         type="button"
-                        onClick={() => setGmailInput(gmailInput + '@gmail.com')}
+                        onClick={() => setGmailInput(gmailInput.trim() + '@gmail.com')}
                         className="absolute right-2 top-2 text-[10px] bg-gray-100 hover:bg-gray-200 px-2 py-1 font-mono text-gray-700 rounded-xs cursor-pointer"
                       >
                         +@gmail.com
                       </button>
                     )}
                   </div>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Enter the Gmail address used for placing orders to automatically see your tax invoices.
+                  </p>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-[#121212] hover:bg-black text-white py-2.5 text-xs font-bold uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-1.5 shadow-sm mt-2"
+                  className="w-full bg-[#121212] hover:bg-black text-white py-3 px-4 text-xs font-bold uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-md mt-4"
                 >
                   {isLoading ? (
                     <>
@@ -359,16 +334,22 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
                     </>
                   ) : (
                     <>
-                      <span>Instant Auto Sign-up &amp; Login</span>
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                      </svg>
+                      <span>Continue with Google / Gmail</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </>
                   )}
                 </button>
               </form>
 
-              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 text-center">
+              <div className="mt-5 pt-3 border-t border-gray-100 text-[11px] text-gray-500 text-center space-y-1">
                 <p>&#128274; Passwordless sign-in with 100% verified SSL security.</p>
-                <p className="mt-0.5">Order invoices and dispatch tracking links will automatically be sent to your Gmail.</p>
+                <p className="text-[10px] text-gray-400">Order invoices and dispatch tracking links will automatically be sent to your Gmail.</p>
               </div>
             </div>
           ) : (
