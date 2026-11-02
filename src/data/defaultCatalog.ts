@@ -83,7 +83,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   freeShippingThreshold: 0,
   standardShippingFee: 99,
   defaultCourier: "Blue Dart Express",
-  supportEmail: "support@leovraclothes.com",
+  supportEmail: "leovracloth@gmail.com",
   supportPhone: "+91 79799 68347",
   supportHours: "Mon - Sat: 10:00 AM - 8:00 PM",
   sevenDayReturnPolicyText: "We offer a transparent 7-Day Return & Exchange Policy measured from the date of package delivery. Merchandise must be unworn, unwashed, in original brand packaging with all tags attached.",
@@ -92,7 +92,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   termsText: "By placing an order on LEOVRA CLOTHES, you agree to our catalog terms, return timelines, and verified payment policies. All prices are stated inclusive of applicable taxes.",
   emailWebhookUrl: "",
   backendApiUrl: "",
-  senderEmail: "leovraclothes@gmail.com"
+  senderEmail: "leovracloth@gmail.com"
 };
 
 export const DEFAULT_ORDERS: Order[] = [];

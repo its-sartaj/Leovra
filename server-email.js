@@ -30,7 +30,7 @@ export const getEmailConfig = () => {
   const user = process.env.GMAIL_USER || process.env.SMTP_USER || fileConfig.user || '';
   const pass = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS || fileConfig.pass || '';
   const storeName = process.env.STORE_NAME || fileConfig.storeName || 'LEOVRA CLOTHES';
-  const supportEmail = process.env.SUPPORT_EMAIL || fileConfig.supportEmail || 'support@leovraclothes.com';
+  const supportEmail = process.env.SUPPORT_EMAIL || fileConfig.supportEmail || 'leovracloth@gmail.com';
   const supportPhone = process.env.SUPPORT_PHONE || fileConfig.supportPhone || '+91 79799 68347';
 
   return {

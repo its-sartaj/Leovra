@@ -72,8 +72,8 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 Modern Streetwear & Casuals
               </p>
               <div className="text-[11px] text-gray-600 mt-2 space-y-0.5">
-                <p>Support: support@leovraclothes.com</p>
-                <p>Helpline: +91 98701 68023</p>
+                <p>Support: leovracloth@gmail.com</p>
+                <p>Helpline: +91 79799 68347</p>
                 <p>GSTIN: 07AAACL1234F1Z5</p>
               </div>
             </div>

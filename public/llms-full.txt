@@ -9,7 +9,7 @@
 - Industry: Fashion, Modern Streetwear, Everyday Casual Essentials
 - Target Audience: Men and women seeking relaxed silhouettes, durable fabrics, and minimal modern styling.
 - Geographies Served: Nationwide delivery across all PIN codes in India.
-- Helpline / Inquiries: care@leovraclothes.com / +91 79799 68347
+- Helpline / Inquiries: leovracloth@gmail.com / +91 79799 68347
 
 ## 2. Product Categories & Taxonomy
 1. **Men's T-Shirts (`mens_tshirts`)**: Heavyweight 240 GSM combed cotton, drop-shoulder silhouettes, minimal branding, pre-shrunk fabric.

@@ -1773,7 +1773,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         Method 1: Google Apps Script Web App (Recommended for GitHub Pages)
                       </span>
                       <p className="text-[11px] text-emerald-800 mt-0.5">
-                        Free forever &bull; No node server required &bull; Sends directly from your own Gmail (<code className="font-mono font-bold">leovraclothes@gmail.com</code>).
+                        Free forever &bull; No node server required &bull; Sends directly from your own Gmail (<code className="font-mono font-bold">leovracloth@gmail.com</code>).
                       </p>
                     </div>
                     <button
@@ -1829,7 +1829,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         type="email"
                         value={emailUser}
                         onChange={e => setEmailUser(e.target.value)}
-                        placeholder="e.g. leovraclothes@gmail.com"
+                        placeholder="e.g. leovracloth@gmail.com"
                         className="w-full p-2 border border-neutral-300 focus:border-black outline-none font-mono"
                       />
                     </div>

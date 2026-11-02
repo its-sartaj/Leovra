@@ -308,7 +308,7 @@ export const generateOrderInvoiceHtml = (order: Order, customSettings?: StoreSet
               </div>
               <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between;">
                 <span>Need support? Call/WhatsApp: <strong style="color: #111827;">${settings.supportPhone || '+91 79799 68347'}</strong></span>
-                <span style="float: right;">Email: <strong style="color: #111827;">${settings.supportEmail || 'support@leovraclothes.com'}</strong></span>
+                <span style="float: right;">Email: <strong style="color: #111827;">${settings.supportEmail || 'leovracloth@gmail.com'}</strong></span>
               </div>
             </td>
           </tr>

@@ -173,6 +173,12 @@ class StoreService {
           const s = JSON.parse(existingSettingsRaw);
           s.upiId = '7979968347@slc';
           s.supportPhone = '+91 79799 68347';
+          if (!s.supportEmail || s.supportEmail.includes('support@leovraclothes.com') || s.supportEmail.includes('leovraclothes@gmail.com')) {
+            s.supportEmail = 'leovracloth@gmail.com';
+          }
+          if (!s.senderEmail || s.senderEmail.includes('leovraclothes@gmail.com')) {
+            s.senderEmail = 'leovracloth@gmail.com';
+          }
           localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s));
         } catch {
           localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
@@ -592,9 +598,21 @@ class StoreService {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (data) {
         const s = JSON.parse(data);
+        let updated = false;
         if (s.upiId === '9870168023@ptsbi') {
           s.upiId = '7979968347@slc';
           s.supportPhone = '+91 79799 68347';
+          updated = true;
+        }
+        if (!s.supportEmail || s.supportEmail.includes('support@leovraclothes.com') || s.supportEmail.includes('leovraclothes@gmail.com')) {
+          s.supportEmail = 'leovracloth@gmail.com';
+          updated = true;
+        }
+        if (!s.senderEmail || s.senderEmail.includes('leovraclothes@gmail.com')) {
+          s.senderEmail = 'leovracloth@gmail.com';
+          updated = true;
+        }
+        if (updated) {
           localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s));
         }
         this.cachedSettings = s;
