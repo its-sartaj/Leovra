@@ -50,7 +50,7 @@ export const Logo: React.FC<LogoProps> = ({
       </div>
       {showText && (
         <span
-          className={`font-black uppercase text-[#121212] font-['Montserrat'] mt-1 leading-none ${
+          className={`font-black uppercase text-[#121212] tracking-wider mt-1 leading-none ${
             textClasses[size] || textClasses.md
           }`}
         >
