@@ -183,7 +183,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
                 setCurrentIndex(idx);
               }}
               aria-label={`Go to slide ${idx + 1}`}
-              className="min-w-[36px] min-h-[36px] p-2 flex items-center justify-center cursor-pointer focus:outline-none"
+              className="min-w-[44px] min-h-[44px] p-2 flex items-center justify-center cursor-pointer focus:outline-none"
             >
               <span
                 className={`h-1.5 rounded-full transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${

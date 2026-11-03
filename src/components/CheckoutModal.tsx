@@ -218,7 +218,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         </div>
 
         {/* Modal Body / Form */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 touch-pan">
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 touch-pan"
+          {...{
+            toolname: 'submitOrder',
+            tooldescription: 'Submit customer order with shipping address, delivery PIN code, contact info, and payment selection (UPI or Cash on Delivery)'
+          } as any}
+        >
           {errorMessage && (
             <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
               {errorMessage}

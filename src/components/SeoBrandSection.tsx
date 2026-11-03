@@ -113,40 +113,40 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
           </p>
 
           {/* Targeted Internal Links / Quick Category Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            <span className="text-xs font-semibold text-gray-900 mr-1">Popular Collections:</span>
+          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+            <span className="text-xs font-semibold text-gray-900 mr-1 self-center">Popular Collections:</span>
             <button
               onClick={() => onSelectCategory('mens_tshirts')}
               aria-label="Filter Men's Oversized T-Shirts"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
             >
               Men's Oversized T-Shirts
             </button>
             <button
               onClick={() => onSelectCategory('womens_lowers')}
               aria-label="Filter Women's Wide Leg Pants"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
             >
               Women's Wide Leg Pants
             </button>
             <button
               onClick={() => onSelectCategory('mens_lowers')}
               aria-label="Filter Baggy Track Pants and Lowers"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
             >
               Baggy Track Pants &amp; Lowers
             </button>
             <button
               onClick={() => onSelectCategory('bestsellers')}
               aria-label="Filter Best Selling Streetwear"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
             >
               Best Selling Streetwear
             </button>
             <button
               onClick={() => onSelectCategory('new')}
               aria-label="Filter New Streetwear Arrivals"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
             >
               New Arrivals
             </button>

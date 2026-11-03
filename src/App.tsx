@@ -4,15 +4,15 @@ import { Product, CartItem, Order, StoreSettings } from './types';
 import { Header } from './components/Header';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductCard } from './components/ProductCard';
-import { ProductModal } from './components/ProductModal';
-import { CartDrawer } from './components/CartDrawer';
-import { MobileMenuDrawer } from './components/MobileMenuDrawer';
-import { SearchOverlay } from './components/SearchOverlay';
 import { SeoBrandSection } from './components/SeoBrandSection';
 import { Footer } from './components/Footer';
 import { MessageCircle, ArrowUp } from 'lucide-react';
 
-// Lazy load non-critical heavy modals and admin panel to maximize mobile performance (100% Score)
+// Lazy load all non-critical drawers, modals, and admin panel for ultra-lean mobile bundle (100% Score)
+const ProductModal = React.lazy(() => import('./components/ProductModal').then(m => ({ default: m.ProductModal })));
+const CartDrawer = React.lazy(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })));
+const MobileMenuDrawer = React.lazy(() => import('./components/MobileMenuDrawer').then(m => ({ default: m.MobileMenuDrawer })));
+const SearchOverlay = React.lazy(() => import('./components/SearchOverlay').then(m => ({ default: m.SearchOverlay })));
 const CheckoutModal = React.lazy(() => import('./components/CheckoutModal').then(m => ({ default: m.CheckoutModal })));
 const OrderConfirmationModal = React.lazy(() => import('./components/OrderConfirmationModal').then(m => ({ default: m.OrderConfirmationModal })));
 const OrderTrackingModal = React.lazy(() => import('./components/OrderTrackingModal').then(m => ({ default: m.OrderTrackingModal })));
@@ -42,7 +42,7 @@ const BackToTopButton: React.FC = React.memo(() => {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className={`w-10 h-10 rounded-full bg-white text-neutral-800 shadow-md border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 active:scale-90 transition-all duration-200 cursor-pointer ${
+      className={`w-11 h-11 rounded-full bg-white text-neutral-800 shadow-md border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 active:scale-90 transition-all duration-200 cursor-pointer ${
         show
           ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
           : 'opacity-0 translate-y-3 scale-75 pointer-events-none'
@@ -534,7 +534,7 @@ export default function App() {
                 aria-label="Sort products by"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="py-1 px-2.5 bg-white border border-gray-300 rounded text-xs font-semibold focus:border-black outline-none cursor-pointer"
+                className="py-2 px-3 bg-white border border-gray-300 rounded text-xs font-semibold focus:border-black outline-none cursor-pointer min-h-[40px]"
               >
                 <option value="featured">Featured / Best Sellers</option>
                 <option value="price_low">Price: Low to High</option>
@@ -566,7 +566,7 @@ export default function App() {
                       setSelectedCategory(cat.id);
                       e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                     }}
-                    className={`whitespace-nowrap px-4 py-1.5 rounded-full border transition-all duration-200 font-medium text-xs sm:text-sm cursor-pointer active:scale-95 ${
+                    className={`whitespace-nowrap px-4 py-2 min-h-[40px] flex items-center rounded-full border transition-all duration-200 font-medium text-xs sm:text-sm cursor-pointer active:scale-95 ${
                       isSelected
                         ? 'border-black bg-black text-white font-semibold shadow-xs'
                         : 'border-gray-200 text-gray-700 hover:border-black active:bg-gray-100'
@@ -616,7 +616,7 @@ export default function App() {
           href={`https://wa.me/91${settings.supportPhone.replace(/\D/g, '') || '7979968347'}?text=${encodeURIComponent('Hello LEOVRA CLOTHES! I have an inquiry about your products.')}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-3 min-h-[48px] rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
           title="Direct WhatsApp Support"
           aria-label="Direct WhatsApp Support"
         >
@@ -652,36 +652,73 @@ export default function App() {
         settings={settings}
       />
 
-      {/* Modals & Slide-over Drawers */}
-      {selectedProduct && (
-        <ProductModal
-          product={selectedProduct}
-          isOpen={true}
-          onClose={() => setSelectedProduct(null)}
-          onAddToCart={(prod, size, color, qty) => {
-            handleAddToCart(prod, size, color, qty);
-            setSelectedProduct(null);
-            setIsCartOpen(true);
-          }}
-          onBuyNow={(prod, size, color, qty) => handleBuyNow(prod, size, color, qty)}
-          onOpenPolicy={(title, content) => setPolicyModal({ open: true, title, content })}
-        />
-      )}
-
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        items={cart}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
-        onProceedToCheckout={() => {
-          setIsCartOpen(false);
-          setIsCheckoutOpen(true);
-        }}
-        freeShippingThreshold={settings.freeShippingThreshold}
-      />
-
+      {/* Modals & Slide-over Drawers (Dynamically code-split to keep initial mobile bundle ultra-light) */}
       <React.Suspense fallback={null}>
+        {selectedProduct && (
+          <ProductModal
+            product={selectedProduct}
+            isOpen={true}
+            onClose={() => setSelectedProduct(null)}
+            onAddToCart={(prod, size, color, qty) => {
+              handleAddToCart(prod, size, color, qty);
+              setSelectedProduct(null);
+              setIsCartOpen(true);
+            }}
+            onBuyNow={(prod, size, color, qty) => handleBuyNow(prod, size, color, qty)}
+            onOpenPolicy={(title, content) => setPolicyModal({ open: true, title, content })}
+          />
+        )}
+
+        {isCartOpen && (
+          <CartDrawer
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            items={cart}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemoveItem={handleRemoveItem}
+            onProceedToCheckout={() => {
+              setIsCartOpen(false);
+              setIsCheckoutOpen(true);
+            }}
+            freeShippingThreshold={settings.freeShippingThreshold}
+          />
+        )}
+
+        {isMobileMenuOpen && (
+          <MobileMenuDrawer
+            isOpen={isMobileMenuOpen}
+            onClose={() => setIsMobileMenuOpen(false)}
+            onSelectCategory={cat => {
+              setSelectedCategory(cat);
+              const el = document.getElementById('catalogSection');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            onOpenTracking={() => {
+              setTrackingOrderNumber('');
+              setIsTrackingOpen(true);
+            }}
+            settings={settings}
+          />
+        )}
+
+        {isSearchOpen && (
+          <SearchOverlay
+            isOpen={isSearchOpen}
+            onClose={() => {
+              setIsSearchOpen(false);
+              setSearchQuery('');
+            }}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchResults={searchResults}
+            onSelectProduct={prod => {
+              setSelectedProduct(prod);
+              setIsSearchOpen(false);
+              setSearchQuery('');
+            }}
+          />
+        )}
+
         {isCheckoutOpen && (
           <CheckoutModal
             isOpen={true}
@@ -741,37 +778,6 @@ export default function App() {
           />
         )}
       </React.Suspense>
-
-      <MobileMenuDrawer
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-        onSelectCategory={cat => {
-          setSelectedCategory(cat);
-          const el = document.getElementById('catalogSection');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
-        onOpenTracking={() => {
-          setTrackingOrderNumber('');
-          setIsTrackingOpen(true);
-        }}
-        settings={settings}
-      />
-
-      <SearchOverlay
-        isOpen={isSearchOpen}
-        onClose={() => {
-          setIsSearchOpen(false);
-          setSearchQuery('');
-        }}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchResults={searchResults}
-        onSelectProduct={prod => {
-          setSelectedProduct(prod);
-          setIsSearchOpen(false);
-          setSearchQuery('');
-        }}
-      />
     </div>
   );
 }

@@ -21,12 +21,20 @@
     <link rel="canonical" href="https://loevraenterprises.publicvm.com/" />
     
     <!-- Machine-Readable LLM & AI Agent Directives (llms.txt Standard) -->
+    <link rel="alternate" type="text/markdown" href="./llms.txt" title="LLM Agent Manifest" />
+    <link rel="help" type="text/plain" href="./llms.txt" />
     <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM Agent Manifest" />
     <link rel="help" type="text/plain" href="/llms.txt" />
 
     <!-- Agent Resource Discovery (ARD / ai-catalog.json Standard for 3/3 Agentic Browsing) -->
+    <link rel="ai-catalog" type="application/json" href="./.well-known/ai-catalog.json" />
+    <link rel="ard" type="application/json" href="./.well-known/ard.json" />
+    <link rel="ai-catalog" type="application/json" href="./ai-catalog.json" />
+    <link rel="ard" type="application/json" href="./ard.json" />
     <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json" />
     <link rel="ard" type="application/json" href="/.well-known/ard.json" />
+    <link rel="ai-catalog" type="application/json" href="/ai-catalog.json" />
+    <link rel="ard" type="application/json" href="/ard.json" />
 
     <!-- Preload Critical LCP Hero Image for Maximum Mobile Performance (100% Score) -->
     <link rel="preload" as="image" href="./assets/hero_look_red_stepout.webp" type="image/webp" fetchpriority="high" />
@@ -656,36 +664,25 @@
   </head>
   <body class="bg-white text-[#121212] antialiased selection:bg-black selection:text-white">
     <div id="root">
-      <!-- Semantic Crawler Pre-render & SEO Content (Replaced immediately upon React hydration) -->
-      <header style="padding: 12px 16px; border-bottom: 1px solid #eaeaea; text-align: center; background-color: #ffffff;">
-        <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #555; margin: 0 0 6px 0; font-weight: 600;">
-          FREE Nationwide Delivery on UPI • Cash on Delivery (COD) Available Across India
-        </p>
-        <h1 style="font-size: 1.4rem; font-weight: 800; margin: 4px 0 10px 0; letter-spacing: -0.5px; color: #121212;">
-          LEOVRA CLOTHS — Modern Streetwear &amp; Everyday Clothing Brand
+      <!-- 0.00 CLS & Instant LCP Skeleton Shell (Seamlessly replaced by React hydration) -->
+      <div style="width: 100%; height: 31px; background-color: #121212; color: #ffffff; font-size: 11px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;">
+        FREE NATIONWIDE DELIVERY ON ALL UPI / ONLINE ORDERS • CASH ON DELIVERY AVAILABLE (RS. 99)
+      </div>
+      <header style="width: 100%; height: 64px; border-bottom: 1px solid #f0f0f0; background-color: #ffffff; display: flex; align-items: center; justify-content: center; padding: 0 16px;">
+        <h1 style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: #121212; margin: 0;">
+          LEOVRA CLOTHS
         </h1>
-        <nav style="display: flex; gap: 12px; justify-content: center; font-size: 0.85rem; flex-wrap: wrap; margin-top: 6px;">
-          <a href="/?category=all" style="color: #121212; text-decoration: none; font-weight: 600;">All Streetwear</a>
-          <a href="/?category=mens_tshirts" style="color: #121212; text-decoration: none; font-weight: 600;">Men's T-Shirts</a>
-          <a href="/?category=womens_lowers" style="color: #121212; text-decoration: none; font-weight: 600;">Women's Wide Leg Pants</a>
-          <a href="/?category=mens_lowers" style="color: #121212; text-decoration: none; font-weight: 600;">Baggy Track Pants</a>
-          <a href="/?category=bestsellers" style="color: #121212; text-decoration: none; font-weight: 600;">Best Sellers</a>
-          <a href="/?action=track" style="color: #121212; text-decoration: none; font-weight: 600;">Track Order</a>
-        </nav>
       </header>
-      <main style="max-width: 900px; margin: 2rem auto; padding: 0 1rem;">
-        <section style="margin-bottom: 2rem;">
-          <h2 style="font-size: 1.25rem; font-weight: 700; color: #121212; margin-bottom: 0.5rem;">
-            About LEOVRA CLOTHS (Leovra Clothes)
-          </h2>
-          <p style="color: #444; line-height: 1.6; font-size: 0.95rem; margin-bottom: 1rem;">
-            LEOVRA CLOTHS is an emerging Indian clothing brand redefining modern streetwear and everyday casual fashion. We craft heavyweight 240+ GSM combed cotton oversized graphic t-shirts, dual-tone wide leg track pants, joggers, and relaxed bottom-wear engineered for exceptional comfort, tailored drapes, and long-lasting durability.
-          </p>
-          <p style="color: #444; line-height: 1.6; font-size: 0.95rem; margin-bottom: 1rem;">
-            Enjoy seamless shopping with zero shipping charges on prepaid UPI orders, hassle-free Cash on Delivery (COD) across all Indian pin codes, and an easy 7-day return and size exchange guarantee.
-          </p>
-        </section>
-      </main>
+      <div style="position: relative; width: 100%; height: 64vh; min-height: 480px; max-height: 820px; background-color: #e5ddd3; background-image: linear-gradient(to right, #e7ded4 0%, #e5ddd3 50%, #e4dbd1 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 16px;">
+        <img
+          src="./assets/hero_look_red_stepout.webp"
+          alt="LEOVRA CLOTHS Step Out Red Track Pants 3D Polaroid"
+          width="682"
+          height="1024"
+          fetchpriority="high"
+          style="height: 100%; width: auto; max-height: 100%; max-width: 100%; object-fit: contain;"
+        />
+      </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

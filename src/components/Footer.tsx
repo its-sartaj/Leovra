@@ -38,7 +38,14 @@ export const Footer: React.FC<FooterProps> = React.memo(({
           Get exclusive deals and early access to new products.
         </p>
 
-        <form onSubmit={handleSubscribe} className="relative max-w-md mx-auto">
+        <form
+          onSubmit={handleSubscribe}
+          className="relative max-w-md mx-auto"
+          {...{
+            toolname: 'newsletterSubscription',
+            tooldescription: 'Subscribe customer email to receive exclusive LEOVRA CLOTHS deals and product drops'
+          } as any}
+        >
           <label htmlFor="newsletter-email" className="sr-only">
             Email address for newsletter
           </label>
@@ -47,6 +54,9 @@ export const Footer: React.FC<FooterProps> = React.memo(({
             name="email"
             aria-label="Email address for newsletter"
             type="email"
+            {...{
+              toolparamdescription: 'Valid customer email address to receive discounts'
+            } as any}
             required
             value={emailInput}
             onChange={e => setEmailInput(e.target.value)}
@@ -79,11 +89,11 @@ export const Footer: React.FC<FooterProps> = React.memo(({
               <h3 className="font-bold text-[#121212] uppercase tracking-wider text-[11px] mb-3">
                 Shop
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-1">
                 <li>
                   <button
                     onClick={() => onSelectCategory('all')}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Shop All
                   </button>
@@ -91,7 +101,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={() => onSelectCategory('new')}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     New Arrivals
                   </button>
@@ -99,7 +109,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={() => onSelectCategory('bestsellers')}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Best Sellers
                   </button>
@@ -107,7 +117,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={() => onSelectCategory('mens_tshirts')}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Men's T-Shirts
                   </button>
@@ -115,7 +125,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={() => onSelectCategory('womens_tshirts')}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Women's T-Shirts
                   </button>
@@ -123,7 +133,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={() => onSelectCategory('mens_lowers')}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Men's Lowers
                   </button>
@@ -131,7 +141,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={() => onSelectCategory('womens_lowers')}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Women's Lowers
                   </button>
@@ -144,11 +154,11 @@ export const Footer: React.FC<FooterProps> = React.memo(({
               <h3 className="font-bold text-[#121212] uppercase tracking-wider text-[11px] mb-3">
                 Customer Care
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-1">
                 <li>
                   <button
                     onClick={() => onOpenPolicy('Shipping & Delivery Policy', settings.shippingPolicyText)}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Shipping Policy
                   </button>
@@ -162,7 +172,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                           '<br/><br/><strong>Eligibility Conditions:</strong><br/>1. Items must be initiated within 7 calendar days of courier delivery timestamp.<br/>2. Merchandise must be in unwashed, unworn, original condition with all barcode tags attached.<br/>3. Innerwear and clearance items marked final sale are non-exchangeable for hygiene reasons.<br/>4. Reverse pickup is arranged through our authorized courier partner.'
                       )
                     }
-                    className="hover:text-black transition-colors font-medium text-black cursor-pointer text-left"
+                    className="hover:text-black transition-colors font-medium text-black cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     7-Day Return Policy
                   </button>
@@ -170,7 +180,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={onOpenTracking}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Track Your Order
                   </button>
@@ -183,7 +193,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                         'All LEOVRA CLOTHES apparel is cut true to size with pre-shrunk combed cotton. If you prefer a loose relaxed streetwear drape, we recommend ordering one size above your usual fit.'
                       )
                     }
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Size Guide
                   </button>
@@ -196,11 +206,11 @@ export const Footer: React.FC<FooterProps> = React.memo(({
               <h3 className="font-bold text-[#121212] uppercase tracking-wider text-[11px] mb-3">
                 Legal & Privacy
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-1">
                 <li>
                   <button
                     onClick={() => onOpenPolicy('Terms and Conditions', settings.termsText)}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Terms of Service
                   </button>
@@ -208,7 +218,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <li>
                   <button
                     onClick={() => onOpenPolicy('Privacy Policy', settings.privacyPolicyText)}
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Privacy Policy
                   </button>
@@ -221,7 +231,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                         'Orders can be cancelled before dispatch without charge. Once returned merchandise is verified at our hub, refunds are credited back to your original payment account or UPI within 3-5 business days.'
                       )
                     }
-                    className="hover:text-black transition-colors cursor-pointer text-left"
+                    className="hover:text-black transition-colors cursor-pointer text-left py-1.5 block min-h-[36px] flex items-center"
                   >
                     Refund Policy
                   </button>

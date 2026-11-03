@@ -57,3 +57,9 @@ Sitemap: https://its-sartaj.github.io/Leovra/sitemap.xml
 # Agent Resource Discovery (ARD / WebMCP Agentmap)
 Agentmap: https://loevraenterprises.publicvm.com/.well-known/ai-catalog.json
 Agentmap: https://loevraenterprises.publicvm.com/.well-known/ard.json
+Agentmap: https://loevraenterprises.publicvm.com/ai-catalog.json
+Agentmap: https://loevraenterprises.publicvm.com/ard.json
+Agentmap: https://its-sartaj.github.io/Leovra/ai-catalog.json
+Agentmap: https://its-sartaj.github.io/Leovra/ard.json
+Agentmap: https://its-sartaj.github.io/Leovra/.well-known/ai-catalog.json
+Agentmap: https://its-sartaj.github.io/Leovra/.well-known/ard.json

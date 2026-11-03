@@ -293,7 +293,14 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
               )}
 
               {/* Direct Seamless 1-Click Gmail Form */}
-              <form onSubmit={handleGmailAutoSignup} className="space-y-3.5">
+              <form
+                onSubmit={handleGmailAutoSignup}
+                className="space-y-3.5"
+                {...{
+                  toolname: 'customerLogin',
+                  tooldescription: 'Sign in or register customer account using Gmail or email address'
+                } as any}
+              >
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-700 mb-1">
                     Your Full Name <span className="text-gray-400 font-normal">(Optional)</span>
@@ -535,7 +542,14 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
 
               {/* TAB 2: SAVED SHIPPING ADDRESS */}
               {activeTab === 'address' && (
-                <form onSubmit={handleSaveProfile} className="space-y-3 text-xs">
+                <form
+                  onSubmit={handleSaveProfile}
+                  className="space-y-3 text-xs"
+                  {...{
+                    toolname: 'updateCustomerShippingAddress',
+                    tooldescription: 'Update saved customer shipping address, phone, and delivery PIN code'
+                  } as any}
+                >
                   <p className="text-[11px] text-gray-500 mb-2">
                     Save your default shipping address so checkout is pre-filled automatically.
                   </p>

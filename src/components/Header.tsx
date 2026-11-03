@@ -71,18 +71,18 @@ export const Header: React.FC<HeaderProps> = React.memo(({
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
           {/* Left Actions: Hamburger Menu & Search */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-3">
             <button
               onClick={onOpenMobileMenu}
               aria-label="Open Navigation Menu"
-              className="p-1.5 -ml-1 text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
+              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
             >
               <Menu className="w-6 h-6 stroke-[1.75]" />
             </button>
             <button
               onClick={onOpenSearch}
               aria-label="Search Catalog"
-              className="p-1.5 text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
+              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
             >
               <Search className="w-5 h-5 stroke-[1.75]" />
             </button>
@@ -99,11 +99,11 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           </div>
 
           {/* Right Actions: Account & Cart Bag */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-3">
             <button
               onClick={onOpenAccount}
               aria-label="Customer Account & Orders"
-              className="p-1 text-[#121212] hover:opacity-85 active:scale-95 focus:outline-none transition-all duration-150 cursor-pointer flex items-center space-x-1.5"
+              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-85 active:scale-95 focus:outline-none transition-all duration-150 cursor-pointer"
             >
               {currentUser ? (
                 <div className="flex items-center space-x-1.5">
@@ -132,11 +132,11 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             <button
               onClick={onOpenCart}
               aria-label="View Shopping Bag"
-              className="p-1.5 -mr-1 text-[#121212] hover:opacity-75 active:scale-90 relative focus:outline-none transition-all duration-150 cursor-pointer"
+              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 relative focus:outline-none transition-all duration-150 cursor-pointer"
             >
               <ShoppingBag className="w-6 h-6 stroke-[1.75]" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#121212] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center transition-transform animate-scale-in shadow-xs">
+                <span className="absolute top-1.5 right-1.5 bg-[#121212] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center transition-transform animate-scale-in shadow-xs">
                   {cartCount}
                 </span>
               )}

@@ -127,29 +127,44 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
 
         {/* Search Form */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 touch-pan">
-          <form onSubmit={handleSearch} className="space-y-3">
+          <form
+            onSubmit={handleSearch}
+            className="space-y-3"
+            {...{
+              toolname: 'lookupOrderTracking',
+              tooldescription: 'Lookup order shipment status, courier AWB tracking, and dispatch details with Order Reference ID'
+            } as any}
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div>
                 <label htmlFor="order-ref-input" className="block text-gray-600 font-semibold mb-1">Order Reference Number *</label>
                 <input
                   id="order-ref-input"
+                  name="orderRef"
                   type="text"
                   required
                   value={orderQuery}
                   onChange={e => setOrderQuery(e.target.value.toUpperCase())}
                   placeholder="e.g. LC-2026-10142"
                   className="w-full p-2.5 border border-gray-300 focus:border-black outline-none font-mono uppercase"
+                  {...{
+                    toolparamdescription: 'Customer order reference number (e.g. LC-2026-10142)'
+                  } as any}
                 />
               </div>
               <div>
                 <label htmlFor="order-phone-input" className="block text-gray-600 font-semibold mb-1">Customer Phone (Optional)</label>
                 <input
                   id="order-phone-input"
+                  name="phone"
                   type="tel"
                   value={phoneQuery}
                   onChange={e => setPhoneQuery(e.target.value)}
                   placeholder="For instant verification"
                   className="w-full p-2.5 border border-gray-300 focus:border-black outline-none"
+                  {...{
+                    toolparamdescription: 'Optional 10-digit customer mobile phone number'
+                  } as any}
                 />
               </div>
             </div>
@@ -353,7 +368,14 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
 
               {/* Return Form */}
               {isReturning && (
-                <form onSubmit={handleRequestReturn} className="p-3 bg-gray-50 border border-gray-300 space-y-2 animate-fade-in">
+                <form
+                  onSubmit={handleRequestReturn}
+                  className="p-3 bg-gray-50 border border-gray-300 space-y-2 animate-fade-in"
+                  {...{
+                    toolname: 'requestOrderReturn',
+                    tooldescription: 'Request 7-day size exchange or product return for a delivered order'
+                  } as any}
+                >
                   <p className="font-bold text-black">Initiate 7-Day Return & Exchange</p>
                   <div>
                     <label className="block text-gray-600 mb-1">Reason for Return:</label>

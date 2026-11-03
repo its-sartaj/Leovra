@@ -39,35 +39,50 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
         className="w-full bg-white shadow-2xl border-b border-gray-200 p-5 sm:p-7 animate-slide-down gpu-smooth"
       >
         <div className="max-w-2xl mx-auto relative">
-          <div className="flex items-center border-b-2 border-black pb-2">
-            <Search className="w-5 h-5 text-gray-500 mr-3 shrink-0" />
+          <form
+            onSubmit={e => e.preventDefault()}
+            role="search"
+            aria-label="Search catalog products"
+            className="flex items-center border-b-2 border-black pb-2"
+            {...{
+              toolname: 'searchCatalog',
+              tooldescription: 'Search LEOVRA CLOTHS streetwear catalog by keyword, style, size, or SKU'
+            } as any}
+          >
+            <Search className="w-5 h-5 text-gray-700 mr-3 shrink-0" />
             <input
               autoFocus
-              type="text"
+              type="search"
+              name="search"
               aria-label="Search catalog products"
               value={searchQuery}
               onChange={e => onSearchChange(e.target.value)}
               placeholder="Search products, tees, lowers, styles, SKUs..."
-              className="w-full text-base sm:text-lg focus:outline-none bg-transparent placeholder-gray-400"
+              className="w-full text-base sm:text-lg focus:outline-none bg-transparent placeholder-gray-500 text-[#121212]"
+              {...{
+                toolparamdescription: 'Keywords, product title, category, or style to search for'
+              } as any}
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => onSearchChange('')}
                 aria-label="Clear search input"
-                className="p-1 text-gray-500 hover:text-black active:scale-90 mr-1 text-xs cursor-pointer font-medium"
+                className="w-10 h-10 flex items-center justify-center text-gray-700 hover:text-black active:scale-90 mr-1 text-xs cursor-pointer font-semibold"
                 title="Clear input"
               >
                 Clear
               </button>
             )}
             <button
+              type="button"
               onClick={onClose}
               aria-label="Close search overlay"
-              className="p-1 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer"
+              className="w-11 h-11 flex items-center justify-center text-gray-700 hover:text-black active:scale-90 transition-all cursor-pointer"
             >
               <X className="w-6 h-6" />
             </button>
-          </div>
+          </form>
 
           {searchQuery.trim().length > 1 && (
             <div className="mt-4 max-h-72 overflow-y-auto divide-y divide-gray-100 touch-pan">

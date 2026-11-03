@@ -15,15 +15,27 @@ export const ProductCard: React.FC<ProductCardProps> = React.memo(({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`View details for ${product.title}, price Rs. ${product.price}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onOpenDetails(product);
+        }
+      }}
       onClick={() => onOpenDetails(product)}
-      className="product-card group cursor-pointer flex flex-col select-none transition-transform duration-150 ease-out active:scale-[0.98]"
+      className="product-card group cursor-pointer flex flex-col select-none transition-transform duration-150 ease-out active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
     >
       {/* Product Image Box with 2nd photo hover preview - 100% Uncropped Full Photo */}
       <div className="product-img-wrapper w-full overflow-hidden relative group bg-[#f5f5f5] flex items-center justify-center">
         <img
           src={product.image}
           alt={product.title}
+          width="600"
+          height="800"
           loading="lazy"
+          decoding="async"
           className={`max-w-full max-h-full w-auto h-auto object-contain object-center img-zoom transition-opacity duration-300 ${
             product.additionalImages && product.additionalImages[0] ? 'md:group-hover:opacity-0' : ''
           }`}
@@ -32,7 +44,10 @@ export const ProductCard: React.FC<ProductCardProps> = React.memo(({
           <img
             src={product.additionalImages[0]}
             alt={`${product.title} alternate view`}
+            width="600"
+            height="800"
             loading="lazy"
+            decoding="async"
             className="max-w-full max-h-full w-auto h-auto object-contain object-center absolute inset-0 m-auto opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 img-zoom"
           />
         )}
@@ -91,7 +106,7 @@ export const ProductCard: React.FC<ProductCardProps> = React.memo(({
             Rs. {product.price.toLocaleString()}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
-            <span className="text-[11px] sm:text-[12px] text-gray-400 line-through">
+            <span className="text-[11px] sm:text-[12px] text-gray-600 line-through font-medium">
               Rs. {product.originalPrice.toLocaleString()}
             </span>
           )}
