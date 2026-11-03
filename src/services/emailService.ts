@@ -62,8 +62,13 @@ function doGet(e) {
 /**
  * Generate a responsive, luxury HTML Tax Invoice for printing, emailing, or previewing
  */
-export const generateOrderInvoiceHtml = (order: Order, customSettings?: StoreSettings): string => {
+export const generateOrderInvoiceHtml = (
+  order: Order,
+  customSettings?: StoreSettings,
+  options?: { forEmail?: boolean }
+): string => {
   const settings = customSettings || storeService.getSettings();
+  const forEmail = options?.forEmail ?? true;
   const customer: Partial<OrderCustomer> = order.customer || {};
   const customerName = customer.fullName || order.customerName || 'Valued Customer';
   const customerEmail = customer.email || order.customerEmail || '';
@@ -103,7 +108,21 @@ export const generateOrderInvoiceHtml = (order: Order, customSettings?: StoreSet
     const qty = Number(item.quantity || 1);
     const price = Number(item.price || 0);
     const lineTotal = price * qty;
-    const imgUrl = item.image || (item.product && item.product.image) || '';
+    
+    // Process image: In emails, never embed 300KB+ base64 data URIs as they cause
+    // Gmail / Google Apps Script MailApp "Limit Exceeded: Email Body Size" rejection!
+    const rawImg = item.image || (item.product && item.product.image) || '';
+    let imgUrl = '';
+    if (rawImg) {
+      if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
+        imgUrl = rawImg;
+      } else if (rawImg.startsWith('/assets/') || rawImg.startsWith('assets/')) {
+        imgUrl = `https://its-sartaj.github.io/Leovra/${rawImg.replace(/^\.?\//, '')}`;
+      } else if (!forEmail && rawImg.startsWith('data:')) {
+        // Only allow base64 in local browser window print, never in email
+        imgUrl = rawImg;
+      }
+    }
 
     return `
       <tr style="border-bottom: 1px solid #f0f0f0;">
@@ -114,7 +133,11 @@ export const generateOrderInvoiceHtml = (order: Order, customSettings?: StoreSet
                 <td style="width: 54px; vertical-align: top; padding-right: 12px;">
                   <img src="${imgUrl}" alt="${title}" width="50" height="60" style="object-fit: cover; border-radius: 4px; display: block; border: 1px solid #eaeaea;" />
                 </td>
-              ` : ''}
+              ` : `
+                <td style="width: 50px; vertical-align: middle; padding-right: 12px;">
+                  <div style="width: 44px; height: 50px; background-color: #1a1a1a; border: 1px solid #c5a059; border-radius: 4px; color: #c5a059; font-size: 11px; font-weight: bold; text-align: center; line-height: 50px; font-family: monospace;">LC</div>
+                </td>
+              `}
               <td style="vertical-align: middle;">
                 <div style="font-weight: 700; color: #121212; font-size: 13px; line-height: 1.3;">${title}</div>
                 <div style="font-size: 11px; color: #6b7280; margin-top: 3px;">
@@ -342,9 +365,15 @@ export const sendOrderInvoiceEmail = async (
   customRecipient?: string
 ): Promise<{ success: boolean; message: string; method?: string; error?: string }> => {
   const customer: Partial<OrderCustomer> = order.customer || {};
-  const recipient = (customRecipient || order.customerEmail || customer.email || '').trim();
+  const customerEmail = (
+    customRecipient || 
+    order.customerEmail || 
+    customer.email || 
+    (order as any).email || 
+    ''
+  ).trim();
 
-  if (!recipient || !recipient.includes('@')) {
+  if (!customerEmail || !customerEmail.includes('@')) {
     console.warn('[EmailService] Skipped: No valid recipient email address.');
     return {
       success: false,
@@ -360,8 +389,15 @@ export const sendOrderInvoiceEmail = async (
   }
   const backendApiUrl = settings.backendApiUrl || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? '' : '');
   const orderNum = order.orderNumber || order.id || 'LC-ORDER';
-  const subject = `Order Confirmed: #${orderNum} - ${settings.brandName || 'LEOVRA CLOTHES'} Tax Invoice`;
-  const htmlBody = generateOrderInvoiceHtml(order, settings);
+  const subject = `Order Confirmed: #${orderNum} - ${settings.brandName || 'LEOVRA CLOTHES'} Official Tax Invoice`;
+  
+  // Ensure forEmail is true so heavy base64 strings are never embedded
+  const htmlBody = generateOrderInvoiceHtml(order, settings, { forEmail: true });
+
+  const storeOfficialEmail = (settings.senderEmail || settings.supportEmail || 'leovracloth@gmail.com').trim();
+  const targetRecipients = (customerEmail.toLowerCase() !== storeOfficialEmail.toLowerCase())
+    ? `${customerEmail}, ${storeOfficialEmail}`
+    : customerEmail;
 
   // ============================================================
   // METHOD 1: Google Apps Script Web App (Works directly on GitHub Pages!)
@@ -369,8 +405,9 @@ export const sendOrderInvoiceEmail = async (
   if (webhookUrl && webhookUrl.startsWith('http')) {
     try {
       const payload = {
-        to: recipient,
-        email: recipient,
+        to: targetRecipients,
+        email: targetRecipients,
+        recipient: targetRecipients,
         subject: subject,
         orderNumber: orderNum,
         customerName: customer.fullName || order.customerName || 'Customer',
@@ -389,7 +426,7 @@ export const sendOrderInvoiceEmail = async (
 
       return {
         success: true,
-        message: `Official Tax Invoice & confirmation successfully emailed to ${recipient}!`,
+        message: `Official Tax Invoice & confirmation successfully emailed to ${customerEmail}!`,
         method: 'google_apps_script'
       };
     } catch (err: any) {
@@ -405,7 +442,7 @@ export const sendOrderInvoiceEmail = async (
     const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order, email: recipient })
+      body: JSON.stringify({ order, email: targetRecipients })
     });
 
     if (res.ok) {
@@ -413,7 +450,7 @@ export const sendOrderInvoiceEmail = async (
       if (data.success) {
         return {
           success: true,
-          message: `Tax invoice dispatched to ${recipient} via store server.`,
+          message: `Tax invoice dispatched to ${customerEmail} via store server.`,
           method: 'node_smtp'
         };
       }
@@ -524,7 +561,7 @@ export const sendTestEmail = async (
  */
 export const openPrintInvoice = (order: Order, customSettings?: StoreSettings): void => {
   if (typeof window === 'undefined') return;
-  const html = generateOrderInvoiceHtml(order, customSettings);
+  const html = generateOrderInvoiceHtml(order, customSettings, { forEmail: false });
   const printWin = window.open('', '_blank', 'width=800,height=900,menubar=no,status=no,titlebar=no');
   if (printWin) {
     printWin.document.open();

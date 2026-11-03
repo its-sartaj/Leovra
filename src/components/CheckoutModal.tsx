@@ -125,6 +125,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       return;
     }
 
+    const finalEmail = (currentUser?.email || email).trim().toLowerCase();
+    if (!finalEmail || !finalEmail.includes('@') || !finalEmail.includes('.')) {
+      setErrorMessage('Please enter a valid Gmail / Email address so we can deliver your official Tax Invoice and order confirmation.');
+      emailInputRef.current?.focus();
+      return;
+    }
+
     if (paymentMethod === 'upi' && !upiUtr.trim()) {
       setErrorMessage('Please enter your 12-digit UPI Reference / UTR Number after completing your payment.');
       return;
@@ -134,13 +141,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setIsSubmitting(true);
       setErrorMessage('');
 
-      const finalEmail = (currentUser?.email || email).trim();
-
       const order = storeService.createOrder({
         customer: {
           fullName: fullName.trim(),
           phone: phone.trim(),
-          email: finalEmail || undefined,
+          email: finalEmail,
           address: address.trim(),
           city: city.trim(),
           pincode: pincode.trim() || undefined,
@@ -148,7 +153,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         },
         customerName: fullName.trim(),
         customerPhone: phone.trim(),
-        customerEmail: finalEmail || undefined,
+        customerEmail: finalEmail,
         customerAddress: address.trim(),
         customerCity: city.trim(),
         items: [...items],
@@ -317,12 +322,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
               <div className="sm:col-span-2">
                 <label className="block text-gray-600 font-medium mb-1">
-                  Gmail / Email Address <span className="text-gray-400 font-normal">(Invoice &amp; delivery updates sent here)</span>
+                  Gmail / Email Address <span className="text-red-500">*</span> <span className="text-gray-400 font-normal">(Tax Invoice &amp; tracking emailed here)</span>
                 </label>
                 <div className="relative">
                   <input
                     ref={emailInputRef}
                     type="email"
+                    required
                     value={currentUser?.email || email}
                     onChange={e => !currentUser && setEmail(e.target.value)}
                     readOnly={Boolean(currentUser)}

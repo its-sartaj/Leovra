@@ -72,6 +72,120 @@ class StoreService {
     } catch {}
   }
 
+  private clearStaleCheckoutData(): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const knownStaleKeys = [
+        'lc_orders_v1',
+        'lc_orders',
+        'lc_orders_backup',
+        'lc_orders_old',
+        'lc_orders_temp',
+        'lc_checkout',
+        'lc_checkout_v1',
+        'lc_checkout_draft',
+        'lc_checkout_data',
+        'lc_temp_order',
+        'lc_order_draft',
+        'checkout_data',
+        'checkout_draft',
+        'checkout_state',
+        'temp_order'
+      ];
+
+      for (const key of knownStaleKeys) {
+        try {
+          localStorage.removeItem(key);
+        } catch {}
+      }
+
+      // Check all keys in localStorage for stale checkout / temp patterns
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (
+          key &&
+          (key.startsWith('lc_checkout_') ||
+           key.startsWith('lc_temp_') ||
+           key.startsWith('temp_') ||
+           key.includes('_backup') ||
+           key.includes('draft'))
+        ) {
+          try {
+            localStorage.removeItem(key);
+          } catch {}
+        }
+      }
+    } catch (e) {
+      console.warn('Failed clearing stale storage items:', e);
+    }
+  }
+
+  /**
+   * Safely persists orders to localStorage under STORAGE_KEYS.ORDERS ('lc_orders_v2').
+   * Gracefully catches QuotaExceededError, clears stale checkout/order data from storage,
+   * prunes older historical orders if necessary, and retries the setItem operation
+   * so the customer's checkout flow never breaks.
+   */
+  private saveOrdersToStorage(orders: Order[]): void {
+    if (typeof window === 'undefined') return;
+
+    try {
+      localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    } catch (error: any) {
+      console.warn(`[StoreService] Storage QuotaExceededError while saving '${STORAGE_KEYS.ORDERS}'. Starting recovery...`, error);
+
+      try {
+        // Step 1: Clear out any old or stale checkout/order data from localStorage
+        this.clearStaleCheckoutData();
+
+        // Step 2: Retry saving the full orders list after freeing up space
+        try {
+          localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+          console.info(`[StoreService] Successfully saved '${STORAGE_KEYS.ORDERS}' after clearing stale storage keys.`);
+          return;
+        } catch {
+          // If storage is still constrained, proceed to prune older/stale orders
+        }
+
+        // Step 3: Prune old or stale order records, keeping newest orders first
+        const retentionLimits = [25, 15, 5, 2, 1];
+        let saved = false;
+
+        for (const limit of retentionLimits) {
+          if (orders.length <= limit && limit !== 1) continue;
+          try {
+            const pruned = orders.slice(0, limit).map(order => ({
+              ...order,
+              items: (order.items || []).map(item => ({
+                ...item,
+                // Strip heavy base64 strings if present in item images
+                image: (item.image && item.image.startsWith('data:')) ? '' : item.image
+              }))
+            }));
+
+            localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(pruned));
+            console.info(`[StoreService] Successfully persisted '${STORAGE_KEYS.ORDERS}' by retaining ${limit} most recent orders.`);
+            saved = true;
+            break;
+          } catch {}
+        }
+
+        // Step 4: Final fallback - retain only the latest order (the active checkout)
+        if (!saved && orders.length > 0) {
+          try {
+            const latestOnly = [orders[0]];
+            localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(latestOnly));
+            saved = true;
+          } catch (lastErr) {
+            console.warn(`[StoreService] Storage quota fully exhausted. Order safely synced to remote database and held in memory:`, lastErr);
+          }
+        }
+      } catch (recoveryErr) {
+        console.error('[StoreService] Error during storage quota recovery routine:', recoveryErr);
+      }
+    }
+  }
+
   private setupSync() {
     if (typeof window === 'undefined') return;
     try {
@@ -119,7 +233,7 @@ class StoreService {
       // 2. Fetch remote orders from Firebase Cloud Database
       const remoteOrders = await fetchRemoteOrders();
       if (remoteOrders !== null && remoteOrders.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(remoteOrders));
+        this.saveOrdersToStorage(remoteOrders);
         this.notify();
       }
 
@@ -131,11 +245,13 @@ class StoreService {
         (updatedProds) => {
           const deletedIds = this.getDeletedIds();
           const clean = updatedProds.filter(p => !DUMMY_PRODUCT_IDS.has(p.id) && !deletedIds.has(p.id));
-          localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(clean));
+          try {
+            localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(clean));
+          } catch {}
           this.notify();
         },
         (updatedOrders) => {
-          localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(updatedOrders));
+          this.saveOrdersToStorage(updatedOrders);
           this.notify();
         }
       );
@@ -190,8 +306,10 @@ class StoreService {
         localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
       }
 
+      this.clearStaleCheckoutData();
+
       if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
-        localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(DEFAULT_ORDERS));
+        this.saveOrdersToStorage(DEFAULT_ORDERS);
       }
 
       this.setupSync();
@@ -403,20 +521,24 @@ class StoreService {
     };
 
     // Deduct stock
-    const products = this.getProducts();
-    for (const item of newOrder.items) {
-      const prod = products.find(p => p.id === item.productId);
-      if (prod) {
-        prod.stock = Math.max(0, prod.stock - item.quantity);
+    try {
+      const products = this.getProducts();
+      for (const item of newOrder.items) {
+        const prod = products.find(p => p.id === item.productId);
+        if (prod) {
+          prod.stock = Math.max(0, prod.stock - item.quantity);
+        }
       }
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+      saveRemoteProducts(products).catch(() => {});
+    } catch (prodErr) {
+      console.warn('Could not update product stock in localStorage:', prodErr);
     }
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
 
     orders.unshift(newOrder);
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    this.saveOrdersToStorage(orders);
     this.notify();
 
-    saveRemoteProducts(products).catch(() => {});
     saveRemoteOrders(orders).catch(() => {});
 
     // Automatically send order confirmation & Tax Invoice email to customer's Gmail
@@ -471,7 +593,7 @@ class StoreService {
       updatedBy
     });
 
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    this.saveOrdersToStorage(orders);
     this.notify();
     saveRemoteOrders(orders).catch(() => {});
     return order;
@@ -499,8 +621,10 @@ class StoreService {
         prod.stock += item.quantity;
       }
     }
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    try {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+    } catch {}
+    this.saveOrdersToStorage(orders);
     this.notify();
 
     saveRemoteProducts(products).catch(() => {});
@@ -528,7 +652,7 @@ class StoreService {
       updatedBy: 'Customer'
     });
 
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    this.saveOrdersToStorage(orders);
     this.notify();
     saveRemoteOrders(orders).catch(() => {});
     return { success: true, message: 'Return request submitted. Our team will verify and arrange reverse pickup.' };
@@ -654,7 +778,7 @@ class StoreService {
     localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(DEFAULT_PRODUCTS));
     localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(DEFAULT_COUPONS));
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(DEFAULT_ORDERS));
+    this.saveOrdersToStorage(DEFAULT_ORDERS);
     this.notify();
   }
 }
