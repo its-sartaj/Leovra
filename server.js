@@ -699,15 +699,38 @@ const distPath = path.resolve(__dirname, 'dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath, {
     maxAge: '1d',
+    dotfiles: 'allow',
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('.html')) {
         res.setHeader('Cache-Control', 'no-cache');
+      }
+      if (filePath.endsWith('.json')) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
       }
     }
   }));
 } else {
   console.warn('[Warning] dist/ folder not found. Run "npm run build" first.');
 }
+
+// Dedicated ARD / Agentic Resource Discovery endpoints
+app.get(['/.well-known/ai-catalog.json', '/.well-known/ard.json'], (req, res) => {
+  const isArd = req.path.endsWith('ard.json');
+  const targetName = isArd ? 'ard.json' : 'ai-catalog.json';
+  const filePath = path.join(distPath, '.well-known', targetName);
+  const fallbackPath = path.join(__dirname, 'public', '.well-known', targetName);
+  
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  } else if (fs.existsSync(fallbackPath)) {
+    return res.sendFile(fallbackPath);
+  }
+  res.status(404).json({ error: 'AI catalog manifest not found' });
+});
 
 // SPA Fallback for client-side routing (excluding /api routes)
 app.get('*', (req, res) => {

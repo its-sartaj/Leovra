@@ -42,12 +42,15 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
-  // Preload images into browser cache
+  // Preload secondary images during browser idle time so initial LCP is 100% fast
   useEffect(() => {
-    HERO_LOOKS.forEach(look => {
-      const img = new Image();
-      img.src = look.imageUrl;
-    });
+    const timer = setTimeout(() => {
+      HERO_LOOKS.slice(1).forEach(look => {
+        const img = new Image();
+        img.src = look.imageUrl;
+      });
+    }, 1200);
+    return () => clearTimeout(timer);
   }, []);
 
   // Continuous auto-slide timer with smooth pause-on-hover / pause-on-touch
@@ -170,8 +173,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
           {buttonText}
         </button>
 
-        {/* Carousel indicators showing auto-slide progress */}
-        <div className="flex items-center gap-1.5 mt-0.5">
+        {/* Carousel indicators with accessible touch targets */}
+        <div className="flex items-center gap-1 mt-0.5">
           {HERO_LOOKS.map((_, idx) => (
             <button
               key={idx}
@@ -180,10 +183,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
                 setCurrentIndex(idx);
               }}
               aria-label={`Go to slide ${idx + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer ${
-                idx === currentIndex ? 'w-6 bg-[#121212]' : 'w-1.5 bg-[#121212]/30 hover:bg-[#121212]/60'
-              }`}
-            />
+              className="min-w-[36px] min-h-[36px] p-2 flex items-center justify-center cursor-pointer focus:outline-none"
+            >
+              <span
+                className={`h-1.5 rounded-full transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  idx === currentIndex ? 'w-6 bg-[#121212]' : 'w-1.5 bg-[#121212]/35 hover:bg-[#121212]/60'
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

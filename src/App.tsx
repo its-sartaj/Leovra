@@ -6,18 +6,20 @@ import { HeroBanner } from './components/HeroBanner';
 import { ProductCard } from './components/ProductCard';
 import { ProductModal } from './components/ProductModal';
 import { CartDrawer } from './components/CartDrawer';
-import { CheckoutModal } from './components/CheckoutModal';
-import { OrderConfirmationModal } from './components/OrderConfirmationModal';
-import { OrderTrackingModal } from './components/OrderTrackingModal';
-import { InvoiceModal } from './components/InvoiceModal';
-import { PolicyModal } from './components/PolicyModal';
-import { CustomerAccountModal } from './components/CustomerAccountModal';
 import { MobileMenuDrawer } from './components/MobileMenuDrawer';
 import { SearchOverlay } from './components/SearchOverlay';
 import { SeoBrandSection } from './components/SeoBrandSection';
 import { Footer } from './components/Footer';
-import { AdminDashboard } from './components/AdminDashboard';
 import { MessageCircle, ArrowUp } from 'lucide-react';
+
+// Lazy load non-critical heavy modals and admin panel to maximize mobile performance (100% Score)
+const CheckoutModal = React.lazy(() => import('./components/CheckoutModal').then(m => ({ default: m.CheckoutModal })));
+const OrderConfirmationModal = React.lazy(() => import('./components/OrderConfirmationModal').then(m => ({ default: m.OrderConfirmationModal })));
+const OrderTrackingModal = React.lazy(() => import('./components/OrderTrackingModal').then(m => ({ default: m.OrderTrackingModal })));
+const InvoiceModal = React.lazy(() => import('./components/InvoiceModal').then(m => ({ default: m.InvoiceModal })));
+const PolicyModal = React.lazy(() => import('./components/PolicyModal').then(m => ({ default: m.PolicyModal })));
+const CustomerAccountModal = React.lazy(() => import('./components/CustomerAccountModal').then(m => ({ default: m.CustomerAccountModal })));
+const AdminDashboard = React.lazy(() => import('./components/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 
 const BackToTopButton: React.FC = React.memo(() => {
   const [show, setShow] = useState(false);
@@ -456,10 +458,12 @@ export default function App() {
   // If in dedicated admin view
   if (currentView === 'admin') {
     return (
-      <AdminDashboard
-        onBackToStore={() => navigateView('store')}
-        onViewInvoice={order => setInvoiceOrder(order)}
-      />
+      <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center font-bold text-sm">Loading Admin Panel...</div>}>
+        <AdminDashboard
+          onBackToStore={() => navigateView('store')}
+          onViewInvoice={order => setInvoiceOrder(order)}
+        />
+      </React.Suspense>
     );
   }
 
@@ -677,64 +681,66 @@ export default function App() {
         freeShippingThreshold={settings.freeShippingThreshold}
       />
 
-      {isCheckoutOpen && (
-        <CheckoutModal
-          isOpen={true}
-          onClose={() => setIsCheckoutOpen(false)}
-          items={cart}
-          onOrderSuccess={handleOrderSuccess}
-          freeShippingThreshold={settings.freeShippingThreshold}
-          standardShippingFee={settings.standardShippingFee}
-          upiId={settings.upiId}
-        />
-      )}
+      <React.Suspense fallback={null}>
+        {isCheckoutOpen && (
+          <CheckoutModal
+            isOpen={true}
+            onClose={() => setIsCheckoutOpen(false)}
+            items={cart}
+            onOrderSuccess={handleOrderSuccess}
+            freeShippingThreshold={settings.freeShippingThreshold}
+            standardShippingFee={settings.standardShippingFee}
+            upiId={settings.upiId}
+          />
+        )}
 
-      {completedOrder && (
-        <OrderConfirmationModal
-          order={completedOrder}
-          isOpen={true}
-          onClose={() => setCompletedOrder(null)}
-          onTrackOrder={handleTrackOrderFromElsewhere}
-          onViewInvoice={order => setInvoiceOrder(order)}
-        />
-      )}
+        {completedOrder && (
+          <OrderConfirmationModal
+            order={completedOrder}
+            isOpen={true}
+            onClose={() => setCompletedOrder(null)}
+            onTrackOrder={handleTrackOrderFromElsewhere}
+            onViewInvoice={order => setInvoiceOrder(order)}
+          />
+        )}
 
-      {isTrackingOpen && (
-        <OrderTrackingModal
-          isOpen={true}
-          onClose={() => setIsTrackingOpen(false)}
-          initialOrderNumber={trackingOrderNumber}
-          onViewInvoice={order => setInvoiceOrder(order)}
-        />
-      )}
+        {isTrackingOpen && (
+          <OrderTrackingModal
+            isOpen={true}
+            onClose={() => setIsTrackingOpen(false)}
+            initialOrderNumber={trackingOrderNumber}
+            onViewInvoice={order => setInvoiceOrder(order)}
+          />
+        )}
 
-      {invoiceOrder && (
-        <InvoiceModal
-          order={invoiceOrder}
-          isOpen={true}
-          onClose={() => setInvoiceOrder(null)}
-          brandName={settings.brandName}
-        />
-      )}
+        {invoiceOrder && (
+          <InvoiceModal
+            order={invoiceOrder}
+            isOpen={true}
+            onClose={() => setInvoiceOrder(null)}
+            brandName={settings.brandName}
+          />
+        )}
 
-      {policyModal.open && (
-        <PolicyModal
-          isOpen={true}
-          onClose={() => setPolicyModal({ open: false, title: '', content: '' })}
-          title={policyModal.title}
-          content={policyModal.content}
-        />
-      )}
+        {policyModal.open && (
+          <PolicyModal
+            isOpen={true}
+            onClose={() => setPolicyModal({ open: false, title: '', content: '' })}
+            title={policyModal.title}
+            content={policyModal.content}
+          />
+        )}
 
-      {isAccountModalOpen && (
-        <CustomerAccountModal
-          isOpen={true}
-          onClose={() => setIsAccountModalOpen(false)}
-          onSendPasscode={val => showToast(`Signed in with ${val}`)}
-          onViewInvoice={order => setInvoiceOrder(order)}
-          onTrackOrder={handleTrackOrderFromElsewhere}
-        />
-      )}
+        {isAccountModalOpen && (
+          <CustomerAccountModal
+            isOpen={true}
+            onClose={() => setIsAccountModalOpen(false)}
+            onSendPasscode={val => showToast(`Signed in with ${val}`)}
+            onViewInvoice={order => setInvoiceOrder(order)}
+            onTrackOrder={handleTrackOrderFromElsewhere}
+          />
+        )}
+      </React.Suspense>
 
       <MobileMenuDrawer
         isOpen={isMobileMenuOpen}

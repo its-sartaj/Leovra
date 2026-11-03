@@ -116,8 +116,21 @@ export const CustomerAccountModal: React.FC<CustomerAccountModalProps> = ({
       }
     };
 
-    const timer = setTimeout(setupGoogle, 300);
-    return () => clearTimeout(timer);
+    // Dynamically inject script on demand without blocking initial page load
+    if (typeof window !== 'undefined') {
+      if (window.google?.accounts?.id) {
+        const timer = setTimeout(setupGoogle, 100);
+        return () => clearTimeout(timer);
+      } else if (!document.getElementById('google-gsi-client')) {
+        const script = document.createElement('script');
+        script.id = 'google-gsi-client';
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = setupGoogle;
+        document.head.appendChild(script);
+      }
+    }
   }, [isOpen, user, hasValidGoogleClient, rawClientId]);
 
   useEffect(() => {

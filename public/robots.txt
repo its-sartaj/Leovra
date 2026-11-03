@@ -53,3 +53,7 @@ Allow: /
 Host: loevraenterprises.publicvm.com
 Sitemap: https://loevraenterprises.publicvm.com/sitemap.xml
 Sitemap: https://its-sartaj.github.io/Leovra/sitemap.xml
+
+# Agent Resource Discovery (ARD / WebMCP Agentmap)
+Agentmap: https://loevraenterprises.publicvm.com/.well-known/ai-catalog.json
+Agentmap: https://loevraenterprises.publicvm.com/.well-known/ard.json

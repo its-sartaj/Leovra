@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "LEOVRA CLOTHS",
+    "documentationUrl": "https://loevraenterprises.publicvm.com/llms.txt",
+    "logoUrl": "https://loevraenterprises.publicvm.com/brand-logo.svg"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:loevraenterprises.publicvm.com:catalog:streetwear",
+      "displayName": "LEOVRA Streetwear Product Catalog",
+      "type": "application/mcp-server-card+json",
+      "url": "https://loevraenterprises.publicvm.com/llms.txt",
+      "description": "Comprehensive catalog of modern streetwear, oversized t-shirts, wide-leg baggy track pants, lowers, and casual essentials with live inventory and pricing in INR.",
+      "capabilities": [
+        "SearchCatalog",
+        "ViewProducts",
+        "TrackOrder",
+        "CheckPricing"
+      ],
+      "representativeQueries": [
+        "browse oversized t-shirts on leovra cloths",
+        "find wide leg baggy track pants",
+        "check cash on delivery streetwear in India",
+        "track order status on leovra cloths"
+      ]
+    },
+    {
+      "identifier": "urn:air:loevraenterprises.publicvm.com:services:order-tracking",
+      "displayName": "LEOVRA Order Tracking & Customer Policies",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://loevraenterprises.publicvm.com/llms-full.txt",
+      "description": "Real-time order tracking, 7-day return and exchange policy verification, and courier dispatch guidelines.",
+      "capabilities": [
+        "TrackShipment",
+        "ReturnPolicy",
+        "ShippingInformation"
+      ],
+      "representativeQueries": [
+        "track my leovra clothes order",
+        "what is the return policy for leovra cloths",
+        "how long does delivery take for leovra"
+      ]
+    }
+  ]
+}

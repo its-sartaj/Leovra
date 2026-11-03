@@ -36,7 +36,7 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
   ];
 
   return (
-    <section className="bg-[#faf9f8] border-t border-[#eae7e2] py-14 px-4 sm:px-6">
+    <section aria-labelledby="seo-brand-heading" className="bg-[#faf9f8] border-t border-[#eae7e2] py-14 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Value Proposition Grid / USPs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pb-12 border-b border-[#eae7e2]">
@@ -45,10 +45,10 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
+              <p className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
                 Modern Streetwear
-              </h3>
-              <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+              </p>
+              <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">
                 Engineered relaxed &amp; baggy silhouettes
               </p>
             </div>
@@ -59,10 +59,10 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
               <Truck className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
+              <p className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
                 Cash on Delivery
-              </h3>
-              <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+              </p>
+              <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">
                 COD &amp; Free UPI shipping across India
               </p>
             </div>
@@ -73,10 +73,10 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
               <RotateCcw className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
+              <p className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
                 7-Day Easy Returns
-              </h3>
-              <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+              </p>
+              <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">
                 Hassle-free size replacement guarantee
               </p>
             </div>
@@ -87,10 +87,10 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
+              <p className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
                 100% Combed Cotton
-              </h3>
-              <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">
+              </p>
+              <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">
                 Pre-shrunk, breathable &amp; durable
               </p>
             </div>
@@ -99,49 +99,54 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
 
         {/* Brand Narrative SEO Content Block */}
         <article className="pt-10 pb-12 max-w-4xl mx-auto text-center">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 bg-neutral-200/70 px-2.5 py-1 rounded-full">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-900 bg-neutral-200 px-2.5 py-1 rounded-full">
             Homegrown Fashion &amp; Streetwear
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#121212] tracking-tight mt-3 mb-4">
+          <h2 id="seo-brand-heading" className="text-2xl sm:text-3xl font-extrabold text-[#121212] tracking-tight mt-3 mb-4">
             LEOVRA CLOTHS — Modern Streetwear &amp; Everyday Clothing Brand
           </h2>
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-3xl mx-auto mb-4">
+          <p className="text-xs sm:text-sm text-gray-700 leading-relaxed max-w-3xl mx-auto mb-4">
             Welcome to <strong>LEOVRA CLOTHS</strong> (also known as <em>Leovra Clothes</em>), an independent Indian clothing brand built for the bold and the style-conscious. We design premium streetwear basics, heavyweight 240+ GSM oversized t-shirts, dual-tone wide leg track pants, relaxed bottom-wear, and everyday casual fashion essentials that merge contemporary aesthetics with maximum comfort.
           </p>
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
+          <p className="text-xs sm:text-sm text-gray-700 leading-relaxed max-w-3xl mx-auto mb-6">
             Whether you are curating an aesthetic college fit, gearing up for an active weekend, or looking for cozy baggy track pants for everyday lounging, Leovra Cloths delivers pre-shrunk bio-washed combed cotton, tailored drapes, and high-density detailing. Shop effortlessly online with zero delivery fees on prepaid UPI orders and dependable Cash on Delivery across all Indian states.
           </p>
 
           {/* Targeted Internal Links / Quick Category Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            <span className="text-xs font-semibold text-gray-800 mr-1">Popular Collections:</span>
+            <span className="text-xs font-semibold text-gray-900 mr-1">Popular Collections:</span>
             <button
               onClick={() => onSelectCategory('mens_tshirts')}
-              className="text-xs bg-white hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1 font-medium cursor-pointer"
+              aria-label="Filter Men's Oversized T-Shirts"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
             >
               Men's Oversized T-Shirts
             </button>
             <button
               onClick={() => onSelectCategory('womens_lowers')}
-              className="text-xs bg-white hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1 font-medium cursor-pointer"
+              aria-label="Filter Women's Wide Leg Pants"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
             >
               Women's Wide Leg Pants
             </button>
             <button
               onClick={() => onSelectCategory('mens_lowers')}
-              className="text-xs bg-white hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1 font-medium cursor-pointer"
+              aria-label="Filter Baggy Track Pants and Lowers"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
             >
               Baggy Track Pants &amp; Lowers
             </button>
             <button
               onClick={() => onSelectCategory('bestsellers')}
-              className="text-xs bg-white hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1 font-medium cursor-pointer"
+              aria-label="Filter Best Selling Streetwear"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
             >
               Best Selling Streetwear
             </button>
             <button
               onClick={() => onSelectCategory('new')}
-              className="text-xs bg-white hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1 font-medium cursor-pointer"
+              aria-label="Filter New Streetwear Arrivals"
+              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3 py-1.5 font-medium cursor-pointer"
             >
               New Arrivals
             </button>
@@ -154,7 +159,7 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
             <h3 className="text-lg sm:text-xl font-extrabold text-[#121212] tracking-tight">
               Frequently Asked Questions (FAQ)
             </h3>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               Everything you need to know about shopping with LEOVRA CLOTHS
             </p>
           </div>
@@ -169,18 +174,25 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
                 >
                   <button
                     onClick={() => toggleFaq(index)}
-                    className="w-full px-4 py-3.5 sm:px-5 sm:py-4 text-left flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-gray-900 hover:text-black transition-colors cursor-pointer select-none"
+                    id={`faq-trigger-${index}`}
+                    aria-controls={`faq-panel-${index}`}
                     aria-expanded={isOpen}
+                    className="w-full px-4 py-3.5 sm:px-5 sm:py-4 text-left flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-gray-900 hover:text-black transition-colors cursor-pointer select-none"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-500 shrink-0 transition-transform duration-200 ${
+                      className={`w-4 h-4 text-gray-700 shrink-0 transition-transform duration-200 ${
                         isOpen ? 'rotate-180 text-black' : ''
                       }`}
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-0 text-xs sm:text-[13px] text-gray-600 leading-relaxed border-t border-gray-100 animate-fade-in">
+                    <div
+                      id={`faq-panel-${index}`}
+                      role="region"
+                      aria-labelledby={`faq-trigger-${index}`}
+                      className="px-4 pb-4 sm:px-5 sm:pb-5 pt-0 text-xs sm:text-[13px] text-gray-700 leading-relaxed border-t border-gray-100 animate-fade-in"
+                    >
                       {faq.a}
                     </div>
                   )}

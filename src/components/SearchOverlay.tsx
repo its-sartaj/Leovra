@@ -53,7 +53,8 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
             {searchQuery && (
               <button
                 onClick={() => onSearchChange('')}
-                className="p-1 text-gray-400 hover:text-black active:scale-90 mr-1 text-xs cursor-pointer"
+                aria-label="Clear search input"
+                className="p-1 text-gray-500 hover:text-black active:scale-90 mr-1 text-xs cursor-pointer font-medium"
                 title="Clear input"
               >
                 Clear

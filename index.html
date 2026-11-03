@@ -24,6 +24,10 @@
     <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM Agent Manifest" />
     <link rel="help" type="text/plain" href="/llms.txt" />
 
+    <!-- Agent Resource Discovery (ARD / ai-catalog.json Standard for 3/3 Agentic Browsing) -->
+    <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json" />
+    <link rel="ard" type="application/json" href="/.well-known/ard.json" />
+
     <!-- Preload Critical LCP Hero Image for Maximum Mobile Performance (100% Score) -->
     <link rel="preload" as="image" href="./assets/hero_look_red_stepout.webp" type="image/webp" fetchpriority="high" />
 
@@ -57,8 +61,7 @@
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     </noscript>
 
-    <!-- Google Identity Services for Gmail Auto Signup & 1-Click Login -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Google Identity Services loaded dynamically only on customer login demand -->
 
     <!-- Schema.org Organization Structured Data (JSON-LD) -->
     <script type="application/ld+json">
