@@ -87,7 +87,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute top-3 right-3 z-30 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black text-sm hover:bg-black hover:text-white active:scale-90 transition-colors shadow-sm cursor-pointer"
+          className="absolute top-3 right-3 z-30 bg-white rounded-full w-10 h-10 flex items-center justify-center text-black text-sm hover:bg-black hover:text-white active:scale-90 transition-colors shadow-sm cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -170,7 +170,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 </span>
                 {product.originalPrice && product.originalPrice > product.price && (
                   <>
-                    <span className="text-xs sm:text-sm text-gray-400 line-through">
+                    <span className="text-xs sm:text-sm text-gray-600 line-through font-medium">
                       Rs. {product.originalPrice.toLocaleString()}
                     </span>
                     <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-sm">
@@ -188,7 +188,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   <span className="text-xs font-semibold text-gray-800">Select Size:</span>
                   <button
                     onClick={() => onOpenPolicy('Size Guide & Tailoring', 'All LEOVRA CLOTHES apparel is cut true to size with pre-shrunk combed cotton. If you prefer a loose relaxed streetwear drape, we recommend ordering one size above your usual fit.')}
-                    className="text-[11px] text-gray-500 underline hover:text-black cursor-pointer active:scale-95 transition-transform"
+                    className="text-[11px] text-gray-600 underline hover:text-black cursor-pointer active:scale-95 transition-transform font-medium"
                   >
                     Size Guide
                   </button>
@@ -198,7 +198,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     <button
                       key={sz}
                       onClick={() => setSelectedSize(sz)}
-                      className={`min-w-[42px] px-3 py-1.5 text-xs font-semibold border transition-all cursor-pointer active:scale-95 ${
+                      className={`min-w-[44px] min-h-[40px] px-3.5 py-2 text-xs font-semibold border transition-all cursor-pointer active:scale-95 flex items-center justify-center ${
                         selectedSize === sz
                           ? 'border-black bg-black text-white shadow-xs'
                           : 'border-gray-200 text-gray-800 hover:border-black'
@@ -215,7 +215,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             {product.colors && product.colors.length > 0 && (
               <div>
                 <div className="text-xs font-semibold text-gray-800 mb-1.5">
-                  Color: <span className="text-gray-500 font-normal">{activeColor.name}</span>
+                  Color: <span className="text-gray-600 font-medium">{activeColor.name}</span>
                 </div>
                 <div className="flex space-x-2">
                   {product.colors.map((c, idx) => (
@@ -224,7 +224,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                       onClick={() => setSelectedColorIndex(idx)}
                       title={c.name}
                       aria-label={`Select color ${c.name}`}
-                      className={`w-6 h-6 rounded-full p-0.5 border transition-all cursor-pointer active:scale-90 ${
+                      className={`w-8 h-8 rounded-full p-1 border transition-all cursor-pointer active:scale-90 flex items-center justify-center ${
                         selectedColorIndex === idx ? 'border-black ring-1 ring-black' : 'border-gray-300'
                       }`}
                     >

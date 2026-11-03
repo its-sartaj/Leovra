@@ -63,7 +63,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
 
       {/* Main Sticky Navbar with Smooth Elevation on Scroll */}
       <header
-        className={`sticky top-0 z-40 bg-white/98 border-b transition-[box-shadow,border-color] duration-150 ${
+        className={`sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b transition-[box-shadow,border-color] duration-150 ${
           isScrolled
             ? 'border-gray-200 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06)]'
             : 'border-[#f0f0f0]'

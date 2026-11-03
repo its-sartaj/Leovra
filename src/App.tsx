@@ -130,6 +130,39 @@ export default function App() {
     };
   }, [isAnyModalOpen]);
 
+  // Deep-link URL query parameter parsing on load (supports ?category=, ?action=track, ?search=, ?product=)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get('category');
+      if (cat) setSelectedCategory(cat);
+
+      const search = params.get('search');
+      if (search) {
+        setSearchQuery(search);
+        setIsSearchOpen(true);
+      }
+
+      const action = params.get('action');
+      if (action === 'track') {
+        const orderId = params.get('orderId') || '';
+        setTrackingOrderNumber(orderId);
+        setIsTrackingOpen(true);
+      } else if (action === 'account') {
+        setIsAccountModalOpen(true);
+      } else if (action === 'cart') {
+        setIsCartOpen(true);
+      }
+
+      const prodSlug = params.get('product');
+      if (prodSlug) {
+        const found = products.find(p => p.id === prodSlug || p.title.toLowerCase().includes(prodSlug.toLowerCase()));
+        if (found) setSelectedProduct(found);
+      }
+    } catch {}
+  }, [products]);
+
   // Subscribe to real-time store changes across tabs & window focus
   useEffect(() => {
     const handleSync = () => {

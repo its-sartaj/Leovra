@@ -98,7 +98,7 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
         </div>
 
         {/* Brand Narrative SEO Content Block */}
-        <article className="pt-10 pb-12 max-w-4xl mx-auto text-center">
+        <article className="pt-10 pb-12 max-w-5xl mx-auto text-center">
           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-900 bg-neutral-200 px-2.5 py-1 rounded-full">
             Homegrown Fashion &amp; Streetwear
           </span>
@@ -112,44 +112,46 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
             Whether you are curating an aesthetic college fit, gearing up for an active weekend, or looking for cozy baggy track pants for everyday lounging, Leovra Cloths delivers pre-shrunk bio-washed combed cotton, tailored drapes, and high-density detailing. Shop effortlessly online with zero delivery fees on prepaid UPI orders and dependable Cash on Delivery across all Indian states.
           </p>
 
-          {/* Targeted Internal Links / Quick Category Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
-            <span className="text-xs font-semibold text-gray-900 mr-1 self-center">Popular Collections:</span>
-            <button
-              onClick={() => onSelectCategory('mens_tshirts')}
-              aria-label="Filter Men's Oversized T-Shirts"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
-            >
-              Men's Oversized T-Shirts
-            </button>
-            <button
-              onClick={() => onSelectCategory('womens_lowers')}
-              aria-label="Filter Women's Wide Leg Pants"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
-            >
-              Women's Wide Leg Pants
-            </button>
-            <button
-              onClick={() => onSelectCategory('mens_lowers')}
-              aria-label="Filter Baggy Track Pants and Lowers"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
-            >
-              Baggy Track Pants &amp; Lowers
-            </button>
-            <button
-              onClick={() => onSelectCategory('bestsellers')}
-              aria-label="Filter Best Selling Streetwear"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
-            >
-              Best Selling Streetwear
-            </button>
-            <button
-              onClick={() => onSelectCategory('new')}
-              aria-label="Filter New Streetwear Arrivals"
-              className="text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2 min-h-[40px] flex items-center font-medium cursor-pointer"
-            >
-              New Arrivals
-            </button>
+          {/* Targeted Internal Links / Quick Category Pills - Strictly One Single Line */}
+          <div className="w-full overflow-x-auto no-scrollbar pt-2 pb-1">
+            <div className="inline-flex items-center justify-center gap-2.5 whitespace-nowrap min-w-full px-2">
+              <span className="text-xs font-semibold text-gray-900 shrink-0">Popular Collections:</span>
+              <button
+                onClick={() => onSelectCategory('mens_tshirts')}
+                aria-label="Filter Men's Oversized T-Shirts"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+              >
+                Men's Oversized T-Shirts
+              </button>
+              <button
+                onClick={() => onSelectCategory('womens_lowers')}
+                aria-label="Filter Women's Wide Leg Pants"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+              >
+                Women's Wide Leg Pants
+              </button>
+              <button
+                onClick={() => onSelectCategory('mens_lowers')}
+                aria-label="Filter Baggy Track Pants and Lowers"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+              >
+                Baggy Track Pants &amp; Lowers
+              </button>
+              <button
+                onClick={() => onSelectCategory('bestsellers')}
+                aria-label="Filter Best Selling Streetwear"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+              >
+                Best Selling Streetwear
+              </button>
+              <button
+                onClick={() => onSelectCategory('new')}
+                aria-label="Filter New Streetwear Arrivals"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+              >
+                New Arrivals
+              </button>
+            </div>
           </div>
         </article>
 

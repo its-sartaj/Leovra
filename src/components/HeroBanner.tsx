@@ -115,7 +115,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
     >
       {/* Horizontal Sliding Carousel: Butter-smooth 120fps translate3d */}
       <div
-        className="flex w-full h-full transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
+        className="flex w-full h-full transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
         style={{ transform: `translate3d(-${currentIndex * 100}%, 0, 0)` }}
       >
         {HERO_LOOKS.map((look, idx) => (

@@ -53,7 +53,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <button
               onClick={onClose}
               aria-label="Close invoice preview"
-              className="p-1.5 text-gray-400 hover:text-black active:scale-90 transition-all cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black active:scale-90 transition-all cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>

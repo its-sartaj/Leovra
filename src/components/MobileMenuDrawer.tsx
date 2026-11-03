@@ -83,13 +83,13 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
             <button
               onClick={onClose}
               aria-label="Close navigation menu"
-              className="p-1.5 text-gray-500 hover:text-black active:scale-90 transition-all cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black active:scale-90 transition-all cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <nav className="mt-6 flex flex-col space-y-3.5 text-sm font-medium">
+          <nav className="mt-6 flex flex-col space-y-2 text-sm font-medium">
             {categories.map(cat => (
               <button
                 key={cat.id}
@@ -97,7 +97,7 @@ export const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                   onSelectCategory(cat.id);
                   onClose();
                 }}
-                className="text-left text-black hover:translate-x-1.5 active:translate-x-2 transition-transform duration-150 cursor-pointer py-0.5"
+                className="text-left text-black hover:translate-x-1.5 active:translate-x-2 transition-transform duration-150 cursor-pointer py-1.5 min-h-[36px] flex items-center"
               >
                 {cat.label}
               </button>
