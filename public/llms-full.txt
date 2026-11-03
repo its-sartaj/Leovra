@@ -1,10 +1,10 @@
-# LEOVRA CLOTHES (LEOVRA ENTERPRISES) - COMPREHENSIVE LLM AGENT SPECIFICATION
+# LEOVRA CLOTHS (LEOVRA CLOTHES / LEOVRA ENTERPRISES) - COMPREHENSIVE LLM AGENT SPECIFICATION
 
 > Complete machine-readable catalog, sizing specifications, store policies, and interaction API guide for AI search agents, web crawlers, and LLM-assisted shopping assistants.
 
 ## 1. Brand Identity & Overview
-- Brand: LEOVRA CLOTHES
-- Legal Entity: Leovra Enterprises
+- Brand: LEOVRA CLOTHS
+- Common Aliases: Leovra Cloths, Leovra Clothes, Leovra Clothing, Leovra Brand, Leovra Enterprises, leovracloth
 - Canonical Production URL: https://loevraenterprises.publicvm.com/
 - Industry: Fashion, Modern Streetwear, Everyday Casual Essentials
 - Target Audience: Men and women seeking relaxed silhouettes, durable fabrics, and minimal modern styling.

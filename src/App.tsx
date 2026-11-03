@@ -14,6 +14,7 @@ import { PolicyModal } from './components/PolicyModal';
 import { CustomerAccountModal } from './components/CustomerAccountModal';
 import { MobileMenuDrawer } from './components/MobileMenuDrawer';
 import { SearchOverlay } from './components/SearchOverlay';
+import { SeoBrandSection } from './components/SeoBrandSection';
 import { Footer } from './components/Footer';
 import { AdminDashboard } from './components/AdminDashboard';
 import { MessageCircle, ArrowUp } from 'lucide-react';
@@ -495,7 +496,7 @@ export default function App() {
 
       <main className="flex-1">
         {/* Semantic H1 for SEO, Accessibility & Agentic Crawlers */}
-        <h1 className="sr-only">LEOVRA CLOTHES | Modern Streetwear Basics &amp; Everyday Casual Essentials</h1>
+        <h1 className="sr-only">LEOVRA CLOTHS | Modern Streetwear Clothing Brand, Oversized T-Shirts, Baggy Pants &amp; Everyday Casuals India</h1>
 
         {/* Cinematic Fashion Hero Showcase */}
         <HeroBanner
@@ -622,6 +623,15 @@ export default function App() {
           <span className="text-xs font-bold whitespace-nowrap">WhatsApp</span>
         </a>
       </div>
+
+      {/* On-Page SEO Brand & FAQ Showcase */}
+      <SeoBrandSection
+        onSelectCategory={cat => {
+          setSelectedCategory(cat);
+          const el = document.getElementById('catalogSection');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
+      />
 
       {/* Footer */}
       <Footer

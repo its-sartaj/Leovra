@@ -73,11 +73,11 @@ export const DEFAULT_COUPONS: Coupon[] = [
 ];
 
 export const DEFAULT_SETTINGS: StoreSettings = {
-  brandName: "LEOVRA CLOTHES",
+  brandName: "LEOVRA CLOTHS",
   upiId: "7979968347@slc",
   announcementText: "FREE Nationwide Delivery on all UPI / Online Orders • Cash on Delivery available (Rs. 99)",
   heroTitle: "Step Out & Move Boldly",
-  heroSubtitle: "Engineered relaxed fit pants and wide leg track pants designed for comfort, style, and everyday movement.",
+  heroSubtitle: "Engineered relaxed fit pants, wide leg track pants, and streetwear tees designed for comfort, style, and everyday movement.",
   heroButtonText: "Shop all",
   heroImageUrl: "/assets/hero_look_red_stepout.jpg",
   freeShippingThreshold: 0,

@@ -41,7 +41,7 @@ export const Logo: React.FC<LogoProps> = ({
       <div className="relative flex items-center justify-center overflow-hidden">
         <img
           src="/assets/aistudio/IMG-20261025-WA0014_40903815.jpg"
-          alt="LEOVRA CLOTHES Logo"
+          alt="LEOVRA CLOTHS - Modern Streetwear &amp; Clothing Brand"
           className={`${sizeClasses[size] || sizeClasses.md} w-auto object-contain ${
             inverted ? 'filter invert brightness-125' : 'mix-blend-multiply'
           }`}

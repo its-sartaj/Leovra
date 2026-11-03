@@ -235,7 +235,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
                 <Logo size="sm" showText={true} />
               </div>
               <p className="leading-relaxed text-gray-600 text-xs">
-                Engineered modern streetwear basics and timeless casual essentials crafted for comfort and enduring everyday wear.
+                LEOVRA CLOTHS is an Indian modern streetwear and casual clothing brand. Engineered oversized t-shirts, wide-leg baggy track pants, and everyday essentials crafted for comfort and enduring style.
               </p>
               <div className="text-[11px] text-gray-600 space-y-1 pt-1 border-t border-gray-100">
                 <div>
@@ -252,9 +252,12 @@ export const Footer: React.FC<FooterProps> = React.memo(({
           </div>
 
           {/* Bottom Copyright */}
-          <div className="pt-8 border-t border-[#f0f0f0] text-center">
+          <div className="pt-8 border-t border-[#f0f0f0] text-center space-y-1">
             <p className="text-gray-600 text-xs font-normal">
-              Copyright © 2026 Leovra Clothes. All rights reserved.
+              Copyright © 2026 LEOVRA CLOTHS (Leovra Clothes). All rights reserved.
+            </p>
+            <p className="text-[11px] text-gray-600">
+              India's Modern Streetwear &amp; Everyday Clothing Brand • Cash on Delivery &amp; Free UPI Shipping
             </p>
           </div>
         </div>
