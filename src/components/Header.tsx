@@ -74,15 +74,15 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <div className="flex items-center space-x-1 sm:space-x-3">
             <button
               onClick={onOpenMobileMenu}
-              aria-label="Open Navigation Menu"
-              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
+              aria-label="Open navigation menu"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
             >
               <Menu className="w-6 h-6 stroke-[1.75]" />
             </button>
             <button
               onClick={onOpenSearch}
-              aria-label="Search Catalog"
-              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
+              aria-label="Search store"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 focus:outline-none transition-all duration-150 cursor-pointer"
             >
               <Search className="w-5 h-5 stroke-[1.75]" />
             </button>
@@ -102,8 +102,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <div className="flex items-center space-x-1 sm:space-x-3">
             <button
               onClick={onOpenAccount}
-              aria-label="Customer Account & Orders"
-              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-85 active:scale-95 focus:outline-none transition-all duration-150 cursor-pointer"
+              aria-label="User account"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-[#121212] hover:opacity-85 active:scale-95 focus:outline-none transition-all duration-150 cursor-pointer"
             >
               {currentUser ? (
                 <div className="flex items-center space-x-1.5">
@@ -112,6 +112,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                       <img
                         src={currentUser.picture}
                         alt={currentUser.name}
+                        width="28"
+                        height="28"
                         className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border border-gray-300 object-cover"
                       />
                     ) : (
@@ -131,8 +133,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             </button>
             <button
               onClick={onOpenCart}
-              aria-label="View Shopping Bag"
-              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 relative focus:outline-none transition-all duration-150 cursor-pointer"
+              aria-label="Shopping cart"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-[#121212] hover:opacity-75 active:scale-90 relative focus:outline-none transition-all duration-150 cursor-pointer"
             >
               <ShoppingBag className="w-6 h-6 stroke-[1.75]" />
               {cartCount > 0 && (

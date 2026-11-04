@@ -114,40 +114,40 @@ export const SeoBrandSection: React.FC<SeoBrandSectionProps> = React.memo(({ onS
 
           {/* Targeted Internal Links / Quick Category Pills - Strictly One Single Line */}
           <div className="w-full overflow-x-auto no-scrollbar pt-2 pb-1">
-            <div className="inline-flex items-center justify-center gap-2.5 whitespace-nowrap min-w-full px-2">
+            <div className="inline-flex items-center justify-start sm:justify-center gap-2.5 whitespace-nowrap min-w-full px-2">
               <span className="text-xs font-semibold text-gray-900 shrink-0">Popular Collections:</span>
               <button
                 onClick={() => onSelectCategory('mens_tshirts')}
                 aria-label="Filter Men's Oversized T-Shirts"
-                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2.5 min-h-[48px] min-w-[48px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
               >
                 Men's Oversized T-Shirts
               </button>
               <button
                 onClick={() => onSelectCategory('womens_lowers')}
                 aria-label="Filter Women's Wide Leg Pants"
-                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2.5 min-h-[48px] min-w-[48px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
               >
                 Women's Wide Leg Pants
               </button>
               <button
                 onClick={() => onSelectCategory('mens_lowers')}
                 aria-label="Filter Baggy Track Pants and Lowers"
-                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2.5 min-h-[48px] min-w-[48px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
               >
                 Baggy Track Pants &amp; Lowers
               </button>
               <button
                 onClick={() => onSelectCategory('bestsellers')}
                 aria-label="Filter Best Selling Streetwear"
-                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2.5 min-h-[48px] min-w-[48px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
               >
                 Best Selling Streetwear
               </button>
               <button
                 onClick={() => onSelectCategory('new')}
                 aria-label="Filter New Streetwear Arrivals"
-                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-3.5 py-2 min-h-[38px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
+                className="whitespace-nowrap shrink-0 text-xs bg-white text-gray-900 hover:bg-black hover:text-white transition-colors border border-gray-300 rounded-full px-4 py-2.5 min-h-[48px] min-w-[48px] flex items-center font-medium cursor-pointer active:scale-95 shadow-2xs"
               >
                 New Arrivals
               </button>

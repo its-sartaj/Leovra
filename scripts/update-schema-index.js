@@ -54,6 +54,33 @@ const products = [
     description: 'Everyday comfort lower engineered with durable soft-touch fabric, elastic drawstring waist, and all-day flexible ease.'
   },
   {
+    id: 'prod-tshirt-1',
+    title: 'LEOVRA Heavyweight Oversized Graphic Streetwear T-Shirt',
+    price: 649,
+    category: 'mens_tshirts',
+    stock: 22,
+    sku: 'SKU-TSHIRT-01',
+    description: 'Heavyweight 240 GSM combed cotton oversized streetwear t-shirt with drop-shoulder silhouette, reinforced ribbed crewneck collar, and durable graphic print.'
+  },
+  {
+    id: 'prod-tshirt-2',
+    title: 'LEOVRA Minimal Typography Drop-Shoulder T-Shirt',
+    price: 499,
+    category: 'mens_tshirts',
+    stock: 30,
+    sku: 'SKU-TSHIRT-02',
+    description: '100% bio-washed combed cotton everyday casual streetwear tee with minimalist chest typography and relaxed modern drape.'
+  },
+  {
+    id: 'prod-tshirt-3',
+    title: 'LEOVRA Urban Aesthetic Vintage Wash Oversized Tee',
+    price: 599,
+    category: 'mens_tshirts',
+    stock: 16,
+    sku: 'SKU-TSHIRT-03',
+    description: 'Vintage mineral wash relaxed boxy streetwear t-shirt with retro aesthetic drape, pre-shrunk breathable fabric, and all-day everyday comfort.'
+  },
+  {
     id: 'prod-1791464881040',
     title: 'Artisanal Golden Plated Necklace',
     price: 299,
@@ -81,7 +108,7 @@ const schema = {
       description: p.description,
       image: [
         baseUrl + '/assets/products/' + p.id + '.jpg',
-        p.category.includes('jewel') ? baseUrl + '/hero-earring.jpg' : baseUrl + '/hero-lowers.jpg'
+        p.category.includes('jewel') ? baseUrl + '/hero-earring.jpg' : p.category.includes('tshirt') ? baseUrl + '/hero-tshirt.jpg' : baseUrl + '/hero-lowers.jpg'
       ],
       url: baseUrl + '/?product=' + p.id,
       sku: p.sku,

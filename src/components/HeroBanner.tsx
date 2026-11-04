@@ -15,6 +15,7 @@ const HERO_LOOKS = [
     collectionTitle: 'Step Out',
     subtitle: 'Not your basic track pants. Made to stand out.',
     imageUrl: './assets/hero_look_red_stepout.webp',
+    srcSet: './assets/hero_look_red_stepout-400w.webp 400w, ./assets/hero_look_red_stepout-600w.webp 600w, ./assets/hero_look_red_stepout.webp 682w',
     bgColor: '#e5ddd3',
     bgGradient: 'linear-gradient(to right, #e7ded4 0%, #e5ddd3 50%, #e4dbd1 100%)',
     altText: 'Leovra Clothes Step Out Red Track Pants 3D Polaroid'
@@ -24,6 +25,7 @@ const HERO_LOOKS = [
     collectionTitle: 'Bold Colours. Bigger Moves.',
     subtitle: 'Lightweight fabric, breathable comfort, and relaxed everyday fit.',
     imageUrl: './assets/hero_look_beige_moves.webp',
+    srcSet: './assets/hero_look_beige_moves-400w.webp 400w, ./assets/hero_look_beige_moves-600w.webp 600w, ./assets/hero_look_beige_moves.webp 682w',
     bgColor: '#e4ddd5',
     bgGradient: 'linear-gradient(to right, #e8e3dc 0%, #e4ddd5 50%, #e4ddd5 100%)',
     altText: 'Leovra Clothes Bold Colours Bigger Moves Relaxed Fit Pants 3D Polaroid'
@@ -131,13 +133,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = React.memo(({
             <div className="relative h-full w-auto max-h-full max-w-full flex items-center justify-center">
               <img
                 src={look.imageUrl}
+                srcSet={look.srcSet}
+                sizes="(max-width: 640px) 400px, (max-width: 1024px) 600px, 682px"
                 alt={look.altText}
                 width={682}
                 height={1024}
                 fetchPriority={idx === 0 ? 'high' : 'auto'}
                 decoding={idx === 0 ? 'sync' : 'async'}
                 className="h-full w-auto max-h-full max-w-full object-contain mx-auto select-none pointer-events-none"
-                loading={idx === 0 ? 'eager' : 'lazy'}
               />
             </div>
           </div>

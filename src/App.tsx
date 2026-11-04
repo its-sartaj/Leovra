@@ -564,10 +564,10 @@ export default function App() {
               <label htmlFor="catalog-sort" className="text-gray-700 font-medium">Sort by:</label>
               <select
                 id="catalog-sort"
-                aria-label="Sort products by"
+                aria-label="Sort products"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="py-2 px-3 bg-white border border-gray-300 rounded text-xs font-semibold focus:border-black outline-none cursor-pointer min-h-[40px]"
+                className="py-2.5 px-3 bg-white border border-gray-300 rounded text-xs font-semibold focus:border-black outline-none cursor-pointer min-h-[48px]"
               >
                 <option value="featured">Featured / Best Sellers</option>
                 <option value="price_low">Price: Low to High</option>
@@ -595,11 +595,12 @@ export default function App() {
                 return (
                   <button
                     key={cat.id}
+                    aria-label={`Filter by ${cat.label}`}
                     onClick={e => {
                       setSelectedCategory(cat.id);
                       e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                     }}
-                    className={`whitespace-nowrap px-4 py-2 min-h-[40px] flex items-center rounded-full border transition-all duration-200 font-medium text-xs sm:text-sm cursor-pointer active:scale-95 ${
+                    className={`whitespace-nowrap px-4 py-3 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full border transition-all duration-200 font-medium text-xs sm:text-sm cursor-pointer active:scale-95 ${
                       isSelected
                         ? 'border-black bg-black text-white font-semibold shadow-xs'
                         : 'border-gray-200 text-gray-700 hover:border-black active:bg-gray-100'
@@ -650,8 +651,8 @@ export default function App() {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-4 py-3 min-h-[48px] rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl border border-emerald-500/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-          title="Direct WhatsApp Support"
-          aria-label="Direct WhatsApp Support"
+          title="Chat with customer support on WhatsApp"
+          aria-label="Chat with customer support on WhatsApp"
         >
           <div className="relative flex items-center justify-center">
             <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />

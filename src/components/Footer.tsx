@@ -66,7 +66,7 @@ export const Footer: React.FC<FooterProps> = React.memo(({
           <button
             type="submit"
             aria-label="Subscribe to email newsletter"
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-gray-800 hover:text-black hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-gray-800 hover:text-black hover:scale-105 active:scale-95 transition-transform cursor-pointer"
           >
             <ArrowRight className="w-5 h-5 stroke-[2]" />
           </button>

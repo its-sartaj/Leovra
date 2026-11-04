@@ -78,7 +78,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
               type="button"
               onClick={onClose}
               aria-label="Close search overlay"
-              className="w-11 h-11 flex items-center justify-center text-gray-700 hover:text-black active:scale-90 transition-all cursor-pointer"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center text-gray-700 hover:text-black active:scale-90 transition-all cursor-pointer"
             >
               <X className="w-6 h-6" />
             </button>
@@ -100,6 +100,10 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                     <img
                       src={product.image}
                       alt={product.title}
+                      width="44"
+                      height="56"
+                      loading="lazy"
+                      decoding="async"
                       className="w-11 h-14 object-contain bg-gray-100 shrink-0 rounded-xs p-0.5"
                     />
                     <div className="flex-1 text-xs">
