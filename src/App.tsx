@@ -6,6 +6,7 @@ import { HeroBanner } from './components/HeroBanner';
 import { ProductCard } from './components/ProductCard';
 import { SeoBrandSection } from './components/SeoBrandSection';
 import { Footer } from './components/Footer';
+import { CategoryFilterBar, CategoryItem } from './components/CategoryFilterBar';
 import { MessageCircle, ArrowUp } from 'lucide-react';
 
 // Lazy load all non-critical drawers, modals, and admin panel for ultra-lean mobile bundle (100% Score)
@@ -54,6 +55,18 @@ const BackToTopButton: React.FC = React.memo(() => {
     </button>
   );
 });
+
+const CATEGORIES: CategoryItem[] = [
+  { id: 'all', label: 'All Products' },
+  { id: 'new', label: 'New Arrivals' },
+  { id: 'bestsellers', label: 'Best Sellers' },
+  { id: 'mens_tshirts', label: "Men's T-Shirts" },
+  { id: 'womens_tshirts', label: "Women's T-Shirts" },
+  { id: 'mens_lowers', label: "Men's Lowers" },
+  { id: 'womens_lowers', label: "Women's Lowers" },
+  { id: 'mens_casual', label: 'Casual Wear' },
+  { id: 'jewellery', label: 'Jewellery' }
+];
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'store' | 'admin'>(() => {
@@ -577,43 +590,12 @@ export default function App() {
             </div>
           </div>
 
-          {/* Horizontal Scrolling Category Filter Pills with Smooth Momentum and Auto-Centering */}
-          <div className="relative">
-            <div className="flex space-x-2 overflow-x-auto no-scrollbar pb-3 text-xs sm:text-sm touch-pan">
-              {[
-                { id: 'all', label: 'All Products' },
-                { id: 'new', label: 'New Arrivals' },
-                { id: 'bestsellers', label: 'Best Sellers' },
-                { id: 'mens_tshirts', label: "Men's T-Shirts" },
-                { id: 'womens_tshirts', label: "Women's T-Shirts" },
-                { id: 'mens_lowers', label: "Men's Lowers" },
-                { id: 'womens_lowers', label: "Women's Lowers" },
-                { id: 'mens_casual', label: 'Casual Wear' },
-                { id: 'jewellery', label: 'Jewellery' }
-              ].map(cat => {
-                const isSelected = selectedCategory === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    aria-label={`Filter by ${cat.label}`}
-                    onClick={e => {
-                      setSelectedCategory(cat.id);
-                      e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-                    }}
-                    className={`whitespace-nowrap px-4 py-3 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-full border transition-all duration-200 font-medium text-xs sm:text-sm cursor-pointer active:scale-95 ${
-                      isSelected
-                        ? 'border-black bg-black text-white font-semibold shadow-xs'
-                        : 'border-gray-200 text-gray-700 hover:border-black active:bg-gray-100'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
-            </div>
-            {/* Soft edge gradient indicator on mobile */}
-            <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-8 bg-gradient-to-l from-white to-transparent sm:hidden" />
-          </div>
+          {/* Horizontal Scrolling Category Filter Pills with Auto-Slide Animation */}
+          <CategoryFilterBar
+            categories={CATEGORIES}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
         </section>
 
         {/* Product Grid Showcase */}
