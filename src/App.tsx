@@ -523,7 +523,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Header with Top Announcement Bar */}
+      {/* Main Header */}
       <Header
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
@@ -541,7 +541,6 @@ export default function App() {
           setSelectedCategory('all');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        announcementText={settings.announcementText}
       />
 
       <main className="flex-1">
